@@ -66,7 +66,7 @@ export default function AdminEstoquePage() {
       });
       if (!res.ok) throw new Error('Erro ao atualizar');
       toast.success('Estoque atualizado!');
-      setQuantidade(prev => ({ ...prev, [id]: '' }));
+      setQuantidade(prev => ({ ...prev, [id]: '0' }));
       carregarProdutos();
     } catch (err: any) {
       toast.error(err.message || 'Erro ao atualizar estoque');
