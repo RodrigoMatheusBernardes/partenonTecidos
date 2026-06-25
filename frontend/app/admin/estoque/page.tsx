@@ -16,7 +16,7 @@ export default function AdminEstoquePage() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState('');
-  const [quantidade, setQuantidade] = useState<Record<string, number>>({});
+  const [quantidade, setQuantidade] = useState<Record<string, string>>({});
 
   const apiUrl = getApiUrl();
 
