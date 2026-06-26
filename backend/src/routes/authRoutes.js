@@ -1,12 +1,13 @@
 ﻿const express = require('express');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const path = require('path');
 
-// CORREÇÃO: Importações absolutas usando app-root-path
-// Isso garante que os caminhos funcionem tanto no seu PC quanto no Render
-const User = require('app-root-path').require('/src/models/user');
-const authMiddleware = require('app-root-path').require('/src/middleware/auth');
-const PasswordResetToken = require('app-root-path').require('/src/models/PasswordResetToken');
+// CORREÇÃO: Usando path.resolve para criar caminhos absolutos a partir da raiz do projeto
+// Isso funciona sem precisar instalar nenhum pacote externo.
+const User = require(path.resolve(__dirname, '../../models/user'));
+const authMiddleware = require(path.resolve(__dirname, '../../middleware/auth'));
+const PasswordResetToken = require(path.resolve(__dirname, '../../models/PasswordResetToken'));
 
 const router = express.Router();
 
@@ -87,7 +88,6 @@ router.post('/esqueci-senha', async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      // Por segurança, retornamos sucesso genérico
       return res.json({ message: 'Se o e-mail estiver cadastrado, você receberá um link para redefinir a senha.' });
     }
 
@@ -145,7 +145,7 @@ router.post('/redefinir-senha', async (req, res) => {
   }
 });
 
-// PUT /api/auth/perfil – atualizar nome e/ou senha do cliente logado
+// PUT /api/auth/perfil
 router.put('/perfil', authMiddleware, async (req, res) => {
   try {
     const { nome, currentPassword, newPassword } = req.body;
