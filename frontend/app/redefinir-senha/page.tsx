@@ -1,56 +1,125 @@
 'use client';
 
-import { useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
-import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
-export default function RedefinirSenhaPage() {
+// Diretiva para evitar pré-renderização
+export const dynamic = 'force-dynamic';
+
+// Componente que usa useSearchParams (deve ficar dentro do Suspense)
+function RedefinirSenhaContent() {
   const searchParams = useSearchParams();
-  const token = searchParams.get('token') || '';
   const router = useRouter();
-  const [password, setPassword] = useState('');
-  const [confirmacao, setConfirmacao] = useState('');
-  const [loading, setLoading] = useState(false);
+  
+  const token = searchParams.get('token');
+  const email = searchParams.get('email');
+  
+  const [novaSenha, setNovaSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [mensagem, setMensagem] = useState('');
+  const [erro, setErro] = useState('');
+  const [carregando, setCarregando] = useState(false);
+
+  // Verifica se os parâmetros estão presentes
+  useEffect(() => {
+    if (!token || !email) {
+      setErro('Link de redefinição inválido ou expirado.');
+    }
+  }, [token, email]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!password || !confirmacao) { toast.error('Preencha todos os campos.'); return; }
-    if (password !== confirmacao) { toast.error('As senhas não conferem.'); return; }
-    if (password.length < 6) { toast.error('A senha deve ter pelo menos 6 caracteres.'); return; }
-    if (!token) { toast.error('Token inválido.'); return; }
+    if (novaSenha !== confirmarSenha) {
+      setErro('As senhas não coincidem.');
+      return;
+    }
+    if (novaSenha.length < 6) {
+      setErro('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
 
-    setLoading(true);
+    setCarregando(true);
+    setErro('');
+    setMensagem('');
+
     try {
       const apiUrl = getApiUrl();
-      await axios.post(`${apiUrl}/api/auth/redefinir-senha`, { token, newPassword: password });
-      toast.success('Senha redefinida com sucesso!');
-      router.push('/login');
+      const res = await axios.post(`${apiUrl}/api/auth/redefinir-senha`, {
+        token,
+        email,
+        novaSenha,
+      });
+      setMensagem(res.data.message || 'Senha redefinida com sucesso!');
+      setTimeout(() => {
+        router.push('/login');
+      }, 3000);
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Erro ao redefinir senha');
+      setErro(err.response?.data?.message || 'Erro ao redefinir a senha.');
     } finally {
-      setLoading(false);
+      setCarregando(false);
     }
   };
 
+  if (erro && !token) {
+    return <div className="text-center py-12 text-red-600">{erro}</div>;
+  }
+
   return (
-    <main className="max-w-md mx-auto px-4 py-20">
-      <h1 className="text-3xl font-bold mb-6 text-center">Nova senha</h1>
+    <div className="max-w-md mx-auto px-4 py-12">
+      <h1 className="text-2xl font-bold mb-6 text-center">Redefinir senha</h1>
+      <p className="text-gray-600 text-center mb-6">
+        Digite sua nova senha para o e-mail <strong>{email}</strong>.
+      </p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm mb-1">Nova senha</label>
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} className="w-full border rounded-lg p-2" />
+          <label htmlFor="novaSenha" className="block text-sm font-medium text-gray-700">
+            Nova senha
+          </label>
+          <input
+            type="password"
+            id="novaSenha"
+            value={novaSenha}
+            onChange={(e) => setNovaSenha(e.target.value)}
+            className="mt-1 w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:outline-none"
+            required
+            minLength={6}
+          />
         </div>
         <div>
-          <label className="block text-sm mb-1">Confirme a nova senha</label>
-          <input type="password" value={confirmacao} onChange={e => setConfirmacao(e.target.value)} required minLength={6} className="w-full border rounded-lg p-2" />
+          <label htmlFor="confirmarSenha" className="block text-sm font-medium text-gray-700">
+            Confirmar senha
+          </label>
+          <input
+            type="password"
+            id="confirmarSenha"
+            value={confirmarSenha}
+            onChange={(e) => setConfirmarSenha(e.target.value)}
+            className="mt-1 w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:outline-none"
+            required
+          />
         </div>
-        <button type="submit" disabled={loading} className="w-full bg-primary text-white py-2 rounded-lg hover:bg-green-700 transition">
-          {loading ? 'Salvando...' : 'Redefinir senha'}
+        {erro && <p className="text-red-600 text-sm">{erro}</p>}
+        {mensagem && <p className="text-green-600 text-sm">{mensagem}</p>}
+        <button
+          type="submit"
+          disabled={carregando}
+          className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary-dark transition disabled:opacity-50"
+        >
+          {carregando ? 'Redefinindo...' : 'Redefinir senha'}
         </button>
       </form>
-      
-    </main>
+    </div>
+  );
+}
+
+// Página principal envolvida em Suspense
+export default function RedefinirSenhaPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-12">Carregando...</div>}>
+      <RedefinirSenhaContent />
+    </Suspense>
   );
 }
