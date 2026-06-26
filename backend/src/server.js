@@ -32,3 +32,10 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+const cors = require('cors');
+const corsOptions = {
+  origin: 'https://partenon-tecidos-w3t8-45v3v7co6-rpetrobernardes-1055s-projects.vercel.app', // seu link do Vercel
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
