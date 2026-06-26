@@ -1,7 +1,12 @@
 ﻿const express = require('express');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-const authMiddleware = require('../middleware/auth');
+const crypto = require('crypto');
+
+// CORREÇÃO: Importações absolutas com app-root-path
+const User = require('app-root-path').require('/src/models/user');
+const authMiddleware = require('app-root-path').require('/src/middleware/auth');
+const PasswordResetToken = require('app-root-path').require('/src/models/PasswordResetToken');
+
 const router = express.Router();
 
 // POST /api/auth/registrar
@@ -72,8 +77,6 @@ router.get('/me', authMiddleware, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-const crypto = require('crypto');
-const PasswordResetToken = require('../models/PasswordResetToken');
 
 // POST /api/auth/esqueci-senha
 router.post('/esqueci-senha', async (req, res) => {
@@ -146,6 +149,7 @@ router.post('/redefinir-senha', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });
+
 // PUT /api/auth/perfil – atualizar nome e/ou senha do cliente logado
 router.put('/perfil', authMiddleware, async (req, res) => {
   try {
@@ -177,4 +181,5 @@ router.put('/perfil', authMiddleware, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 module.exports = router;
