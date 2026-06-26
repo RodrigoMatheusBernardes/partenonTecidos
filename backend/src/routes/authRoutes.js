@@ -2,7 +2,8 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
-// CORREÇÃO: Importações absolutas com app-root-path
+// CORREÇÃO: Importações absolutas usando app-root-path
+// Isso garante que os caminhos funcionem tanto no seu PC quanto no Render
 const User = require('app-root-path').require('/src/models/user');
 const authMiddleware = require('app-root-path').require('/src/middleware/auth');
 const PasswordResetToken = require('app-root-path').require('/src/models/PasswordResetToken');
@@ -86,20 +87,16 @@ router.post('/esqueci-senha', async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      // Por segurança, retornamos sucesso genérico para não revelar se o e-mail existe
+      // Por segurança, retornamos sucesso genérico
       return res.json({ message: 'Se o e-mail estiver cadastrado, você receberá um link para redefinir a senha.' });
     }
 
-    // Gera token único
     const token = crypto.randomBytes(32).toString('hex');
-    // Expira em 1 hora
     const expiresAt = new Date(Date.now() + 3600000);
 
     await PasswordResetToken.create({ userId: user._id, token, expiresAt });
 
     const resetLink = `http://localhost:3000/redefinir-senha?token=${token}`;
-
-    // 🖨️ Exibe no console (substituir por envio de e-mail posteriormente)
     console.log(`\n📧 Link de redefinição de senha para ${email}:\n${resetLink}\n`);
 
     res.json({ message: 'Se o e-mail estiver cadastrado, você receberá um link para redefinir a senha.' });
@@ -130,16 +127,14 @@ router.post('/redefinir-senha', async (req, res) => {
       return res.status(400).json({ error: 'Token inválido ou expirado.' });
     }
 
-    // Atualiza a senha do usuário
     const user = await User.findById(resetToken.userId);
     if (!user) {
       return res.status(400).json({ error: 'Usuário não encontrado.' });
     }
 
-    user.password = newPassword; // o middleware pre-save fará o hash
+    user.password = newPassword;
     await user.save();
 
-    // Marca o token como usado
     resetToken.used = true;
     await resetToken.save();
 
@@ -157,7 +152,6 @@ router.put('/perfil', authMiddleware, async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ error: 'Usuário não encontrado.' });
 
-    // Se quiser trocar a senha, precisa confirmar a senha atual
     if (newPassword) {
       if (!currentPassword) {
         return res.status(400).json({ error: 'Senha atual é obrigatória para definir uma nova senha.' });
