@@ -9,6 +9,9 @@ import FiltersSidebar from '@/components/FiltersSidebar';
 import { SkeletonProduct } from '@/components/Skeleton';
 import ProductCard from '@/components/ui/ProductCard';
 
+// Esta linha resolve o erro de pré-renderização no Vercel
+export const dynamic = 'force-dynamic';
+
 interface Categoria { _id: string; nome: string; }
 interface Produto {
   _id: string; nome: string; preco: number; fotos: string[];
