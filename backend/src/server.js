@@ -1,10 +1,14 @@
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const path = require('path');
 const connectDB = require('./database');
 
-dotenv.config();
+// Carrega variáveis de ambiente apenas se NÃO estiver em produção (Render define NODE_ENV=production)
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
+// Conecta ao MongoDB (a função connectDB deve usar process.env.MONGODB_URI)
 connectDB();
 
 const app = express();
