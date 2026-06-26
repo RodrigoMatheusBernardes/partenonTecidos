@@ -1,13 +1,11 @@
 ﻿const express = require('express');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const path = require('path');
 
-// CORREÇÃO: Usando path.resolve para criar caminhos absolutos a partir da raiz do projeto
-// Isso funciona sem precisar instalar nenhum pacote externo.
-const User = require(path.resolve(__dirname, '../../models/user'));
-const authMiddleware = require(path.resolve(__dirname, '../../middleware/auth'));
-const PasswordResetToken = require(path.resolve(__dirname, '../../models/PasswordResetToken'));
+// CORREÇÃO: Caminhos relativos corretos e case-sensitive
+const User = require('../models/User');                     // Maiúsculo
+const authMiddleware = require('../middleware/auth');       // middleware (minúsculo, verifique se o arquivo é auth.js)
+const PasswordResetToken = require('../models/PasswordResetToken'); // Nome do arquivo (verifique se é exatamente este)
 
 const router = express.Router();
 
