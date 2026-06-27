@@ -10,6 +10,13 @@ import FavoritoButton from '@/components/FavoritoButton';
 
 const DEFAULT_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400"%3E%3Crect width="300" height="400" fill="%23f5f2ee"/%3E%3Ctext x="150" y="200" font-family="Inter, sans-serif" font-size="20" fill="%23999" text-anchor="middle"%3EProduto%3C/text%3E%3C/svg%3E';
 
+// Função auxiliar para corrigir a URL da imagem (local)
+function fixImageUrl(url: string): string {
+  if (!url) return url;
+  // Substitui localhost:5000 pela URL do Render
+  return url.replace('http://localhost:5000', 'https://partenontecidos.onrender.com');
+}
+
 export default function ProductCard({ produto }: { produto?: any }) {
   const { addItem } = useCart();
   const [imgError, setImgError] = useState(false);
@@ -38,10 +45,12 @@ export default function ProductCard({ produto }: { produto?: any }) {
     produto.imagem ||
     produto.imagemUrl ||
     '';
-  const imagemValida =
-    imagemPrincipal && typeof imagemPrincipal === 'string' && imagemPrincipal.startsWith('http')
-      ? imagemPrincipal
-      : DEFAULT_IMAGE;
+  const imagemValida = (() => {
+    if (imagemPrincipal && typeof imagemPrincipal === 'string' && imagemPrincipal.startsWith('http')) {
+      return fixImageUrl(imagemPrincipal);
+    }
+    return DEFAULT_IMAGE;
+  })();
   const estoque = typeof produto.estoque === 'number' ? produto.estoque : 0;
 
   const descontoPercentual =
@@ -65,7 +74,6 @@ export default function ProductCard({ produto }: { produto?: any }) {
       quantidade: 1,
       maxEstoque: estoque,
     });
-    // ✅ Não mostramos toast extra aqui; o CartContext já exibe o toast com o nome do produto
   };
 
   const imageSrc = imgError ? DEFAULT_IMAGE : imagemValida;
@@ -107,7 +115,6 @@ export default function ProductCard({ produto }: { produto?: any }) {
             </div>
           )}
 
-          {/* 🔒 Coração de favorito – com wrapper que impede navegação */}
           <div
             className="absolute top-3 right-3 z-10"
             onClick={(e) => {
