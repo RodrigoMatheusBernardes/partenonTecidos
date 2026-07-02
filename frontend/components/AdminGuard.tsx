@@ -6,13 +6,13 @@ import { useRouter, usePathname } from 'next/navigation';
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [authorized, setAuthorized] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [ok, setOk] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     if (pathname === '/admin/login') {
-      setAuthorized(true);
-      setLoading(false);
+      setOk(true);
+      setChecking(false);
       return;
     }
 
@@ -24,38 +24,26 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
     }
 
     try {
-      // Decodifica o token para verificar a role
       const payload = JSON.parse(atob(token.split('.')[1]));
-      
       if (payload.role === 'admin') {
-        setAuthorized(true);
+        setOk(true);
       } else {
-        console.log('Acesso negado - role não é admin');
         router.push('/login');
       }
-    } catch (e) {
-      console.log('Token inválido');
+    } catch {
       localStorage.removeItem('token');
       router.push('/login');
     }
     
-    setLoading(false);
+    setChecking(false);
   }, [pathname, router]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Carregando...</p>
-      </div>
-    );
+  if (checking) {
+    return <div className="p-12 text-center">Verificando acesso...</div>;
   }
 
-  if (!authorized) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Acesso negado. Redirecionando...</p>
-      </div>
-    );
+  if (!ok) {
+    return <div className="p-12 text-center">Acesso negado.</div>;
   }
 
   return <>{children}</>;
