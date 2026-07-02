@@ -1,30 +1,61 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isAdmin, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [authorized, setAuthorized] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!loading && !isAuthenticated && pathname !== '/admin/login') {
-      router.push('/admin/login');
+    if (pathname === '/admin/login') {
+      setAuthorized(true);
+      setLoading(false);
+      return;
     }
-  }, [isAuthenticated, loading, pathname, router]);
 
-  if (pathname === '/admin/login') {
-    return <>{children}</>;
-  }
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    try {
+      // Decodifica o token para verificar a role
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      
+      if (payload.role === 'admin') {
+        setAuthorized(true);
+      } else {
+        console.log('Acesso negado - role não é admin');
+        router.push('/login');
+      }
+    } catch (e) {
+      console.log('Token inválido');
+      localStorage.removeItem('token');
+      router.push('/login');
+    }
+    
+    setLoading(false);
+  }, [pathname, router]);
 
   if (loading) {
-    return <p className="text-center py-12">Carregando...</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Carregando...</p>
+      </div>
+    );
   }
 
-  if (!isAuthenticated || !isAdmin) {
-    return <p className="text-center py-12">Acesso negado. Redirecionando...</p>;
+  if (!authorized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Acesso negado. Redirecionando...</p>
+      </div>
+    );
   }
 
   return <>{children}</>;
