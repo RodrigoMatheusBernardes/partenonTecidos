@@ -25,9 +25,23 @@ export default function LoginPage() {
     try {
       const apiUrl = getApiUrl();
       const res = await axios.post(`${apiUrl}/api/auth/login`, { email, password });
+      
+      // ✅ Verifica se a API retornou erro
+      if (res.data.error) {
+        toast.error(res.data.error);
+        return;
+      }
+      
+      // ✅ Só prossegue se tiver token e user
+      if (!res.data.token || !res.data.user) {
+        toast.error('Resposta inválida do servidor.');
+        return;
+      }
+      
       const { token, user } = res.data;
       login(user, token);
       toast.success('Login realizado!');
+      
       if (user.role === 'admin') {
         router.push('/admin');
       } else {
@@ -64,8 +78,8 @@ export default function LoginPage() {
         Não tem conta? <Link href="/cadastro" className="text-primary hover:underline">Criar conta</Link>
       </p>
       <p className="text-center text-sm mt-2">
-  <Link href="/esqueci-senha" className="text-gray-500 hover:underline">Esqueci minha senha</Link>
-</p>
+        <Link href="/esqueci-senha" className="text-gray-500 hover:underline">Esqueci minha senha</Link>
+      </p>
     </main>
   );
 }
