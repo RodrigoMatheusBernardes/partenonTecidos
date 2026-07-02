@@ -39,11 +39,17 @@ export default function LoginPage() {
       }
       
       const { token, user } = res.data;
+      
+      // ✅ Força salvar o token no localStorage
+      localStorage.setItem('token', token);
+      
+      // Chama o login do contexto
       login(user, token);
       toast.success('Login realizado!');
       
+      // ✅ Usa window.location para forçar o redirecionamento
       if (user.role === 'admin') {
-        router.push('/admin');
+        window.location.href = '/admin';
       } else {
         router.push('/meus-pedidos');
       }
