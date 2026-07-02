@@ -28,7 +28,16 @@ export default function AdminEstoquePage() {
       });
       if (!res.ok) throw new Error('Erro ao carregar');
       const data = await res.json();
-      setProdutos(data);
+      
+      // ✅ Garante que todos os campos existam
+      const produtosCorrigidos = data.map((p: any) => ({
+        ...p,
+        estoque: p.estoque || 0,
+        reservado: p.reservado || 0,
+        disponivel: (p.estoque || 0) - (p.reservado || 0)
+      }));
+      
+      setProdutos(produtosCorrigidos);
     } catch (err: any) {
       toast.error('Erro ao carregar produtos.');
     } finally {
@@ -66,7 +75,7 @@ export default function AdminEstoquePage() {
       });
       if (!res.ok) throw new Error('Erro ao atualizar');
       toast.success('Estoque atualizado!');
-      setQuantidade(prev => ({ ...prev, [id]: '0' }));
+      setQuantidade(prev => ({ ...prev, [id]: '' }));
       carregarProdutos();
     } catch (err: any) {
       toast.error(err.message || 'Erro ao atualizar estoque');
@@ -77,74 +86,84 @@ export default function AdminEstoquePage() {
     p.nome.toLowerCase().includes(busca.toLowerCase())
   );
 
-  if (carregando) return <p className="text-center py-12">Carregando...</p>;
+  if (carregando) return (
+    <div className="flex items-center justify-center py-12">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>
+  );
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-3xl font-bold">Estoque</h1>
         <input
           type="text"
           placeholder="Buscar por nome..."
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
-          className="border rounded-lg px-4 py-2 w-64"
+          className="border rounded-lg px-4 py-2 w-full sm:w-64"
         />
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="p-3 text-left">Produto</th>
-              <th className="p-3 text-center">Estoque Atual</th>
-              <th className="p-3 text-center">Reservado</th>
-              <th className="p-3 text-center">Disponível</th>
-              <th className="p-3 text-center">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {produtosFiltrados.map(produto => (
-              <tr key={produto._id} className="border-t hover:bg-gray-50">
-                <td className="p-3 font-medium">{produto.nome}</td>
-                <td className="p-3 text-center">{produto.estoque}</td>
-                <td className="p-3 text-center">{produto.reservado}</td>
-                <td className="p-3 text-center font-semibold">{produto.disponivel}</td>
-                <td className="p-3">
-                  <div className="flex justify-center gap-2 flex-wrap">
-                    <input
-                      type="number"
-                      min="0"
-                      placeholder="Qtd"
-                      value={quantidade[produto._id] || ''}
-                      onChange={(e) => setQuantidade(prev => ({ ...prev, [produto._id]: e.target.value }))}
-                      className="border rounded px-2 py-1 w-20 text-center"
-                    />
-                    <button
-                      onClick={() => atualizarEstoque(produto._id, 'definir')}
-                      className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
-                    >
-                      Definir
-                    </button>
-                    <button
-                      onClick={() => atualizarEstoque(produto._id, 'incrementar')}
-                      className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
-                    >
-                      + Adicionar
-                    </button>
-                    <button
-                      onClick={() => atualizarEstoque(produto._id, 'decrementar')}
-                      className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
-                    >
-                      - Remover
-                    </button>
-                  </div>
-                </td>
+      {produtosFiltrados.length === 0 ? (
+        <div className="bg-white rounded-lg shadow p-12 text-center text-gray-500">
+          Nenhum produto encontrado.
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg shadow overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="p-3 text-left">Produto</th>
+                <th className="p-3 text-center">Estoque Atual</th>
+                <th className="p-3 text-center">Reservado</th>
+                <th className="p-3 text-center">Disponível</th>
+                <th className="p-3 text-center">Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {produtosFiltrados.map(produto => (
+                <tr key={produto._id} className="border-t hover:bg-gray-50">
+                  <td className="p-3 font-medium">{produto.nome}</td>
+                  <td className="p-3 text-center">{produto.estoque}</td>
+                  <td className="p-3 text-center">{produto.reservado}</td>
+                  <td className="p-3 text-center font-semibold">{produto.disponivel}</td>
+                  <td className="p-3">
+                    <div className="flex justify-center gap-2 flex-wrap">
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="Qtd"
+                        value={quantidade[produto._id] || ''}
+                        onChange={(e) => setQuantidade(prev => ({ ...prev, [produto._id]: e.target.value }))}
+                        className="border rounded px-2 py-1 w-20 text-center"
+                      />
+                      <button
+                        onClick={() => atualizarEstoque(produto._id, 'definir')}
+                        className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
+                      >
+                        Definir
+                      </button>
+                      <button
+                        onClick={() => atualizarEstoque(produto._id, 'incrementar')}
+                        className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
+                      >
+                        + Adicionar
+                      </button>
+                      <button
+                        onClick={() => atualizarEstoque(produto._id, 'decrementar')}
+                        className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
+                      >
+                        - Remover
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
