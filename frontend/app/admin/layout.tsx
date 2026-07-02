@@ -132,7 +132,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </button>
             </div>
           </aside>
-
+<div className="border-t pt-4 mt-auto">
+  <div className="flex items-center gap-3 px-3 py-2 mb-2">
+    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+      <span className="text-sm font-medium text-primary">A</span>
+    </div>
+    <div className="flex-1 min-w-0">
+      <p className="text-sm font-medium text-gray-900 truncate">Admin</p>
+      <p className="text-xs text-gray-500 truncate">admin@partenon.com</p>
+    </div>
+  </div>
+  <a
+    href="/login"
+    onClick={(e) => {
+      e.preventDefault();
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }}
+    className="flex items-center gap-3 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition w-full text-left cursor-pointer"
+  >
+    <span className="text-lg">🚪</span>
+    Sair do Painel
+  </a>
+</div>
           {/* Conteúdo principal */}
           <main className="flex-1 p-4 md:p-6 max-w-full overflow-x-auto">
             {children}
