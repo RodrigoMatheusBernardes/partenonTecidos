@@ -56,7 +56,6 @@ export default function HorizontalCategoryNav() {
       .catch(console.error);
   }, []);
 
-  // Atualiza posição ao scroll/resize
   useEffect(() => {
     const atualizar = () => {
       if (catBtnEl && menuCategoriasAberto) setCatBtnRect(catBtnEl.getBoundingClientRect());
@@ -70,7 +69,6 @@ export default function HorizontalCategoryNav() {
     };
   }, [catBtnEl, segBtnEl, menuCategoriasAberto, menuSegmentosAberto]);
 
-  // Fecha menus
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -124,26 +122,26 @@ export default function HorizontalCategoryNav() {
   const linhaDeco = categorias.slice(metade);
 
   const CategoriasPanel = () => (
-    <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 p-5 w-[640px] max-w-[90vw]">
+    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-5 w-[640px] max-w-[90vw] animate-fadeIn">
       <div className="relative mb-4">
         <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
         <input
           type="text" placeholder="Filtrar categorias..." value={filtro}
           onChange={e => setFiltro(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2463eb]"
+          className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-shadow"
         />
       </div>
-      <div className="grid grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto">
+      <div className="grid grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto scrollbar-thin">
         {colsArray.map((col, i) => (
           <div key={i} className="space-y-1">
             {col.map(cat => (
               <Link key={cat._id} href={`/categoria/${cat.slug}`}
                 onClick={() => { setMenuCategoriasAberto(false); setFiltro(''); }}
-                className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-[#2463eb]/5 hover:text-[#2463eb] transition-colors"
+                className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200"
               >
                 <span className="flex items-center gap-2"><span className="text-base">📌</span>{cat.nome}</span>
                 {contagemPorCategoria[cat._id] !== undefined && (
-                  <span className="text-xs text-gray-400">({contagemPorCategoria[cat._id]})</span>
+                  <span className="text-xs text-gray-400 font-medium bg-gray-100 px-2 py-0.5 rounded-full">{contagemPorCategoria[cat._id]}</span>
                 )}
               </Link>
             ))}
@@ -157,21 +155,21 @@ export default function HorizontalCategoryNav() {
   );
 
   const SegmentosPanel = () => (
-    <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 p-6 w-[640px] max-w-[90vw]">
+    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 w-[640px] max-w-[90vw] animate-fadeIn">
       <div className="grid grid-cols-2 gap-6">
         <div>
-          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-            <Scissors className="w-4 h-4 text-[#2463eb]" /> Linha Profissional
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <Scissors className="w-4 h-4 text-blue-600" /> Linha Profissional
           </h3>
-          <ul className="space-y-2">
+          <ul className="space-y-1">
             {linhaProf.length > 0 ? linhaProf.map(cat => (
               <li key={cat._id}>
                 <Link href={`/categoria/${cat.slug}`} onClick={() => setMenuSegmentosAberto(false)}
-                  className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-[#2463eb]/5 hover:text-[#2463eb] transition-colors"
+                  className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200"
                 >
                   <span className="flex items-center gap-2"><span className="text-base">📌</span>{cat.nome}</span>
                   {contagemPorCategoria[cat._id] !== undefined && (
-                    <span className="text-xs text-gray-400">({contagemPorCategoria[cat._id]})</span>
+                    <span className="text-xs text-gray-400 font-medium bg-gray-100 px-2 py-0.5 rounded-full">{contagemPorCategoria[cat._id]}</span>
                   )}
                 </Link>
               </li>
@@ -179,18 +177,18 @@ export default function HorizontalCategoryNav() {
           </ul>
         </div>
         <div>
-          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-            <Gem className="w-4 h-4 text-[#2463eb]" /> Linha Decorativa
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <Gem className="w-4 h-4 text-blue-600" /> Linha Decorativa
           </h3>
-          <ul className="space-y-2">
+          <ul className="space-y-1">
             {linhaDeco.length > 0 ? linhaDeco.map(cat => (
               <li key={cat._id}>
                 <Link href={`/categoria/${cat.slug}`} onClick={() => setMenuSegmentosAberto(false)}
-                  className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-[#2463eb]/5 hover:text-[#2463eb] transition-colors"
+                  className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200"
                 >
                   <span className="flex items-center gap-2"><span className="text-base">📌</span>{cat.nome}</span>
                   {contagemPorCategoria[cat._id] !== undefined && (
-                    <span className="text-xs text-gray-400">({contagemPorCategoria[cat._id]})</span>
+                    <span className="text-xs text-gray-400 font-medium bg-gray-100 px-2 py-0.5 rounded-full">{contagemPorCategoria[cat._id]}</span>
                   )}
                 </Link>
               </li>
@@ -202,73 +200,67 @@ export default function HorizontalCategoryNav() {
   );
 
   return (
-    <nav className="bg-[#0a1628] shadow-lg border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-6 flex items-center gap-4 md:gap-8 py-3 overflow-x-auto scrollbar-hide">
+    <nav className="bg-gradient-to-r from-[#0a1628] to-[#111f33] shadow-lg border-b border-blue-900/30 sticky top-20 z-40 backdrop-blur-sm">
+      <div className="max-w-7xl mx-auto px-6 flex items-center gap-6 md:gap-10 py-3 overflow-x-auto scrollbar-hide">
         {/* Categorias */}
         <div className="relative flex-shrink-0 dropdown-trigger">
           <button onClick={toggleCat}
-            className="flex items-center gap-2 py-2 text-sm font-light tracking-wide text-white hover:text-white/80 transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 py-2 text-sm font-medium tracking-wide text-white/90 hover:text-white transition-colors whitespace-nowrap group"
           >
-            <Package className="w-4 h-4 text-white" strokeWidth={1} />
-            Categorias
+            <Package className="w-4 h-4 text-blue-400 group-hover:text-blue-300 transition-colors" strokeWidth={1.5} />
+            <span>Categorias</span>
             {categorias.length > 0 && (
-              <span className="text-xs text-white/60 font-light">({categorias.length})</span>
+              <span className="text-xs text-white/50 font-medium bg-white/10 px-2 py-0.5 rounded-full">{categorias.length}</span>
             )}
-            <ChevronDown className={`w-3 h-3 transition-transform text-white/60 ${menuCategoriasAberto ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-4 h-4 transition-transform text-white/50 ${menuCategoriasAberto ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
-        {/* Divisor */}
-        <span className="w-px h-4 bg-white/20 hidden md:block" />
+        <span className="w-px h-5 bg-white/10 hidden md:block" />
 
         {/* Segmentos */}
         <div className="relative flex-shrink-0 dropdown-trigger">
           <button onClick={toggleSeg}
-            className="flex items-center gap-2 py-2 text-sm font-light tracking-wide text-white hover:text-white/80 transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 py-2 text-sm font-medium tracking-wide text-white/90 hover:text-white transition-colors whitespace-nowrap group"
           >
-            <Scissors className="w-4 h-4 text-white" strokeWidth={1} />
-            Segmentos
-            <ChevronDown className={`w-3 h-3 transition-transform text-white/60 ${menuSegmentosAberto ? 'rotate-180' : ''}`} />
+            <Scissors className="w-4 h-4 text-blue-400 group-hover:text-blue-300 transition-colors" strokeWidth={1.5} />
+            <span>Segmentos</span>
+            <ChevronDown className={`w-4 h-4 transition-transform text-white/50 ${menuSegmentosAberto ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
-        {/* Divisor */}
-        <span className="w-px h-4 bg-white/20 hidden md:block" />
+        <span className="w-px h-5 bg-white/10 hidden md:block" />
 
-        {/* Novidades - BRANCO FORTE */}
+        {/* Novidades */}
         <Link href="/novidades"
-          className="flex items-center gap-2 py-2 text-sm font-light tracking-wide !text-white hover:!text-white hover:underline underline-offset-4 transition-all whitespace-nowrap flex-shrink-0"
-          style={{ color: 'white', textShadow: '0 0 2px rgba(255,255,255,0.3)' }}
+          className="flex items-center gap-2 py-2 text-sm font-medium tracking-wide text-white/90 hover:text-white transition-colors whitespace-nowrap flex-shrink-0 group"
         >
-          <Sparkles className="w-4 h-4 text-white" strokeWidth={1} style={{ filter: 'drop-shadow(0 0 2px rgba(255,255,255,0.3))' }} />
-          Novidades
+          <Sparkles className="w-4 h-4 text-blue-400 group-hover:text-blue-300 transition-colors" strokeWidth={1.5} />
+          <span>Novidades</span>
           {qtdNovidades > 0 && (
-            <span className="bg-white/20 text-white text-[11px] font-medium rounded-full px-2 py-0.5 leading-none">
+            <span className="bg-blue-600 text-white text-[11px] font-bold rounded-full px-2.5 py-0.5 leading-none shadow-sm shadow-blue-600/30">
               +{qtdNovidades}
             </span>
           )}
         </Link>
 
-        {/* Divisor */}
-        <span className="w-px h-4 bg-white/20 hidden md:block" />
+        <span className="w-px h-5 bg-white/10 hidden md:block" />
 
-        {/* Promoções - BRANCO FORTE */}
+        {/* Promoções */}
         <Link href="/promocoes"
-          className="flex items-center gap-2 py-2 text-sm font-light tracking-wide !text-white hover:!text-white hover:underline underline-offset-4 transition-all whitespace-nowrap flex-shrink-0"
-          style={{ color: 'white', textShadow: '0 0 2px rgba(255,255,255,0.3)' }}
+          className="flex items-center gap-2 py-2 text-sm font-medium tracking-wide text-white/90 hover:text-white transition-colors whitespace-nowrap flex-shrink-0 group"
         >
-          <Tag className="w-4 h-4 text-white" strokeWidth={1} style={{ filter: 'drop-shadow(0 0 2px rgba(255,255,255,0.3))' }} />
-          Promoções
-          {qtdPromocoes > 0 && <span className="text-xs text-white/70 font-light">({qtdPromocoes})</span>}
+          <Tag className="w-4 h-4 text-rose-400 group-hover:text-rose-300 transition-colors" strokeWidth={1.5} />
+          <span>Promoções</span>
+          {qtdPromocoes > 0 && <span className="text-xs text-white/60 font-medium">({qtdPromocoes})</span>}
           {maiorDesconto > 0 && (
-            <span className="ml-1 bg-red-500 text-white text-[11px] font-medium rounded-full px-2 py-0.5 leading-none">
+            <span className="ml-1 bg-rose-600 text-white text-[11px] font-bold rounded-full px-2.5 py-0.5 leading-none shadow-sm shadow-rose-600/30 animate-pulse">
               Até {maiorDesconto}% OFF
             </span>
           )}
         </Link>
       </div>
 
-      {/* Portal dropdowns */}
       {typeof document !== 'undefined' && createPortal(
         <>
           {menuCategoriasAberto && catBtnRect && (
