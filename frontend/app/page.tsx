@@ -93,13 +93,16 @@ export default function Home() {
 
   return (
     <>
+      {/* Banner em tela cheia */}
       <HomeBanner />
-      <TrendingBar />
 
-      {/* Conteúdo principal centralizado */}
+      {/* Conteúdo principal centralizado (inclui TrendingBar) */}
       <div className="main-container py-12 md:py-16">
+        {/* Produtos em Alta */}
+        <TrendingBar />
+
         {/* TÍTULO DA SEÇÃO DE LOJA */}
-        <div className="mb-10 md:mb-14">
+        <div className="mb-10 md:mb-14 mt-8">
           <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
             Nossa Coleção
           </h2>
