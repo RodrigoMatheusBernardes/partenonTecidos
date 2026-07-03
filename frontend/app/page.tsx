@@ -200,30 +200,22 @@ export default function Home() {
         {/* SEÇÃO INSTITUCIONAL */}
         {/* SEÇÃO INSTITUCIONAL – mais arejada e elegante */}
 {/* SEÇÃO INSTITUCIONAL – clean e sofisticada */}
+{/* SEÇÃO INSTITUCIONAL – puro texto, extremamente clean */}
 <section className="mt-24 md:mt-32 py-16 md:py-24 border-t border-[#e8e3dc]">
-  <div className="grid md:grid-cols-3 gap-16 md:gap-20 text-center">
-    <div className="flex flex-col items-center">
-      <div className="w-12 h-12 mx-auto mb-6 rounded-full border border-[#c9a96e] flex items-center justify-center">
-        <span className="w-2 h-2 bg-[#c9a96e] rounded-full"></span>
-      </div>
+  <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
+    <div>
       <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">Qualidade Premium</h3>
       <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
         Tecidos selecionados dos melhores fornecedores
       </p>
     </div>
-    <div className="flex flex-col items-center">
-      <div className="w-12 h-12 mx-auto mb-6 rounded-full border border-[#c9a96e] flex items-center justify-center">
-        <span className="w-2 h-2 bg-[#c9a96e] rounded-full"></span>
-      </div>
+    <div>
       <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">Entrega Rápida</h3>
       <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
         Enviamos para todo o Brasil com agilidade
       </p>
     </div>
-    <div className="flex flex-col items-center">
-      <div className="w-12 h-12 mx-auto mb-6 rounded-full border border-[#c9a96e] flex items-center justify-center">
-        <span className="w-2 h-2 bg-[#c9a96e] rounded-full"></span>
-      </div>
+    <div>
       <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">Atendimento Especial</h3>
       <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
         Suporte personalizado para suas necessidades
