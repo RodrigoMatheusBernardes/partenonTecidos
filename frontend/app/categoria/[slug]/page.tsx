@@ -6,6 +6,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import ProductCard from '@/components/ui/ProductCard';
 import { getApiUrl } from '@/lib/api';
+import { Home, ChevronRight } from 'lucide-react';
 
 interface Produto {
   _id: string;
@@ -14,6 +15,8 @@ interface Produto {
   fotos: string[];
   imagemUrl?: string;
   disponivel: number;
+  preco_original?: number;
+  estoque?: number;
 }
 
 export default function CategoriaPage() {
@@ -27,16 +30,14 @@ export default function CategoriaPage() {
     const apiUrl = getApiUrl();
     let catId: string;
 
-    // 1. Buscar a categoria pelo slug
-    axios.get(`${apiUrl}/api/categorias/slug/${slug}`)
+    axios
+      .get(`${apiUrl}/api/categorias/slug/${slug}`)
       .then(res => {
         setCategoria(res.data);
         catId = res.data._id;
-        // 2. Buscar todos os produtos da vitrine
         return axios.get(`${apiUrl}/api/produtos/vitrine`);
       })
       .then(res => {
-        // 3. Filtrar produtos que pertençam a essa categoria
         const filtrados = res.data.filter((p: any) => {
           const idCategoria = typeof p.categoria === 'object' ? p.categoria?._id : p.categoria;
           return idCategoria === catId;
@@ -47,40 +48,76 @@ export default function CategoriaPage() {
       .finally(() => setCarregando(false));
   }, [slug]);
 
-  // ✅ Título dinâmico da aba (SEO)
   useEffect(() => {
     if (categoria) {
       document.title = `${categoria.nome} | Parthenon Tecidos`;
     }
   }, [categoria]);
 
-  if (carregando) return <p className="p-8">Carregando...</p>;
-  if (!categoria) return <p className="p-8 text-red-600">Categoria não encontrada.</p>;
+  if (carregando) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!categoria) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-red-500 text-lg">Categoria não encontrada.</p>
+        <Link href="/loja" className="text-blue-600 hover:underline mt-4 inline-block">
+          Ver todas as categorias
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8">
-      <div className="text-sm text-gray-500 mb-4">
-        <Link href="/" className="hover:text-primary">Loja</Link>
-        <span className="mx-2">/</span>
-        <span className="text-gray-800">{categoria.nome}</span>
-      </div>
-      <h1 className="text-3xl font-bold mb-8 font-heading">{categoria.nome}</h1>
-      {produtos.length === 0 ? (
-        <p className="text-gray-500">Nenhum produto nesta categoria ainda.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {produtos.map(produto => (
-            <ProductCard
-              key={produto._id}
-              id={produto._id}
-              nome={produto.nome}
-              preco={produto.preco}
-              imagem={produto.fotos?.[0] || produto.imagemUrl}
-              estoque={produto.disponivel ?? 0}
-            />
-          ))}
+    <main>
+      {/* Cabeçalho da categoria */}
+      <div className="bg-[#0a1628] text-white py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center gap-2 text-sm text-white/60 mb-4">
+            <Link href="/" className="hover:text-white transition-colors flex items-center gap-1">
+              <Home className="w-4 h-4" />
+              Loja
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-white">{categoria.nome}</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-serif font-light tracking-wide">
+            {categoria.nome}
+          </h1>
+          {produtos.length > 0 && (
+            <p className="text-white/50 mt-2 text-sm">
+              {produtos.length} {produtos.length === 1 ? 'produto encontrado' : 'produtos encontrados'}
+            </p>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Grid de produtos */}
+      <div className="max-w-7xl mx-auto px-6 py-12 md:py-16">
+        {produtos.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div className="text-6xl mb-4">📭</div>
+            <p className="text-gray-500 text-lg">Nenhum produto nesta categoria ainda.</p>
+            <Link
+              href="/loja"
+              className="inline-block mt-6 bg-[#0a1628] text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-[#1a2a44] transition"
+            >
+              Explorar outros produtos
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+            {produtos.map(produto => (
+              <ProductCard key={produto._id} produto={produto} />
+            ))}
+          </div>
+        )}
+      </div>
     </main>
   );
 }
