@@ -21,13 +21,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="pt-BR" className={`${inter.variable} ${playfair.variable}`}>
-      <body className="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col">
+      <body className="bg-white text-[--color-text-primary] font-sans antialiased min-h-screen flex flex-col">
         <AuthProvider>
           <CartProvider>
             <TopBar />
             <Header />
             {!isAdmin && <HorizontalCategoryNav />}
-            <main className="flex-1">{children}</main>
+            {/* Centralização profissional + padding inferior para o footer não colar */}
+            <main className="flex-1 main-container pb-16 md:pb-24">
+              {children}
+            </main>
             <Footer />
             <ScrollToTopButton />
             <Toaster
