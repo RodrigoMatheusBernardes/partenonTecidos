@@ -198,37 +198,38 @@ export default function Home() {
         </div>
 
         {/* SEÇÃO INSTITUCIONAL */}
-        <section className="mt-20 md:mt-28 py-16 md:py-20 border-t border-[#e8e3dc]">
-          <div className="grid md:grid-cols-3 gap-12 md:gap-16 text-center">
-            <div>
-              <div className="w-14 h-14 mx-auto mb-5 border border-[#e8e3dc] rounded-full flex items-center justify-center">
-                <span className="text-2xl">🎯</span>
-              </div>
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a]">Qualidade Premium</h3>
-              <p className="text-[#8a7a6a] font-light text-sm mt-3 leading-relaxed">
-                Tecidos selecionados dos melhores fornecedores
-              </p>
-            </div>
-            <div>
-              <div className="w-14 h-14 mx-auto mb-5 border border-[#e8e3dc] rounded-full flex items-center justify-center">
-                <span className="text-2xl">🚀</span>
-              </div>
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a]">Entrega Rápida</h3>
-              <p className="text-[#8a7a6a] font-light text-sm mt-3 leading-relaxed">
-                Enviamos para todo o Brasil com agilidade
-              </p>
-            </div>
-            <div>
-              <div className="w-14 h-14 mx-auto mb-5 border border-[#e8e3dc] rounded-full flex items-center justify-center">
-                <span className="text-2xl">💎</span>
-              </div>
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a]">Atendimento Especial</h3>
-              <p className="text-[#8a7a6a] font-light text-sm mt-3 leading-relaxed">
-                Suporte personalizado para suas necessidades
-              </p>
-            </div>
-          </div>
-        </section>
+        {/* SEÇÃO INSTITUCIONAL – mais arejada e elegante */}
+<section className="mt-24 md:mt-32 py-16 md:py-24 border-t border-[#e8e3dc]">
+  <div className="grid md:grid-cols-3 gap-16 md:gap-20 text-center">
+    <div className="flex flex-col items-center">
+      <div className="w-16 h-16 mx-auto mb-6 border border-[#e8e3dc] rounded-full flex items-center justify-center">
+        <span className="text-3xl">🎯</span>
+      </div>
+      <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">Qualidade Premium</h3>
+      <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
+        Tecidos selecionados dos melhores fornecedores
+      </p>
+    </div>
+    <div className="flex flex-col items-center">
+      <div className="w-16 h-16 mx-auto mb-6 border border-[#e8e3dc] rounded-full flex items-center justify-center">
+        <span className="text-3xl">🚀</span>
+      </div>
+      <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">Entrega Rápida</h3>
+      <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
+        Enviamos para todo o Brasil com agilidade
+      </p>
+    </div>
+    <div className="flex flex-col items-center">
+      <div className="w-16 h-16 mx-auto mb-6 border border-[#e8e3dc] rounded-full flex items-center justify-center">
+        <span className="text-3xl">💎</span>
+      </div>
+      <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">Atendimento Especial</h3>
+      <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
+        Suporte personalizado para suas necessidades
+      </p>
+    </div>
+  </div>
+</section>
       </div>
 
       {/* Filtro mobile (botão flutuante elegante) */}
