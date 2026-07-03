@@ -1,31 +1,32 @@
 'use client';
 
-import { useState } from 'react';
-
 interface SearchBarProps {
+  value?: string;
+  onChange?: (value: string) => void;
   onSearch?: (termo: string) => void;
+  placeholder?: string;
 }
 
-export default function SearchBar({ onSearch }: SearchBarProps) {
-  const [termo, setTermo] = useState('');
-
+export default function SearchBar({ value, onChange, onSearch, placeholder = 'Buscar tecidos...' }: SearchBarProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valor = e.target.value;
-    setTermo(valor);
-    if (onSearch) onSearch(valor);            // filtra em tempo real
+    const novoValor = e.target.value;
+    if (onChange) onChange(novoValor);
+    if (onSearch) onSearch(novoValor);      // opcional: mantém compatibilidade
   };
 
   const handleClick = () => {
-    if (onSearch) onSearch(termo);            // também filtra ao clicar
+    const termo = value || '';
+    if (onSearch) onSearch(termo);
   };
 
   return (
     <div className="flex w-full max-w-2xl">
       <input
         type="text"
-        value={termo}
+        value={value || ''}
         onChange={handleChange}
-        placeholder="Buscar tecidos, marcas, fibras naturais..."
+        onKeyDown={(e) => { if (e.key === 'Enter') handleClick(); }}
+        placeholder={placeholder}
         className="flex-1 bg-gray-100 border border-gray-300 rounded-l-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
       />
       <button
