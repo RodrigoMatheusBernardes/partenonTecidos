@@ -12,13 +12,19 @@ const noCache = (req, res, next) => {
   next();
 };
 
-// ================= CONFIGURAÇÃO DO CLOUDINARY =================
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true
-});
+// ================= CONFIGURAÇÃO DO CLOUDINARY (prioriza CLOUDINARY_URL) =================
+if (process.env.CLOUDINARY_URL) {
+  cloudinary.config({ url: process.env.CLOUDINARY_URL });
+} else if (process.env.CLOUDINARY_CLOUD_NAME) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true
+  });
+} else {
+  console.error('⚠️ Cloudinary não configurado: defina CLOUDINARY_URL ou as variáveis individuais.');
+}
 
 // ================= CONFIGURAÇÃO DO UPLOAD (MEMORY STORAGE) =================
 const storage = multer.memoryStorage();
@@ -316,7 +322,7 @@ router.post('/:id/confirmar', async (req, res) => {
   } catch (err) { res.status(400).json({ error: err.message }); }
 });
 
-// ================= MIGRAÇÃO DE IMAGENS =================
+// ================= MIGRAÇÃO DE IMAGENS (FERRAMENTA ADMINISTRATIVA) =================
 router.post('/migrar-imagens', authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
