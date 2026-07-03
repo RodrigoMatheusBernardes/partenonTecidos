@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import ProductCard from '@/components/ui/ProductCard';
+import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
 
 interface Produto {
@@ -12,6 +12,7 @@ interface Produto {
   fotos: string[];
   imagemUrl?: string;
   disponivel: number;
+  vendas?: number;
 }
 
 export default function MaisVendidos() {
@@ -20,31 +21,32 @@ export default function MaisVendidos() {
 
   useEffect(() => {
     const apiUrl = getApiUrl();
-    axios.get(`${apiUrl}/api/produtos/destaques`)
-      .then(res => setProdutos(res.data))
+    axios.get(`${apiUrl}/api/produtos/vitrine`)
+      .then(res => {
+        const ordenados = res.data.sort((a: any, b: any) => (b.vendas || 0) - (a.vendas || 0));
+        setProdutos(ordenados.slice(0, 4));
+      })
       .catch(console.error)
       .finally(() => setCarregando(false));
   }, []);
 
-  if (carregando || produtos.length === 0) return null;
-
-  return (
-    <section className="mt-12">
-      <h2 className="text-2xl font-bold mb-6 font-heading text-gray-800">
-        🔥 Mais Vendidos
-      </h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {produtos.map(produto => (
-          <ProductCard
-            key={produto._id}
-            id={produto._id}
-            nome={produto.nome}
-            preco={produto.preco}
-            imagem={produto.fotos?.[0] || produto.imagemUrl}
-            estoque={produto.disponivel ?? 0}
-          />
+  if (carregando) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-64 bg-gray-100 rounded-2xl animate-pulse" />
         ))}
       </div>
-    </section>
+    );
+  }
+
+  if (produtos.length === 0) return null;
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {produtos.map(produto => (
+        <ProductCard key={produto._id} produto={produto} />
+      ))}
+    </div>
   );
 }
