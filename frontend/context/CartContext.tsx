@@ -14,6 +14,11 @@ interface CartItem {
   foto?: string;
 }
 
+interface Cupom {
+  codigo: string;
+  desconto: number; // percentual
+}
+
 interface CartContextType {
   items: CartItem[];
   addItem: (item: Omit<CartItem, 'quantidade'> & { quantidade?: number }) => Promise<void>;
@@ -22,15 +27,21 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
+  // Novos campos para cupom
+  aplicarCupom: (codigo: string) => Promise<void>;
+  removerCupom: () => void;
+  cupom: Cupom | null;
+  descontoCupom: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [processing, setProcessing] = useState(false); // evita reservas simultâneas
+  const [processing, setProcessing] = useState(false);
+  const [cupom, setCupom] = useState<Cupom | null>(null);
+  const [descontoCupom, setDescontoCupom] = useState(0);
 
-  // Chamada de API genérica para reserva/cancelamento
   const reservarNoBackend = async (produtoId: string, quantidade: number, acao: 'reservar' | 'cancelar-reserva') => {
     try {
       const apiUrl = getApiUrl();
@@ -46,7 +57,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setProcessing(true);
     try {
       const quantidade = newItem.quantidade || 1;
-      // Reserva no servidor
       await reservarNoBackend(newItem.id, quantidade, 'reservar');
 
       setItems(prev => {
@@ -103,7 +113,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items, processing]);
 
   const clearCart = useCallback(() => {
-    // Ao limpar, cancela todas as reservas
     items.forEach(async (item) => {
       try {
         await reservarNoBackend(item.id, item.quantidade, 'cancelar-reserva');
@@ -112,11 +121,35 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([]);
   }, [items]);
 
+  // Funções de cupom (implementação futura; por enquanto, apenas simulam)
+  const aplicarCupom = useCallback(async (codigo: string) => {
+    // Implemente a validação real na sua API
+    toast.error('Sistema de cupons em manutenção');
+    throw new Error('Não implementado');
+  }, []);
+
+  const removerCupom = useCallback(() => {
+    setCupom(null);
+    setDescontoCupom(0);
+  }, []);
+
   const totalItems = items.reduce((acc, item) => acc + item.quantidade, 0);
   const totalPrice = items.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, totalPrice }}>
+    <CartContext.Provider value={{
+      items,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+      totalItems,
+      totalPrice,
+      aplicarCupom,
+      removerCupom,
+      cupom,
+      descontoCupom
+    }}>
       {children}
     </CartContext.Provider>
   );
