@@ -1,14 +1,12 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
 
 export interface User {
   id: string;
   nome: string;
   email: string;
-  role: 'admin' | 'customer' | 'vendedor';  // ✅ Adiciona 'vendedor'
+  role: 'admin' | 'customer' | 'vendedor';
 }
 
 interface AuthContextType {
@@ -25,31 +23,28 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true); // controle de carregamento inicial
 
   useEffect(() => {
+    // Carrega o token do localStorage ao iniciar
     const savedToken = localStorage.getItem('token');
-    if (!savedToken) return;
-    setToken(savedToken);
-    try {
-      const base64Url = savedToken.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const decoded = JSON.parse(window.atob(base64));
-      setUser({
-        id: decoded.id,
-        nome: decoded.nome || 'Usuário',
-        email: decoded.email,
-        role: decoded.role,
-      });
-    } catch {
-      // fallback: buscar da API
-      const apiUrl = getApiUrl();
-      axios.get(`${apiUrl}/api/auth/me`, { headers: { Authorization: `Bearer ${savedToken}` } })
-        .then(res => setUser(res.data))
-        .catch(() => {
-          localStorage.removeItem('token');
-          setToken(null);
-        });
+    if (savedToken) {
+      try {
+        const payload = JSON.parse(atob(savedToken.split('.')[1]));
+        const userData: User = {
+          id: payload.id,
+          nome: payload.nome || 'Usuário',
+          email: payload.email,
+          role: payload.role,
+        };
+        setToken(savedToken);
+        setUser(userData);
+      } catch (e) {
+        console.error('Token inválido no localStorage, removendo.');
+        localStorage.removeItem('token');
+      }
     }
+    setLoading(false);
   }, []);
 
   const login = (userData: User, newToken: string) => {
@@ -66,6 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = !!user;
   const isAdmin = user?.role === 'admin';
+
+  // Se ainda estiver carregando, retorna null ou um indicador de carregamento
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+  }
 
   return (
     <AuthContext.Provider value={{ user, token, isAuthenticated, isAdmin, login, logout }}>
