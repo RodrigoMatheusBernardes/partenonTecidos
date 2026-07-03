@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import ProductCard from '@/components/ui/ProductCard';
 import { getApiUrl } from '@/lib/api';
+import ProductCard from '@/components/ui/ProductCard';
 
 interface Produto {
   _id: string;
@@ -22,42 +22,38 @@ export default function ProdutosRelacionados({ produtoAtualId }: { produtoAtualI
     if (!produtoAtualId) return;
     const apiUrl = getApiUrl();
     axios.get(`${apiUrl}/api/produtos/vitrine`)
-      .then(response => {
-        const todos = response.data as Produto[];
-        // Filtra o produto atual e pega até 4
-        const outros = todos
-          .filter(p => p._id !== produtoAtualId)
+      .then(res => {
+        // Filtra removendo o produto atual e pega até 4 relacionados
+        const relacionados = res.data
+          .filter((p: any) => p._id !== produtoAtualId)
           .slice(0, 4);
-        setProdutos(outros);
+        setProdutos(relacionados);
       })
-      .catch(err => console.error('Erro ao buscar relacionados:', err))
+      .catch(console.error)
       .finally(() => setCarregando(false));
   }, [produtoAtualId]);
 
-  if (carregando) return null;
-
-  if (produtos.length === 0) {
+  if (carregando) {
     return (
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4 font-heading text-gray-800">Você também pode gostar</h2>
-        <p className="text-gray-500">Nenhum produto relacionado no momento.</p>
+      <div className="mt-16 border-t pt-10">
+        <h2 className="text-2xl font-heading font-bold mb-6">Produtos Relacionados</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-48 bg-gray-100 rounded-2xl animate-pulse" />
+          ))}
+        </div>
       </div>
     );
   }
 
+  if (produtos.length === 0) return null;
+
   return (
-    <div className="mt-12">
-      <h2 className="text-2xl font-bold mb-6 font-heading text-gray-800">Você também pode gostar</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="mt-16 border-t pt-10">
+      <h2 className="text-2xl font-heading font-bold mb-6">Produtos Relacionados</h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {produtos.map(produto => (
-          <ProductCard
-            key={produto._id}
-            id={produto._id}
-            nome={produto.nome}
-            preco={produto.preco}
-            imagem={produto.fotos?.[0] || produto.imagemUrl}
-            estoque={produto.disponivel ?? 0}
-          />
+          <ProductCard key={produto._id} produto={produto} />
         ))}
       </div>
     </div>
