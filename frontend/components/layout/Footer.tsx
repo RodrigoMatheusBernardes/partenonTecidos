@@ -6,10 +6,10 @@ export default function Footer() {
   return (
     <footer className="bg-white border-t border-gray-100">
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           
-          {/* LOGO + DESCRIÇÃO */}
-          <div className="md:col-span-1">
+          {/* ESQUERDA – LOGO + DESCRIÇÃO */}
+          <div>
             <h3 className="font-serif font-light text-2xl tracking-[0.1em] text-[#1a1a1a]">
               PARTHENON
               <span className="block text-sm font-light text-[#8a7a6a] tracking-[0.05em] mt-1">
@@ -17,13 +17,12 @@ export default function Footer() {
               </span>
             </h3>
             <p className="mt-4 text-sm text-[#8a7a6a] font-light leading-relaxed max-w-xs">
-              Tecidos de alta qualidade para moda e decoração. 
               Elegância e sofisticação em cada metro.
             </p>
           </div>
 
-          {/* NAVEGAÇÃO + ATENDIMENTO (agrupados em uma coluna só) */}
-          <div className="grid grid-cols-2 gap-8 md:col-span-2">
+          {/* DIREITA – LINKS + CONTATO */}
+          <div className="grid grid-cols-2 gap-8">
             <div>
               <h4 className="text-xs tracking-[0.1em] uppercase text-[#1a1a1a] font-light mb-4">
                 Navegação
@@ -53,7 +52,7 @@ export default function Footer() {
               <ul className="space-y-2 text-sm text-[#8a7a6a] font-light">
                 <li>Av. Martins Bastos, 1234 – Sarandi</li>
                 <li>Porto Alegre, RS</li>
-                <li className="mt-2">contato@parthenon.com.br</li>
+                <li className="mt-3">contato@parthenon.com.br</li>
                 <li>(11) 99999-9999</li>
               </ul>
             </div>
