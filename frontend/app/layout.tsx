@@ -27,8 +27,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <TopBar />
             <Header />
             {!isAdmin && <HorizontalCategoryNav />}
-            {/* Centralização profissional + padding inferior para o footer não colar */}
-            <main className="flex-1 main-container pb-16 md:pb-24">
+            {/* main sem main-container – as páginas decidem o que centralizar */}
+            <main className="flex-1 pb-16 md:pb-24">
               {children}
             </main>
             <Footer />
