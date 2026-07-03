@@ -4,38 +4,26 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
-import FavoritoButton from '@/components/FavoritoButton';
 import FiltersSidebar from '@/components/FiltersSidebar';
 import { SkeletonProduct } from '@/components/Skeleton';
 import ProductCard from '@/components/ui/ProductCard';
 
-// Essa diretiva garante que o Next.js não tente pré-renderizar essa página no build
 export const dynamic = 'force-dynamic';
 
+// Tipos
 interface Categoria { _id: string; nome: string; }
 interface Produto {
   _id: string; nome: string; preco: number; fotos: string[];
   imagemUrl?: string; disponivel: number; preco_original?: number | null;
-  categoria?: Categoria | string;
+  categoria?: Categoria | string; estoque?: number;
 }
 
-// Componente que usa useSearchParams (isolado para ficar dentro do Suspense)
-function SearchParamsHandler({ setBusca }: { setBusca: (val: string) => void }) {
-  const searchParams = useSearchParams();
-  useEffect(() => {
-    const termo = searchParams.get('busca');
-    if (termo) setBusca(termo);
-  }, [searchParams, setBusca]);
-  return null;
-}
-
-// Componente principal da loja (onde fica toda a lógica de produtos)
-function LojaContent() {
+// ─── Componente que recebe o estado de busca ─────────────────────
+function LojaContent({ busca, setBusca }: { busca: string; setBusca: (v: string) => void }) {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
 
-  const [busca, setBusca] = useState('');
   const [precoMin, setPrecoMin] = useState(0);
   const [precoMax, setPrecoMax] = useState(1000);
   const [precoMaxGlobal, setPrecoMaxGlobal] = useState(1000);
@@ -48,14 +36,13 @@ function LojaContent() {
 
   const removerAcentos = (texto: string) => texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-  // Carregar produtos
   useEffect(() => {
     const apiUrl = getApiUrl();
-    axios.get(`${apiUrl}/api/produtos/vitrine`)
+    axios.get<Produto[]>(`${apiUrl}/api/produtos/vitrine`)
       .then(res => {
         const data = res.data;
         setProdutos(data);
-        const maxPreco = Math.max(...data.map(p => p.preco ?? 0), 100);
+        const maxPreco = Math.max(...data.map((p: Produto) => p.preco ?? 0), 100);
         setPrecoMaxGlobal(maxPreco);
         setPrecoMax(maxPreco);
       })
@@ -63,7 +50,6 @@ function LojaContent() {
       .finally(() => setCarregando(false));
   }, []);
 
-  // Carregar categorias
   useEffect(() => {
     axios.get(`${getApiUrl()}/api/categorias`)
       .then(res => setCategorias(res.data))
@@ -157,19 +143,10 @@ function LojaContent() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {paginaAtual.map(produto => (
-                  <div key={produto._id} className="relative group">
-                    <ProductCard
-                      id={produto._id}
-                      nome={produto.nome}
-                      preco={produto.preco ?? 0}
-                      imagem={produto.fotos?.[0] || produto.imagemUrl}
-                      estoque={produto.disponivel ?? 0}
-                      precoOriginal={produto.preco_original}
-                    />
-                    <div className="absolute top-2 right-2 z-10">
-                      <FavoritoButton produtoId={produto._id} />
-                    </div>
-                  </div>
+                  <ProductCard
+                    key={produto._id}
+                    produto={produto}   // ← agora passamos o objeto completo
+                  />
                 ))}
               </div>
 
@@ -214,12 +191,25 @@ function LojaContent() {
   );
 }
 
-// A página exportada envolve o conteúdo em um Suspense
+// ─── Página exportada com Suspense e estado global de busca ──────
 export default function LojaPage() {
+  // O estado “busca” fica aqui para ser compartilhado entre SearchParamsHandler e LojaContent
+  const [busca, setBusca] = useState('');
+
   return (
-    <Suspense fallback={<div className="text-center py-10">Carregando busca...</div>}>
-      <SearchParamsHandler setBusca={(val) => { /* O estado será atualizado pelo setBusca passado para o componente filho */ }} />
-      <LojaContent />
+    <Suspense fallback={<div className="text-center py-10">Carregando...</div>}>
+      <SearchParamsHandler setBusca={setBusca} />
+      <LojaContent busca={busca} setBusca={setBusca} />
     </Suspense>
   );
+}
+
+// ─── Captura o parâmetro de busca da URL ────────────────────────
+function SearchParamsHandler({ setBusca }: { setBusca: (val: string) => void }) {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const termo = searchParams.get('busca');
+    if (termo) setBusca(termo);
+  }, [searchParams, setBusca]);
+  return null;
 }
