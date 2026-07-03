@@ -25,7 +25,7 @@ if (process.env.CLOUDINARY_URL) {
 } else {
   console.error('⚠️ Cloudinary não configurado: defina CLOUDINARY_URL ou as variáveis individuais.');
 }
-
+console.log('🌩️ Cloudinary configurado:', cloudinary.config().cloud_name || 'NÃO CONFIGURADO');
 // ================= CONFIGURAÇÃO DO UPLOAD (MEMORY STORAGE) =================
 const storage = multer.memoryStorage();
 const upload = multer({ 
