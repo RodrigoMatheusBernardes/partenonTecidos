@@ -53,8 +53,8 @@ router.post('/upload', authMiddleware, upload.single('imagem'), async (req, res)
     res.json({ url: result.secure_url });
   } catch (err) {
     console.error('Erro no upload:', err);
-    res.status(500).json({ error: 'Falha no upload da imagem' });
-  }
+    res.status(500).json({ error: 'Falha no upload da imagem', details: err.message });
+}
 });
 
 // ================= ROTAS FIXAS (ANTES DE :ID) =================
