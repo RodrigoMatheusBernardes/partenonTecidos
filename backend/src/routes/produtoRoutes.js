@@ -1,5 +1,6 @@
 ﻿const express = require('express');
 const router = express.Router();
+const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -11,28 +12,43 @@ const noCache = (req, res, next) => {
   next();
 };
 
-// ================= CONFIGURAÇÃO DO UPLOAD =================
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '..', '..', 'uploads');
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname);
-    cb(null, uniqueName);
-  }
+// ================= CONFIGURAÇÃO DO CLOUDINARY =================
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true
 });
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
-// ================= UPLOAD DE IMAGEM =================
-router.post('/upload', (req, res) => {
-  upload.single('imagem')(req, res, (err) => {
-    if (err) return res.status(400).json({ error: err.message });
-    if (!req.file) return res.status(400).json({ error: 'Nenhuma imagem enviada' });
-    const url = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-    res.json({ url });
-  });
+// ================= CONFIGURAÇÃO DO UPLOAD (MEMORY STORAGE) =================
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+});
+
+// ================= UPLOAD DE IMAGEM (PROTEGIDO, VIA CLOUDINARY) =================
+router.post('/upload', authMiddleware, upload.single('imagem'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Nenhuma imagem enviada' });
+    }
+
+    // Converte o buffer para base64 e faz upload para o Cloudinary
+    const b64 = Buffer.from(req.file.buffer).toString('base64');
+    const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+    
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: 'parthenon-produtos',
+      resource_type: 'auto'
+    });
+
+    // Retorna a URL segura do Cloudinary (HTTPS)
+    res.json({ url: result.secure_url });
+  } catch (err) {
+    console.error('Erro no upload:', err);
+    res.status(500).json({ error: 'Falha no upload da imagem' });
+  }
 });
 
 // ================= ROTAS FIXAS (ANTES DE :ID) =================
@@ -166,15 +182,12 @@ router.get('/favoritos/:clienteId', async (req, res) => {
   try {
     const Favorito = require('../models/Favorito');
     const favoritos = await Favorito.find({ cliente_id: req.params.clienteId })
-      .populate('produto_id');   // ← ADICIONE ESTA LINHA
+      .populate('produto_id');
     res.json(favoritos);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ================= ROTAS COM :ID (DEVEM VIR DEPOIS) =================
-// ================= AVALIAÇÕES (DEVEM VIR ANTES DAS ROTas :ID) =================
-
-// POST /api/produtos/:id/avaliar
+// ================= AVALIAÇÕES =================
 router.post('/:id/avaliar', async (req, res) => {
   try {
     const Avaliacao = require('../models/Avaliacao');
@@ -197,7 +210,6 @@ router.post('/:id/avaliar', async (req, res) => {
   }
 });
 
-// GET /api/produtos/:id/avaliacoes
 router.get('/:id/avaliacoes', async (req, res) => {
   try {
     const Avaliacao = require('../models/Avaliacao');
@@ -211,7 +223,6 @@ router.get('/:id/avaliacoes', async (req, res) => {
   }
 });
 
-// GET /api/produtos/:id/media
 router.get('/:id/media', async (req, res) => {
   try {
     const Avaliacao = require('../models/Avaliacao');
@@ -226,7 +237,8 @@ router.get('/:id/media', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// GET /api/produtos/:id - produto com estoque calculado
+
+// ================= ROTAS COM :ID =================
 router.get('/:id', noCache, async (req, res) => {
   try {
     const produto = await Produto.findById(req.params.id)
@@ -240,7 +252,6 @@ router.get('/:id', noCache, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// PUT /api/produtos/:id - atualizar produto
 router.put('/:id', async (req, res) => {
   try {
     const produto = await Produto.findByIdAndUpdate(
@@ -253,7 +264,6 @@ router.put('/:id', async (req, res) => {
   } catch (err) { res.status(400).json({ error: err.message }); }
 });
 
-// DELETE /api/produtos/:id - excluir produto
 router.delete('/:id', async (req, res) => {
   try {
     const produto = await Produto.findByIdAndDelete(req.params.id);
@@ -304,6 +314,42 @@ router.post('/:id/confirmar', async (req, res) => {
     await produto.save();
     res.json({ message: 'Compra confirmada', disponivel: (produto.estoque || 0) - (produto.reservado || 0) });
   } catch (err) { res.status(400).json({ error: err.message }); }
+});
+
+// ================= MIGRAÇÃO DE IMAGENS =================
+router.post('/migrar-imagens', authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
+
+    const { origem, destino } = req.body;
+    const oldBase = origem || 'http://localhost:5000';
+    const newBase = destino || 'https://res.cloudinary.com/dzwarbmzt/image/upload/v1/parthenon-produtos';
+
+    const produtos = await Produto.find({
+      $or: [
+        { fotos: { $regex: oldBase, $options: 'i' } },
+        { imagemUrl: { $regex: oldBase, $options: 'i' } }
+      ]
+    });
+
+    let atualizados = 0;
+    for (const produto of produtos) {
+      const update = {};
+      if (produto.fotos && Array.isArray(produto.fotos)) {
+        update.fotos = produto.fotos.map(url => url.replace(oldBase, newBase));
+      }
+      if (produto.imagemUrl && typeof produto.imagemUrl === 'string') {
+        update.imagemUrl = produto.imagemUrl.replace(oldBase, newBase);
+      }
+      await Produto.updateOne({ _id: produto._id }, { $set: update });
+      atualizados++;
+    }
+
+    res.json({ message: `${atualizados} produtos atualizados.` });
+  } catch (err) {
+    console.error('Erro na migração:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;
