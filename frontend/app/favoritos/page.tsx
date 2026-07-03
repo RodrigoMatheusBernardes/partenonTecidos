@@ -6,6 +6,7 @@ import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import FavoritoButton from '@/components/FavoritoButton';
+import toast from 'react-hot-toast';
 
 interface ProdutoFavorito {
   _id: string;
@@ -39,6 +40,11 @@ export default function FavoritosPage() {
   }, [isAuthenticated, user]);
 
   const removerFavorito = async (produtoId: string) => {
+    // Garantia extra para o TypeScript
+    if (!user) {
+      toast.error('Faça login para gerenciar favoritos.');
+      return;
+    }
     try {
       const apiUrl = getApiUrl();
       await axios.post(`${apiUrl}/api/produtos/favoritos`, {
@@ -49,6 +55,7 @@ export default function FavoritosPage() {
       setFavoritos(prev => prev.filter(fav => fav.produto_id._id !== produtoId));
     } catch (err) {
       console.error(err);
+      toast.error('Erro ao remover favorito.');
     }
   };
 
@@ -69,16 +76,19 @@ export default function FavoritosPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {favoritosValidos.map((fav) => {
             const prod = fav.produto_id;
+            // Monta um objeto compatível com ProductCard
+            const produtoCompativel = {
+              _id: prod._id,
+              nome: prod.nome,
+              preco: prod.preco ?? 0,
+              fotos: prod.fotos,
+              imagemUrl: prod.imagemUrl,
+              estoque: prod.disponivel ?? 0,
+              preco_original: prod.preco_original,
+            };
             return (
               <div key={fav._id} className="relative group">
-                <ProductCard
-                  id={prod._id}
-                  nome={prod.nome}
-                  preco={prod.preco ?? 0}
-                  imagem={prod.fotos?.[0] || prod.imagemUrl}
-                  estoque={prod.disponivel ?? 0}
-                  precoOriginal={prod.preco_original}
-                />
+                <ProductCard produto={produtoCompativel} />
                 <div className="absolute top-2 right-2 z-10">
                   <FavoritoButton produtoId={prod._id} />
                 </div>
