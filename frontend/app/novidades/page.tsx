@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
-import FavoritoButton from '@/components/FavoritoButton';
 import ProductCard from '@/components/ui/ProductCard';
 
 interface Produto {
@@ -14,6 +13,8 @@ interface Produto {
   imagemUrl?: string;
   disponivel: number;
   createdAt: string;
+  preco_original?: number | null;
+  estoque?: number;
 }
 
 export default function NovidadesPage() {
@@ -22,13 +23,12 @@ export default function NovidadesPage() {
 
   useEffect(() => {
     const apiUrl = getApiUrl();
-    // Buscar todos os produtos e ordenar pelos mais recentes
     axios.get(`${apiUrl}/api/produtos/vitrine`)
       .then(res => {
         const ordenados = res.data.sort(
           (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
-        setProdutos(ordenados.slice(0, 12)); // pega os 12 mais recentes
+        setProdutos(ordenados.slice(0, 12));
       })
       .catch(console.error)
       .finally(() => setCarregando(false));
@@ -55,18 +55,7 @@ export default function NovidadesPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {produtos.map(produto => (
-            <div key={produto._id} className="relative group">
-              <ProductCard
-                id={produto._id}
-                nome={produto.nome}
-                preco={produto.preco}
-                imagem={produto.fotos?.[0] || produto.imagemUrl}
-                estoque={produto.disponivel ?? 0}
-              />
-              <div className="absolute top-2 right-2 z-10">
-                <FavoritoButton produtoId={produto._id} />
-              </div>
-            </div>
+            <ProductCard key={produto._id} produto={produto} />
           ))}
         </div>
       )}
