@@ -11,10 +11,16 @@ import FavoritoButton from '@/components/FavoritoButton';
 const DEFAULT_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400"%3E%3Crect width="300" height="400" fill="%23f5f2ee"/%3E%3Ctext x="150" y="200" font-family="Inter, sans-serif" font-size="20" fill="%23999" text-anchor="middle"%3EProduto%3C/text%3E%3C/svg%3E';
 
 // Função auxiliar para corrigir a URL da imagem (local)
+// Função auxiliar para corrigir a URL da imagem (substitui localhost e força HTTPS)
 function fixImageUrl(url: string): string {
   if (!url) return url;
   // Substitui localhost:5000 pela URL do Render
-  return url.replace('http://localhost:5000', 'https://partenontecidos.onrender.com');
+  let fixed = url.replace('http://localhost:5000', 'https://partenontecidos.onrender.com');
+  // Garante HTTPS
+  if (fixed.startsWith('http://')) {
+    fixed = fixed.replace('http://', 'https://');
+  }
+  return fixed;
 }
 
 export default function ProductCard({ produto }: { produto?: any }) {

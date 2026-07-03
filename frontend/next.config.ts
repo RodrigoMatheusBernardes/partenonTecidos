@@ -1,21 +1,22 @@
+// next.config.ts
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Ignora erros de TypeScript durante o build (libera o deploy)
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  // Configuração de imagens externas (localhost para desenvolvimento)
   images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '5000',
+        protocol: 'https',
+        hostname: 'partenontecidos.onrender.com',
         pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
       },
     ],
   },
+  // ... outras configs
 };
 
 export default nextConfig;
