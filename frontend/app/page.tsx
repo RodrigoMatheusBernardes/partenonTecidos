@@ -81,23 +81,24 @@ export default function Home() {
 
   if (carregando) {
     return (
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <div className="main-container py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (<SkeletonProduct key={i} />))}
         </div>
-      </main>
+      </div>
     );
   }
 
-  if (erro) return <main className="text-center py-20 text-red-600">{erro}</main>;
+  if (erro) return <div className="text-center py-20 text-red-600">{erro}</div>;
 
   return (
     <>
       <HomeBanner />
       <TrendingBar />
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-16">
-        {/* 🔹 TÍTULO DA SEÇÃO DE LOJA */}
+      {/* Conteúdo principal centralizado */}
+      <div className="main-container py-12 md:py-16">
+        {/* TÍTULO DA SEÇÃO DE LOJA */}
         <div className="mb-10 md:mb-14">
           <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
             Nossa Coleção
@@ -193,7 +194,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 🔹 SEÇÃO INSTITUCIONAL (visual elegante) */}
+        {/* SEÇÃO INSTITUCIONAL */}
         <section className="mt-20 md:mt-28 py-16 md:py-20 border-t border-[#e8e3dc]">
           <div className="grid md:grid-cols-3 gap-12 md:gap-16 text-center">
             <div>
@@ -225,7 +226,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-      </main>
+      </div>
 
       {/* Filtro mobile (botão flutuante elegante) */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
