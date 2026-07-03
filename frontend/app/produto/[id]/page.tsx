@@ -46,7 +46,7 @@ export default function ProdutoPage() {
       .finally(() => setCarregando(false));
   }, [id]);
 
-  // ✅ Título dinâmico da aba (SEO)
+  // Título dinâmico da aba (SEO)
   useEffect(() => {
     if (produto) {
       document.title = `${produto.nome} | Parthenon Tecidos`;
@@ -121,7 +121,7 @@ export default function ProdutoPage() {
             )}
           </div>
 
-          {/* CTA – com cor de destaque e selo de segurança */}
+          {/* CTA */}
           <div className="mt-6">
             {produto.disponivel > 0 ? (
               <>
@@ -152,7 +152,7 @@ export default function ProdutoPage() {
             )}
           </div>
 
-          {/* Descrição (secundária) */}
+          {/* Descrição */}
           {produto.descricao && (
             <div className="mt-6">
               <h3 className="font-semibold text-gray-800 mb-1">Descrição</h3>
@@ -160,12 +160,12 @@ export default function ProdutoPage() {
             </div>
           )}
 
-          {/* Atributos (secundários) */}
+          {/* Atributos – corrigidos para evitar undefined */}
           {produto.atributos && Object.values(produto.atributos).some(v => v) && (
             <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
               {produto.atributos.composicao && <div><span className="text-gray-500">Composição:</span> {produto.atributos.composicao}</div>}
-              {produto.atributos.largura_metro > 0 && <div><span className="text-gray-500">Largura:</span> {produto.atributos.largura_metro} m</div>}
-              {produto.atributos.gramatura > 0 && <div><span className="text-gray-500">Gramatura:</span> {produto.atributos.gramatura} g/m²</div>}
+              {(produto.atributos.largura_metro ?? 0) > 0 && <div><span className="text-gray-500">Largura:</span> {produto.atributos.largura_metro} m</div>}
+              {(produto.atributos.gramatura ?? 0) > 0 && <div><span className="text-gray-500">Gramatura:</span> {produto.atributos.gramatura} g/m²</div>}
               {produto.atributos.cuidados && <div className="col-span-2"><span className="text-gray-500">Cuidados:</span> {produto.atributos.cuidados}</div>}
             </div>
           )}
