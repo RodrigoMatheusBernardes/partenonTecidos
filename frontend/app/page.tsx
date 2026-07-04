@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
 import SearchBar from '@/components/SearchBar';
@@ -87,12 +87,9 @@ export default function Home() {
 
   const ordenar = (lista: Produto[]) => {
     const copia = [...lista];
-    if (ordenacao === 'menor-preco')
-      copia.sort((a, b) => a.preco - b.preco);
-    else if (ordenacao === 'maior-preco')
-      copia.sort((a, b) => b.preco - a.preco);
-    else if (ordenacao === 'nome')
-      copia.sort((a, b) => a.nome.localeCompare(b.nome));
+    if (ordenacao === 'menor-preco') copia.sort((a, b) => a.preco - b.preco);
+    else if (ordenacao === 'maior-preco') copia.sort((a, b) => b.preco - a.preco);
+    else if (ordenacao === 'nome') copia.sort((a, b) => a.nome.localeCompare(b.nome));
     return copia;
   };
 
@@ -112,7 +109,6 @@ export default function Home() {
     setPagina(1);
   };
 
-  // Estado de carregamento
   if (carregando) {
     return (
       <div className="main-container py-8">
@@ -125,20 +121,15 @@ export default function Home() {
     );
   }
 
-  // Estado de erro
   if (erro) return <div className="text-center py-20 text-red-600">{erro}</div>;
 
   return (
     <>
-      {/* Banner – largura total */}
       <HomeBanner />
 
-      {/* Conteúdo centralizado (inclui TrendingBar) */}
       <div className="main-container py-12 md:py-16">
-        {/* Produtos em Alta */}
         <TrendingBar />
 
-        {/* Título da seção */}
         <div className="mb-10 md:mb-14 mt-8">
           <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
             Nossa Coleção
@@ -149,7 +140,6 @@ export default function Home() {
         </div>
 
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Sidebar de filtros desktop */}
           <aside className="hidden md:block w-64 flex-shrink-0">
             <div className="bg-white rounded-2xl shadow-sm border border-[#e8e3dc] p-6">
               <FiltersSidebar
@@ -181,9 +171,7 @@ export default function Home() {
             </div>
           </aside>
 
-          {/* Lista de produtos */}
           <div className="flex-1">
-            {/* Barra de busca e ordenação */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <div className="w-full sm:max-w-md">
                 <SearchBar value={busca} onChange={setBusca} />
@@ -210,9 +198,7 @@ export default function Home() {
 
             {produtosFiltrados.length === 0 ? (
               <div className="text-center py-12 bg-[#f8f6f2] rounded-2xl">
-                <p className="text-[#8a7a6a] font-light">
-                  Nenhum produto encontrado.
-                </p>
+                <p className="text-[#8a7a6a] font-light">Nenhum produto encontrado.</p>
                 <button
                   onClick={() => {
                     setBusca('');
@@ -233,30 +219,22 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Paginação profissional */}
+                {/* Paginação estilo Mercado Livre – discreta e elegante */}
                 {totalPaginas > 1 && (
-                  <div className="mt-10 flex flex-col items-center gap-4">
-                    <p className="text-xs text-[#8a7a6a] font-light tracking-wider uppercase">
-                      Página {pagina} de {totalPaginas}
-                    </p>
+                  <div className="mt-12 flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => {
+                        setPagina(prev => Math.max(1, prev - 1));
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      disabled={pagina === 1}
+                      className="px-3 py-2 text-sm font-light text-gray-400 hover:text-gray-600 disabled:opacity-30 transition"
+                      aria-label="Anterior"
+                    >
+                      ‹ Anterior
+                    </button>
 
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => {
-                          setPagina(prev => Math.max(1, prev - 1));
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        disabled={pagina === 1}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-light transition ${
-                          pagina === 1
-                            ? 'text-gray-300 cursor-not-allowed'
-                            : 'text-[#1a1a1a] hover:bg-gray-100'
-                        }`}
-                        aria-label="Página anterior"
-                      >
-                        ←
-                      </button>
-
+                    <div className="flex items-center gap-1">
                       {Array.from({ length: totalPaginas }, (_, i) => i + 1)
                         .filter(
                           num =>
@@ -266,42 +244,38 @@ export default function Home() {
                             Math.abs(num - pagina) <= 1
                         )
                         .map((num, idx, arr) => (
-                          <span key={num} className="flex items-center gap-3">
+                          <React.Fragment key={num}>
                             {idx > 0 && arr[idx - 1] !== num - 1 && (
-                              <span className="text-gray-300">…</span>
+                              <span className="text-gray-400 px-2">…</span>
                             )}
                             <button
                               onClick={() => {
                                 setPagina(num);
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                               }}
-                              className={`w-10 h-10 rounded-full text-sm font-light transition ${
+                              className={`min-w-[2rem] h-8 px-2 rounded-md text-sm font-light transition ${
                                 num === pagina
                                   ? 'bg-[#1a1a1a] text-white'
-                                  : 'text-[#1a1a1a] hover:bg-gray-100'
+                                  : 'text-gray-600 hover:bg-gray-100'
                               }`}
                             >
                               {num}
                             </button>
-                          </span>
+                          </React.Fragment>
                         ))}
-
-                      <button
-                        onClick={() => {
-                          setPagina(prev => Math.min(totalPaginas, prev + 1));
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        disabled={pagina === totalPaginas}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-light transition ${
-                          pagina === totalPaginas
-                            ? 'text-gray-300 cursor-not-allowed'
-                            : 'text-[#1a1a1a] hover:bg-gray-100'
-                        }`}
-                        aria-label="Próxima página"
-                      >
-                        →
-                      </button>
                     </div>
+
+                    <button
+                      onClick={() => {
+                        setPagina(prev => Math.min(totalPaginas, prev + 1));
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      disabled={pagina === totalPaginas}
+                      className="px-3 py-2 text-sm font-light text-gray-400 hover:text-gray-600 disabled:opacity-30 transition"
+                      aria-label="Próximo"
+                    >
+                      Próximo ›
+                    </button>
                   </div>
                 )}
               </>
@@ -309,7 +283,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Seção institucional – clean */}
+        {/* Seção institucional limpa */}
         <section className="mt-24 md:mt-32 py-16 md:py-24 border-t border-[#e8e3dc]">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
             <div>
@@ -340,7 +314,7 @@ export default function Home() {
         </section>
       </div>
 
-      {/* Filtro mobile (botão flutuante) */}
+      {/* Filtro mobile */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
           onClick={() => setSidebarAberta(true)}
@@ -350,10 +324,7 @@ export default function Home() {
         </button>
       </div>
       {sidebarAberta && (
-        <div
-          className="md:hidden fixed inset-0 z-40 bg-black/50"
-          onClick={() => setSidebarAberta(false)}
-        >
+        <div className="md:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setSidebarAberta(false)}>
           <div
             className="absolute right-0 top-0 h-full w-80 bg-white p-6 overflow-y-auto shadow-2xl"
             onClick={e => e.stopPropagation()}
@@ -371,9 +342,7 @@ export default function Home() {
               }}
               onCategoriaChange={catId => {
                 setCategoriasSelecionadas(prev =>
-                  prev.includes(catId)
-                    ? prev.filter(c => c !== catId)
-                    : [...prev, catId]
+                  prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]
                 );
                 setPagina(1);
               }}
@@ -385,10 +354,7 @@ export default function Home() {
               Fechar
             </button>
             <button
-              onClick={() => {
-                limparFiltros();
-                setSidebarAberta(false);
-              }}
+              onClick={() => { limparFiltros(); setSidebarAberta(false); }}
               className="mt-2 w-full text-sm text-[#8a7a6a] hover:text-[#1a1a1a] transition-colors font-light"
             >
               Limpar filtros
