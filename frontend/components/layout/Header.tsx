@@ -24,78 +24,84 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white border-b border-[#e8e3dc] sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-1 flex-shrink-0">
-            <span className="font-serif font-light text-2xl tracking-[0.15em] text-[#1a1a1a]">
+    <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
+      {/* Faixa promocional opcional – pode remover se quiser */}
+      <div className="bg-[#0a1628] text-white text-[10px] md:text-xs font-light tracking-widest py-2 text-center uppercase">
+        Frete grátis para pedidos acima de R$ 299
+      </div>
+
+      <div className="max-w-[1440px] mx-auto px-6 py-4 md:py-5">
+        <div className="flex items-center justify-between">
+          {/* LOGO */}
+          <Link href="/" className="flex items-end gap-1 flex-shrink-0">
+            <span className="font-serif font-light text-2xl md:text-3xl tracking-[0.15em] text-[#1a1a1a]">
               PARTHENON
             </span>
-            <span className="font-serif font-light text-xl tracking-[0.1em] text-[#8a7a6a] hidden sm:inline">
+            <span className="hidden sm:inline font-serif font-light text-lg md:text-xl tracking-[0.1em] text-[#8a7a6a] -ml-1">
               TECIDOS
             </span>
           </Link>
 
-          {/* Navegação */}
-          <nav className="hidden md:flex items-center gap-8">
+          {/* NAVEGAÇÃO DESKTOP */}
+          <nav className="hidden lg:flex items-center gap-8 ml-8">
             <Link
               href="/loja"
-              className="font-sans font-light text-sm tracking-[0.1em] uppercase text-[#1a1a1a] hover:text-[#8a7a6a] transition-colors"
+              className="text-sm uppercase tracking-wider text-[#1a1a1a] hover:text-[#8a7a6a] transition font-light"
             >
               Coleção
             </Link>
             <Link
               href="/novidades"
-              className="font-sans font-light text-sm tracking-[0.1em] uppercase text-[#1a1a1a] hover:text-[#8a7a6a] transition-colors"
+              className="text-sm uppercase tracking-wider text-[#1a1a1a] hover:text-[#8a7a6a] transition font-light"
             >
               Novidades
             </Link>
             <Link
               href="/promocoes"
-              className="font-sans font-light text-sm tracking-[0.1em] uppercase text-[#1a1a1a] hover:text-[#8a7a6a] transition-colors"
+              className="text-sm uppercase tracking-wider text-[#1a1a1a] hover:text-[#8a7a6a] transition font-light"
             >
               Promoções
             </Link>
           </nav>
 
-          {/* Ícones */}
+          {/* ÍCONES */}
           <div className="flex items-center gap-5">
+            {/* Busca expansível */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="text-[#1a1a1a] hover:text-[#8a7a6a] transition-colors"
+              className="text-[#1a1a1a] hover:text-[#8a7a6a] transition"
             >
-              <Search className="w-5 h-5" strokeWidth={1} />
+              <Search className="w-5 h-5" strokeWidth={1.5} />
             </button>
 
             <Link
               href="/favoritos"
-              className="text-[#1a1a1a] hover:text-[#8a7a6a] transition-colors hidden sm:block"
+              className="text-[#1a1a1a] hover:text-[#8a7a6a] transition hidden sm:block"
             >
-              <Heart className="w-5 h-5" strokeWidth={1} />
+              <Heart className="w-5 h-5" strokeWidth={1.5} />
             </Link>
 
             {isAuthenticated ? (
               <Link
                 href="/meu-perfil"
-                className="text-[#1a1a1a] hover:text-[#8a7a6a] transition-colors hidden sm:block"
+                className="text-[#1a1a1a] hover:text-[#8a7a6a] transition hidden sm:block"
               >
-                <User className="w-5 h-5" strokeWidth={1} />
+                <User className="w-5 h-5" strokeWidth={1.5} />
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="text-[#1a1a1a] hover:text-[#8a7a6a] transition-colors hidden sm:block"
+                className="text-[#1a1a1a] hover:text-[#8a7a6a] transition hidden sm:block"
               >
-                <User className="w-5 h-5" strokeWidth={1} />
+                <User className="w-5 h-5" strokeWidth={1.5} />
               </Link>
             )}
 
             <button
               onClick={() => setCartOpen(true)}
-              className="text-[#1a1a1a] hover:text-[#8a7a6a] transition-colors relative"
+              className="text-[#1a1a1a] hover:text-[#8a7a6a] transition relative"
             >
-              <ShoppingBag className="w-5 h-5" strokeWidth={1} />
+              <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
               {totalItems > 0 && (
                 <span className="absolute -top-2 -right-2 bg-[#1a1a1a] text-white text-[0.6rem] w-5 h-5 flex items-center justify-center rounded-full font-light">
                   {totalItems}
@@ -103,18 +109,19 @@ export default function Header() {
               )}
             </button>
 
+            {/* Menu mobile */}
             <button
               onClick={() => setMobileOpen(true)}
-              className="md:hidden text-[#1a1a1a]"
+              className="lg:hidden text-[#1a1a1a]"
             >
-              <Menu className="w-6 h-6" strokeWidth={1} />
+              <Menu className="w-6 h-6" strokeWidth={1.5} />
             </button>
           </div>
         </div>
 
-        {/* Busca expansível */}
+        {/* Campo de busca expansível */}
         {searchOpen && (
-          <div className="py-4 border-t border-[#e8e3dc]">
+          <div className="pt-4 border-t border-gray-100 mt-4">
             <input
               type="text"
               placeholder="Buscar tecidos..."
@@ -132,17 +139,17 @@ export default function Header() {
 
       {/* Menu mobile */}
       {mobileOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setMobileOpen(false)} />
+        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileOpen(false)} />
       )}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-50 p-6 md:hidden transform transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-50 p-6 lg:hidden transform transition-transform duration-300 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex justify-between items-center mb-8">
           <span className="font-serif text-xl text-[#1a1a1a]">Menu</span>
           <button onClick={() => setMobileOpen(false)} className="text-[#1a1a1a]">
-            <X className="w-5 h-5" strokeWidth={1} />
+            <X className="w-5 h-5" strokeWidth={1.5} />
           </button>
         </div>
         <div className="flex flex-col gap-4 text-sm font-light tracking-[0.1em] uppercase">
