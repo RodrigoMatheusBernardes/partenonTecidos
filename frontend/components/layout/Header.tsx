@@ -1,21 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import CartDrawer from '@/components/CartDrawer';
-import { Search, ShoppingBag, Heart, User, Menu, X } from 'lucide-react';
+import { Search, ShoppingBag, Heart, User, Menu, X, ChevronDown } from 'lucide-react';
 
 export default function Header() {
   const { totalItems } = useCart();
-  const { isAuthenticated, isAdmin, logout } = useAuth();
+  const { isAuthenticated, isAdmin, logout, user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [busca, setBusca] = useState('');
   const router = useRouter();
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Fecha o dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,10 +39,16 @@ export default function Header() {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    setUserMenuOpen(false);
+    router.push('/');
+  };
+
   return (
     <header className="w-full bg-white border-b border-[#e8e4dc] font-sans text-[#1a1a1a]">
       <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-8 md:py-10">
-        {/* LINHA PRINCIPAL: LOGO + ÍCONES + BUSCA EXPANSÍVEL */}
+        {/* LINHA PRINCIPAL */}
         <div className="flex items-center justify-between">
           
           {/* LOGO */}
@@ -42,45 +61,10 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* ÁREA DIREITA: ÍCONES + BUSCA */}
+          {/* ÍCONES (Busca, Favoritos, Usuário, Carrinho, Mobile) */}
           <div className="flex items-center gap-6">
-            {/* Favoritos */}
-            <Link href="/favoritos" className="text-[#1a1a1a] hover:text-[#8a7a6a] transition hidden sm:block" aria-label="Favoritos">
-              <Heart className="w-6 h-6" strokeWidth={1.5} />
-            </Link>
-
-            {/* Conta / Entrar */}
-            {isAuthenticated ? (
-              <Link href="/meu-perfil" className="text-[#1a1a1a] hover:text-[#8a7a6a] transition hidden sm:block" aria-label="Minha Conta">
-                <User className="w-6 h-6" strokeWidth={1.5} />
-              </Link>
-            ) : (
-              <div className="hidden sm:flex items-center gap-1.5 text-xs font-light text-[#5c5c5c]">
-                <Link href="/login" className="flex items-center gap-1 hover:text-[#1a1a1a] transition">
-                  <User className="w-4 h-4" strokeWidth={1.5} /> Entrar
-                </Link>
-                <span className="text-[#d4cfc6]">/</span>
-                <Link href="/cadastro" className="hover:text-[#1a1a1a] transition">
-                  Cadastre-se
-                </Link>
-              </div>
-            )}
-
-            {/* Carrinho */}
-            <button
-              onClick={() => setCartOpen(true)}
-              className="relative flex items-center gap-2 text-[#1a1a1a] hover:text-[#8a7a6a] transition"
-              aria-label="Carrinho"
-            >
-              <ShoppingBag className="w-6 h-6" strokeWidth={1.5} />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#1a1a1a] text-white text-[0.6rem] w-5 h-5 flex items-center justify-center rounded-full font-light">
-                  {totalItems}
-                </span>
-              )}
-            </button>
-
-            {/* LUPA ou CAMPO DE BUSCA (expansível na linha) */}
+            
+            {/* 1. Busca expansível (primeiro ícone) */}
             {searchOpen ? (
               <form onSubmit={handleSearch} className="relative">
                 <input
@@ -106,14 +90,97 @@ export default function Header() {
               </button>
             )}
 
-            {/* Menu mobile */}
+            {/* 2. Favoritos (coração) */}
+            <Link href="/favoritos" className="text-[#1a1a1a] hover:text-[#8a7a6a] transition hidden sm:block" aria-label="Favoritos">
+              <Heart className="w-6 h-6" strokeWidth={1.5} />
+            </Link>
+
+            {/* 3. Usuário (com dropdown quando logado) */}
+            <div className="relative hidden sm:block" ref={userMenuRef}>
+              {isAuthenticated ? (
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-1 text-[#1a1a1a] hover:text-[#8a7a6a] transition"
+                  aria-label="Menu do usuário"
+                >
+                  <User className="w-6 h-6" strokeWidth={1.5} />
+                  <ChevronDown className="w-4 h-4" strokeWidth={1.5} />
+                </button>
+              ) : (
+                <div className="flex items-center gap-1.5 text-xs font-light text-[#5c5c5c]">
+                  <Link href="/login" className="flex items-center gap-1 hover:text-[#1a1a1a] transition">
+                    <User className="w-4 h-4" strokeWidth={1.5} /> Entrar
+                  </Link>
+                  <span className="text-[#d4cfc6]">/</span>
+                  <Link href="/cadastro" className="hover:text-[#1a1a1a] transition">
+                    Cadastre-se
+                  </Link>
+                </div>
+              )}
+
+              {/* Dropdown do usuário logado */}
+              {isAuthenticated && userMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900 truncate">{user?.nome || 'Usuário'}</p>
+                    <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                  </div>
+                  <Link
+                    href="/meu-perfil"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    Meu Perfil
+                  </Link>
+                  <Link
+                    href="/meus-pedidos"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    Meus Pedidos
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <hr className="my-1 border-gray-100" />
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                  >
+                    Sair
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* 4. Carrinho */}
+            <button
+              onClick={() => setCartOpen(true)}
+              className="relative flex items-center gap-2 text-[#1a1a1a] hover:text-[#8a7a6a] transition"
+              aria-label="Carrinho"
+            >
+              <ShoppingBag className="w-6 h-6" strokeWidth={1.5} />
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#1a1a1a] text-white text-[0.6rem] w-5 h-5 flex items-center justify-center rounded-full font-light">
+                  {totalItems}
+                </span>
+              )}
+            </button>
+
+            {/* 5. Menu mobile */}
             <button onClick={() => setMobileOpen(true)} className="lg:hidden text-[#1a1a1a]">
               <Menu className="w-6 h-6" strokeWidth={1.5} />
             </button>
           </div>
         </div>
 
-        {/* NAVEGAÇÃO DESKTOP – centralizada e arejada */}
+        {/* NAVEGAÇÃO DESKTOP (sem Meus Pedidos) */}
         <nav className="hidden lg:flex justify-center items-center gap-10 mt-8 pt-5 border-t border-[#e8e4dc]">
           <Link href="/loja" className="text-sm font-light uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-[#8a7a6a] transition">
             Coleção
@@ -123,9 +190,6 @@ export default function Header() {
           </Link>
           <Link href="/promocoes" className="text-sm font-light uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-[#8a7a6a] transition">
             Promoções
-          </Link>
-          <Link href="/meus-pedidos" className="text-sm font-light uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-[#8a7a6a] transition">
-            Meus Pedidos
           </Link>
         </nav>
       </div>
