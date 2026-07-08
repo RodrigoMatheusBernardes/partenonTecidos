@@ -46,11 +46,10 @@ export default function Header() {
 
   return (
     <header className="w-full bg-white border-b border-[#e8e4dc] font-sans text-[#1a1a1a]">
-      {/* Padding vertical aumentado para dar mais respiro */}
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-10 md:py-14">
+      {/* Padding vertical bem maior para sensação de amplitude */}
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-14 md:py-20">
         
-        {/* Espaçamento entre os grupos ligeiramente maior */}
-        <div className="flex items-center justify-between gap-8 lg:gap-10">
+        <div className="flex items-center justify-between gap-8 lg:gap-12">
           
           {/* LOGO */}
           <Link href="/" className="flex items-end gap-1 flex-shrink-0">
@@ -63,7 +62,7 @@ export default function Header() {
           </Link>
 
           {/* NAVEGAÇÃO DESKTOP */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-10">
             <Link href="/loja" className="text-xs font-light uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-[#8a7a6a] transition">
               Coleção
             </Link>
@@ -76,8 +75,8 @@ export default function Header() {
           </nav>
 
           {/* ÍCONES + BUSCA */}
-          <div className="flex items-center gap-5">
-            {/* Busca expansível que não quebra o layout */}
+          <div className="flex items-center gap-6">
+            {/* Busca expansível */}
             <div className="relative flex items-center">
               {searchOpen ? (
                 <form onSubmit={handleSearch} className="flex items-center">
