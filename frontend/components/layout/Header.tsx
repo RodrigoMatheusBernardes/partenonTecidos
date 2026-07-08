@@ -19,7 +19,7 @@ export default function Header() {
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-[1440px] mx-auto px-6 py-4 md:py-5 flex items-center justify-between">
         
-        {/* LOGO */}
+        {/* LOGO – estilo Hugo Boss (serifada, tracking generoso) */}
         <Link href="/" className="flex items-end gap-1 flex-shrink-0">
           <span className="font-serif font-light text-2xl md:text-3xl tracking-[0.15em] text-[#1a1a1a]">
             PARTHENON
@@ -29,7 +29,29 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* ÍCONES */}
+        {/* NAVEGAÇÃO DESKTOP – enxuta, igual Hugo Boss */}
+        <nav className="hidden lg:flex items-center gap-8">
+          <Link
+            href="/loja"
+            className="text-sm uppercase tracking-wider text-[#1a1a1a] hover:text-[#8a7a6a] transition font-light"
+          >
+            Coleção
+          </Link>
+          <Link
+            href="/novidades"
+            className="text-sm uppercase tracking-wider text-[#1a1a1a] hover:text-[#8a7a6a] transition font-light"
+          >
+            Novidades
+          </Link>
+          <Link
+            href="/promocoes"
+            className="text-sm uppercase tracking-wider text-[#1a1a1a] hover:text-[#8a7a6a] transition font-light"
+          >
+            Promoções
+          </Link>
+        </nav>
+
+        {/* ÍCONES – discretos, traço fino */}
         <div className="flex items-center gap-5">
           <Link
             href="/favoritos"
@@ -66,7 +88,7 @@ export default function Header() {
             )}
           </button>
 
-          {/* Menu mobile */}
+          {/* Menu mobile (hambúrguer) */}
           <button
             onClick={() => setMobileOpen(true)}
             className="lg:hidden text-[#1a1a1a]"
@@ -76,7 +98,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Menu mobile */}
+      {/* Menu mobile – funcionalidade completa */}
       {mobileOpen && (
         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileOpen(false)} />
       )}
