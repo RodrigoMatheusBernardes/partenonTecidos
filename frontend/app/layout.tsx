@@ -5,9 +5,7 @@ import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import { AuthProvider } from '@/context/AuthContext';
-import TopBar from '@/components/layout/TopBar';
 import Header from '@/components/layout/Header';
-import HorizontalCategoryNav from '@/components/HorizontalCategoryNav';
 import Footer from '@/components/layout/Footer';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import { Toaster } from 'react-hot-toast';
@@ -24,10 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-white text-[--color-text-primary] font-sans antialiased min-h-screen flex flex-col">
         <AuthProvider>
           <CartProvider>
-            <TopBar />
+            {/* TopBar removida */}
             <Header />
-            {!isAdmin && <HorizontalCategoryNav />}
-            {/* main sem main-container – as páginas decidem o que centralizar */}
+            {/* HorizontalCategoryNav removida */}
             <main className="flex-1 pb-16 md:pb-24">
               {children}
             </main>
