@@ -138,16 +138,19 @@ export default function LojaPage() {
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-8 flex gap-12">
         {/* Filtro Desktop */}
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <FiltersSidebar
-            precoMin={precoMin}
-            precoMax={precoMax}
-            precoMaxGlobal={precoMaxGlobal}
-            categorias={categorias}
-            categoriasSelecionadas={categoriasSelecionadas}
-            onPrecoChange={handlePrecoChange}
-            onCategoriaChange={handleCategoriaChange}
-            limparFiltros={limparFiltros}
-          />
+         <FiltersSidebar
+  precoMin={precoMin}
+  precoMax={precoMax}
+  precoMaxGlobal={precoMaxGlobal}
+  categorias={categorias}
+  categoriasSelecionadas={categoriasSelecionadas}
+  onPrecoChange={(min, max) => { setPrecoMin(min); setPrecoMax(max); setPagina(1); }}
+  onCategoriaChange={catId => {
+    setCategoriasSelecionadas(prev => prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]);
+    setPagina(1);
+  }}
+  limparFiltros={limparFiltros}   // ← ADICIONE ESTA LINHA
+/>
         </aside>
 
         {/* Conteúdo Principal */}
@@ -233,17 +236,18 @@ export default function LojaPage() {
         }`}
       >
         <FiltersSidebar
-          precoMin={precoMin}
-          precoMax={precoMax}
-          precoMaxGlobal={precoMaxGlobal}
-          categorias={categorias}
-          categoriasSelecionadas={categoriasSelecionadas}
-          onPrecoChange={handlePrecoChange}
-          onCategoriaChange={handleCategoriaChange}
-          limparFiltros={limparFiltros}
-          isMobile
-          onClose={() => setSidebarAberta(false)}
-        />
+  precoMin={precoMin}
+  precoMax={precoMax}
+  precoMaxGlobal={precoMaxGlobal}
+  categorias={categorias}
+  categoriasSelecionadas={categoriasSelecionadas}
+  onPrecoChange={(min, max) => { setPrecoMin(min); setPrecoMax(max); setPagina(1); }}
+  onCategoriaChange={catId => {
+    setCategoriasSelecionadas(prev => prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]);
+    setPagina(1);
+  }}
+  limparFiltros={limparFiltros}   // ← ADICIONE ESTA LINHA
+/>
       </div>
     </main>
   );
