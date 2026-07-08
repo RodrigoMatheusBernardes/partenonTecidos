@@ -28,9 +28,8 @@ export default function Header() {
 
   return (
     <header className="w-full bg-white border-b border-[#e8e4dc] font-sans text-[#1a1a1a]">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-6 md:py-8">
-        
-        {/* LINHA PRINCIPAL: LOGO + ÍCONES */}
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-8 md:py-10">
+        {/* LINHA PRINCIPAL: LOGO + ÍCONES + BUSCA EXPANSÍVEL */}
         <div className="flex items-center justify-between">
           
           {/* LOGO */}
@@ -43,8 +42,8 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* ÍCONES + CARRINHO */}
-          <div className="flex items-center gap-5">
+          {/* ÁREA DIREITA: ÍCONES + BUSCA */}
+          <div className="flex items-center gap-6">
             {/* Favoritos */}
             <Link href="/favoritos" className="text-[#1a1a1a] hover:text-[#8a7a6a] transition hidden sm:block" aria-label="Favoritos">
               <Heart className="w-6 h-6" strokeWidth={1.5} />
@@ -67,15 +66,6 @@ export default function Header() {
               </div>
             )}
 
-            {/* Lupa – abre a busca expansível */}
-            <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="text-[#1a1a1a] hover:text-[#8a7a6a] transition"
-              aria-label="Buscar"
-            >
-              <Search className="w-6 h-6" strokeWidth={1.5} />
-            </button>
-
             {/* Carrinho */}
             <button
               onClick={() => setCartOpen(true)}
@@ -90,6 +80,32 @@ export default function Header() {
               )}
             </button>
 
+            {/* LUPA ou CAMPO DE BUSCA (expansível na linha) */}
+            {searchOpen ? (
+              <form onSubmit={handleSearch} className="relative">
+                <input
+                  type="text"
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  placeholder="Buscar tecidos..."
+                  className="w-40 md:w-64 lg:w-80 border border-[#d4cfc6] rounded-full px-4 py-2 text-sm font-light placeholder:text-[#a0a0a0] focus:outline-none focus:border-[#1a1a1a] transition-all duration-300"
+                  autoFocus
+                  onBlur={() => { if (!busca.trim()) setSearchOpen(false); }}
+                />
+                <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a7a6a] hover:text-[#1a1a1a] transition">
+                  <Search className="w-4 h-4" strokeWidth={1.5} />
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="text-[#1a1a1a] hover:text-[#8a7a6a] transition"
+                aria-label="Buscar"
+              >
+                <Search className="w-6 h-6" strokeWidth={1.5} />
+              </button>
+            )}
+
             {/* Menu mobile */}
             <button onClick={() => setMobileOpen(true)} className="lg:hidden text-[#1a1a1a]">
               <Menu className="w-6 h-6" strokeWidth={1.5} />
@@ -97,27 +113,8 @@ export default function Header() {
           </div>
         </div>
 
-        {/* BUSCA EXPANSÍVEL (aparece abaixo da linha principal) */}
-        {searchOpen && (
-          <div className="mt-4 pt-4 border-t border-[#e8e4dc]">
-            <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">
-              <input
-                type="text"
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar tecidos, cores, estampas..."
-                className="w-full border border-[#d4cfc6] rounded-full px-6 py-4 text-sm font-light placeholder:text-[#a0a0a0] focus:outline-none focus:border-[#1a1a1a] focus:shadow-sm transition-all duration-300"
-                autoFocus
-              />
-              <button type="submit" className="absolute right-5 top-1/2 -translate-y-1/2 text-[#8a7a6a] hover:text-[#1a1a1a] transition">
-                <Search className="w-5 h-5" strokeWidth={1.5} />
-              </button>
-            </form>
-          </div>
-        )}
-
         {/* NAVEGAÇÃO DESKTOP – centralizada e arejada */}
-        <nav className="hidden lg:flex justify-center items-center gap-10 mt-6 pt-4 border-t border-[#e8e4dc]">
+        <nav className="hidden lg:flex justify-center items-center gap-10 mt-8 pt-5 border-t border-[#e8e4dc]">
           <Link href="/loja" className="text-sm font-light uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-[#8a7a6a] transition">
             Coleção
           </Link>
