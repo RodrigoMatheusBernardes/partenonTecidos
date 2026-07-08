@@ -46,11 +46,13 @@ export default function Header() {
 
   return (
     <header className="w-full bg-white border-b border-[#e8e4dc] font-sans text-[#1a1a1a]">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-8 md:py-10">
+      {/* Padding vertical aumentado para dar mais respiro */}
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-10 md:py-14">
         
-        <div className="flex items-center justify-between gap-6 lg:gap-8">
+        {/* Espaçamento entre os grupos ligeiramente maior */}
+        <div className="flex items-center justify-between gap-8 lg:gap-10">
           
-          {/* LOGO – tamanhos refinados para caber com a busca */}
+          {/* LOGO */}
           <Link href="/" className="flex items-end gap-1 flex-shrink-0">
             <span className="font-serif font-light text-2xl md:text-3xl lg:text-4xl tracking-[0.2em] text-[#1a1a1a]">
               PARTHENON
@@ -61,7 +63,7 @@ export default function Header() {
           </Link>
 
           {/* NAVEGAÇÃO DESKTOP */}
-          <nav className="hidden lg:flex items-center gap-6">
+          <nav className="hidden lg:flex items-center gap-8">
             <Link href="/loja" className="text-xs font-light uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-[#8a7a6a] transition">
               Coleção
             </Link>
@@ -74,7 +76,7 @@ export default function Header() {
           </nav>
 
           {/* ÍCONES + BUSCA */}
-          <div className="flex items-center gap-4 md:gap-5">
+          <div className="flex items-center gap-5">
             {/* Busca expansível que não quebra o layout */}
             <div className="relative flex items-center">
               {searchOpen ? (
