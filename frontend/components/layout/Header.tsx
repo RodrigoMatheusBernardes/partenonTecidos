@@ -1,201 +1,83 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useCart } from '@/context/CartContext';
-import { useAuth } from '@/context/AuthContext';
-import CartDrawer from '@/components/CartDrawer';
-import { Search, ShoppingBag, Heart, User, Menu, X, ChevronDown } from 'lucide-react';
+import { Search, ShoppingBag, User, Heart } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Header() {
-  const { totalItems } = useCart();
-  const { isAuthenticated, isAdmin, logout, user } = useAuth();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [busca, setBusca] = useState('');
-  const router = useRouter();
-  const userMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setUserMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (busca.trim()) {
-      router.push(`/loja?busca=${encodeURIComponent(busca.trim())}`);
-      setBusca('');
-      setSearchOpen(false);
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-    setUserMenuOpen(false);
-    router.push('/');
-  };
-
   return (
-    <header className="w-full bg-white border-b border-[#e8e4dc] font-sans text-[#1a1a1a]">
-      {/* Padding vertical bem maior para sensação de amplitude */}
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-14 md:py-20">
+    <header className="w-full bg-white border-b border-[#e5e5e5] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+      {/* Aumentei o padding vertical de py-4 para py-6 md:py-8 */}
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-6 md:py-8 flex items-center justify-between gap-6">
         
-        <div className="flex items-center justify-between gap-8 lg:gap-12">
+        {/* 1. LOGO (Aumentei o tamanho para ficar mais imponente) */}
+        <Link href="/" className="flex items-center gap-1 shrink-0">
+          <span className="text-3xl md:text-4xl font-serif font-medium tracking-wider text-[#1a1a1a]">
+            PARTHENON
+          </span>
+          <span className="text-3xl md:text-4xl font-light tracking-widest text-[#666]">
+            TECIDOS
+          </span>
+        </Link>
+
+        {/* 2. MENU DE NAVEGAÇÃO (Aumentei o gap e o tracking) */}
+        <nav className="hidden md:flex items-center gap-8 lg:gap-12 text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-[#1a1a1a]">
+          <Link href="/colecao" className="hover:opacity-60 transition-opacity duration-300">
+            Coleção
+          </Link>
+          <Link href="/novidades" className="hover:opacity-60 transition-opacity duration-300">
+            Novidades
+          </Link>
+          <Link href="/promocoes" className="hover:opacity-60 transition-opacity duration-300">
+            Promoções
+          </Link>
+        </nav>
+
+        {/* 3. AÇÕES DO USUÁRIO (Aumentei o tamanho dos ícones e o espaçamento) */}
+        <div className="flex items-center gap-4 md:gap-6 lg:gap-8">
           
-          {/* LOGO */}
-          <Link href="/" className="flex items-end gap-1 flex-shrink-0">
-            <span className="font-serif font-light text-2xl md:text-3xl lg:text-4xl tracking-[0.2em] text-[#1a1a1a]">
-              PARTHENON
-            </span>
-            <span className="hidden sm:inline font-serif font-light text-lg md:text-xl lg:text-2xl tracking-[0.15em] text-[#8a7a6a] -ml-1">
-              TECIDOS
-            </span>
+          {/* Busca */}
+          <div className="relative hidden lg:block">
+            <input
+              type="text"
+              placeholder="Buscar tecidos..."
+              className="w-40 lg:w-56 border-b border-gray-200 bg-transparent py-1.5 text-sm font-light tracking-wide outline-none focus:border-[#1a1a1a] transition-all duration-300 placeholder:text-gray-400"
+            />
+            <Search className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1a1a1a]" strokeWidth={1.5} />
+          </div>
+          
+          {/* Ícone de Busca para mobile (e desktop se quiser) */}
+          <button className="lg:hidden hover:opacity-60 transition-opacity">
+            <Search className="w-5 h-5 text-[#1a1a1a]" strokeWidth={1.5} />
+          </button>
+
+          {/* Favoritos */}
+          <Link href="/favoritos" className="hover:opacity-60 transition-opacity">
+            <Heart className="w-5 h-5 md:w-6 md:h-6 text-[#1a1a1a]" strokeWidth={1.5} />
           </Link>
 
-          {/* NAVEGAÇÃO DESKTOP */}
-          <nav className="hidden lg:flex items-center gap-10">
-            <Link href="/loja" className="text-xs font-light uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-[#8a7a6a] transition">
-              Coleção
-            </Link>
-            <Link href="/novidades" className="text-xs font-light uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-[#8a7a6a] transition">
-              Novidades
-            </Link>
-            <Link href="/promocoes" className="text-xs font-light uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-[#8a7a6a] transition">
-              Promoções
-            </Link>
-          </nav>
-
-          {/* ÍCONES + BUSCA */}
-          <div className="flex items-center gap-6">
-            {/* Busca expansível */}
-            <div className="relative flex items-center">
-              {searchOpen ? (
-                <form onSubmit={handleSearch} className="flex items-center">
-                  <input
-                    type="text"
-                    value={busca}
-                    onChange={(e) => setBusca(e.target.value)}
-                    placeholder="Buscar tecidos..."
-                    className="w-32 md:w-48 lg:w-56 border border-[#d4cfc6] rounded-full px-3 py-1.5 text-sm font-light placeholder:text-[#a0a0a0] focus:outline-none focus:border-[#1a1a1a] transition-all duration-300"
-                    autoFocus
-                    onBlur={() => { if (!busca.trim()) setSearchOpen(false); }}
-                  />
-                  <button type="submit" className="ml-1 p-1 text-[#8a7a6a] hover:text-[#1a1a1a] transition">
-                    <Search className="w-4 h-4" strokeWidth={1.5} />
-                  </button>
-                </form>
-              ) : (
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  className="text-[#1a1a1a] hover:text-[#8a7a6a] transition"
-                  aria-label="Buscar"
-                >
-                  <Search className="w-5 h-5" strokeWidth={1.5} />
-                </button>
-              )}
-            </div>
-
-            {/* Favoritos */}
-            <Link href="/favoritos" className="text-[#1a1a1a] hover:text-[#8a7a6a] transition hidden sm:block" aria-label="Favoritos">
-              <Heart className="w-5 h-5" strokeWidth={1.5} />
-            </Link>
-
-            {/* Usuário com dropdown */}
-            <div className="relative hidden sm:block" ref={userMenuRef}>
-              {isAuthenticated ? (
-                <button
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-1 text-[#1a1a1a] hover:text-[#8a7a6a] transition"
-                  aria-label="Menu do usuário"
-                >
-                  <User className="w-5 h-5" strokeWidth={1.5} />
-                  <ChevronDown className="w-3.5 h-3.5" strokeWidth={1.5} />
-                </button>
-              ) : (
-                <div className="flex items-center gap-1.5 text-xs font-light text-[#5c5c5c]">
-                  <Link href="/login" className="flex items-center gap-1 hover:text-[#1a1a1a] transition">
-                    <User className="w-3.5 h-3.5" strokeWidth={1.5} /> Entrar
-                  </Link>
-                  <span className="text-[#d4cfc6]">/</span>
-                  <Link href="/cadastro" className="hover:text-[#1a1a1a] transition">
-                    Cadastre-se
-                  </Link>
-                </div>
-              )}
-
-              {isAuthenticated && userMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
-                  <div className="px-4 py-2 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900 truncate">{user?.nome || 'Usuário'}</p>
-                    <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-                  </div>
-                  <Link href="/meu-perfil" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Meu Perfil</Link>
-                  <Link href="/meus-pedidos" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Meus Pedidos</Link>
-                  {isAdmin && <Link href="/admin" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Admin</Link>}
-                  <hr className="my-1 border-gray-100" />
-                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">Sair</button>
-                </div>
-              )}
-            </div>
-
-            {/* Carrinho */}
-            <button
-              onClick={() => setCartOpen(true)}
-              className="relative flex items-center gap-2 text-[#1a1a1a] hover:text-[#8a7a6a] transition"
-              aria-label="Carrinho"
-            >
-              <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#1a1a1a] text-white text-[0.6rem] w-5 h-5 flex items-center justify-center rounded-full font-light">
-                  {totalItems}
-                </span>
-              )}
-            </button>
-
-            {/* Menu mobile */}
-            <button onClick={() => setMobileOpen(true)} className="lg:hidden text-[#1a1a1a]">
-              <Menu className="w-5 h-5" strokeWidth={1.5} />
-            </button>
+          {/* Conta / Login */}
+          <div className="hidden sm:flex items-center gap-1 text-xs md:text-sm font-light text-[#1a1a1a]">
+            <User className="w-4 h-4 md:w-5 md:h-5" strokeWidth={1.5} />
+            <span className="flex items-center gap-1">
+              <Link href="/login" className="hover:opacity-60 transition-opacity">Entrar</Link>
+              <span className="text-gray-300">/</span>
+              <Link href="/cadastro" className="hover:opacity-60 transition-opacity">Cadastre-se</Link>
+            </span>
           </div>
+          <Link href="/login" className="sm:hidden hover:opacity-60 transition-opacity">
+             <User className="w-5 h-5 text-[#1a1a1a]" strokeWidth={1.5} />
+          </Link>
+
+          {/* Carrinho */}
+          <Link href="/carrinho" className="relative hover:opacity-60 transition-opacity">
+            <ShoppingBag className="w-5 h-5 md:w-6 md:h-6 text-[#1a1a1a]" strokeWidth={1.5} />
+            <span className="absolute -top-1 -right-1 bg-[#1a1a1a] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center">
+              0
+            </span>
+          </Link>
         </div>
       </div>
-
-      {/* MENU MOBILE */}
-      {mobileOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileOpen(false)} />}
-      <div className={`fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-50 p-6 lg:hidden transform transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex justify-between items-center mb-8">
-          <span className="font-serif text-xl text-[#1a1a1a]">Menu</span>
-          <button onClick={() => setMobileOpen(false)} className="text-[#1a1a1a]"><X className="w-5 h-5" strokeWidth={1.5} /></button>
-        </div>
-        <div className="flex flex-col gap-4 text-sm font-light tracking-[0.1em] uppercase">
-          <Link href="/" onClick={() => setMobileOpen(false)} className="text-[#1a1a1a] hover:text-[#8a7a6a]">Home</Link>
-          <Link href="/loja" onClick={() => setMobileOpen(false)} className="text-[#1a1a1a] hover:text-[#8a7a6a]">Loja</Link>
-          <Link href="/meus-pedidos" onClick={() => setMobileOpen(false)} className="text-[#1a1a1a] hover:text-[#8a7a6a]">Meus Pedidos</Link>
-          <Link href="/favoritos" onClick={() => setMobileOpen(false)} className="text-[#1a1a1a] hover:text-[#8a7a6a]">Favoritos</Link>
-          {isAuthenticated ? (
-            <>
-              {isAdmin && <Link href="/admin" onClick={() => setMobileOpen(false)} className="text-[#1a1a1a] hover:text-[#8a7a6a]">Admin</Link>}
-              <button onClick={() => { logout(); setMobileOpen(false); }} className="text-left text-red-500 hover:text-red-600">Sair</button>
-            </>
-          ) : (
-            <>
-              <Link href="/cadastro" onClick={() => setMobileOpen(false)} className="text-[#1a1a1a] hover:text-[#8a7a6a]">Criar conta</Link>
-              <Link href="/login" onClick={() => setMobileOpen(false)} className="text-[#1a1a1a] hover:text-[#8a7a6a]">Entrar</Link>
-            </>
-          )}
-        </div>
-      </div>
-
-      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </header>
   );
 }
