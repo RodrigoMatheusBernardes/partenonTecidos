@@ -1,20 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
-interface Categoria {
-  _id: string;
-  nome: string;
-}
+import { useState } from 'react';
+import { ChevronDown, ChevronUp, SlidersHorizontal, X } from 'lucide-react';
 
 interface FiltersSidebarProps {
   precoMin: number;
   precoMax: number;
   precoMaxGlobal: number;
-  categorias: Categoria[];
+  categorias: { _id: string; nome: string }[];
   categoriasSelecionadas: string[];
   onPrecoChange: (min: number, max: number) => void;
-  onCategoriaChange: (categoriaId: string) => void;
+  onCategoriaChange: (catId: string) => void;
+  limparFiltros: () => void;
+  isMobile?: boolean;
+  onClose?: () => void;
 }
 
 export default function FiltersSidebar({
@@ -25,127 +24,98 @@ export default function FiltersSidebar({
   categoriasSelecionadas,
   onPrecoChange,
   onCategoriaChange,
+  limparFiltros,
+  isMobile = false,
+  onClose,
 }: FiltersSidebarProps) {
-  const [minInput, setMinInput] = useState(precoMin.toString());
-  const [maxInput, setMaxInput] = useState(precoMax.toString());
-
-  useEffect(() => {
-    setMinInput(precoMin.toString());
-    setMaxInput(precoMax.toString());
-  }, [precoMin, precoMax]);
-
-  const faixasPreco = [
-    { label: 'Até R$ 20', min: 0, max: 20 },
-    { label: 'R$ 20 – R$ 50', min: 20, max: 50 },
-    { label: 'R$ 50 – R$ 100', min: 50, max: 100 },
-    { label: 'Acima de R$ 100', min: 100, max: precoMaxGlobal },
-  ];
-
-  // Handler local que garante que o onPrecoChange seja chamado com valores corretos
-  const handlePrecoManual = () => {
-    let min = parseFloat(minInput) || 0;
-    let max = parseFloat(maxInput) || precoMaxGlobal;
-    if (min < 0) min = 0;
-    if (max > precoMaxGlobal) max = precoMaxGlobal;
-    if (min > max) min = max;
-    onPrecoChange(min, max);
-  };
-
-  const handleFaixaChange = (min: number, max: number) => {
-    onPrecoChange(min, max);
-  };
+  const [precoSectionOpen, setPrecoSectionOpen] = useState(true);
+  const [categoriasSectionOpen, setCategoriasSectionOpen] = useState(true);
 
   return (
-    <aside className="w-full space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-gray-800">Filtros</h2>
-        {(precoMin > 0 || precoMax < precoMaxGlobal || categoriasSelecionadas.length > 0) && (
-          <button
-            onClick={() => {
-              onPrecoChange(0, precoMaxGlobal);
-              categoriasSelecionadas.forEach(id => onCategoriaChange(id));
-            }}
-            className="text-sm text-primary hover:underline"
-          >
-            Limpar
+    <div className={`bg-white ${isMobile ? 'h-full overflow-y-auto p-6' : 'p-0'}`}>
+      {/* Cabeçalho do Filtro (Título + Botão Fechar no Mobile) */}
+      <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
+        <h3 className="text-lg font-serif font-light tracking-wider text-[#1a1a1a]">Filtrar por</h3>
+        {isMobile && (
+          <button onClick={onClose} className="p-1 hover:opacity-60 transition">
+            <X className="w-5 h-5 text-[#1a1a1a]" strokeWidth={1.5} />
           </button>
         )}
       </div>
 
-      {/* Preço */}
-      <div>
-        <h3 className="font-semibold text-gray-700 mb-2">Preço</h3>
-        <div className="flex gap-2 mb-3">
-          <input
-            type="number"
-            value={minInput}
-            onChange={(e) => setMinInput(e.target.value)}
-            placeholder="Min"
-            className="w-20 border rounded p-1 text-sm"
-          />
-          <span className="self-center">-</span>
-          <input
-            type="number"
-            value={maxInput}
-            onChange={(e) => setMaxInput(e.target.value)}
-            placeholder="Max"
-            className="w-20 border rounded p-1 text-sm"
-          />
-          <button onClick={handlePrecoManual} className="bg-primary text-white text-xs px-3 py-1 rounded hover:bg-green-700">
-            OK
-          </button>
-        </div>
+      {/* Seção Preço */}
+      <div className="mb-6 border-b border-gray-100 pb-6">
+        <button
+          onClick={() => setPrecoSectionOpen(!precoSectionOpen)}
+          className="flex items-center justify-between w-full text-sm font-medium uppercase tracking-wider text-[#1a1a1a] mb-3"
+        >
+          <span>Preço</span>
+          {precoSectionOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
 
-        <div className="space-y-1">
-          {faixasPreco.map((faixa) => (
-            <label
-              key={faixa.label}
-              className={`flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-gray-100 ${
-                precoMin === faixa.min && precoMax === faixa.max ? 'font-medium text-primary' : 'text-gray-600'
-              }`}
-            >
+        {precoSectionOpen && (
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center gap-2">
               <input
-                type="radio"
-                name="faixa-preco"
-                checked={precoMin === faixa.min && precoMax === faixa.max}
-                onChange={() => handleFaixaChange(faixa.min, faixa.max)}
-                className="w-4 h-4 text-primary focus:ring-primary"
+                type="number"
+                min={0}
+                max={precoMaxGlobal}
+                value={precoMin}
+                onChange={(e) => onPrecoChange(Number(e.target.value), precoMax)}
+                className="w-1/2 border border-gray-200 rounded-md px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#1a1a1a] transition"
+                placeholder="Mín"
               />
-              {faixa.label}
-            </label>
-          ))}
-          <label className="flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-gray-100">
-            <input
-              type="radio"
-              name="faixa-preco"
-              checked={precoMin === 0 && precoMax === precoMaxGlobal}
-              onChange={() => handleFaixaChange(0, precoMaxGlobal)}
-              className="w-4 h-4 text-primary focus:ring-primary"
-            />
-            Todos os preços
-          </label>
-        </div>
+              <span className="text-gray-400">—</span>
+              <input
+                type="number"
+                min={precoMin}
+                max={precoMaxGlobal}
+                value={precoMax}
+                onChange={(e) => onPrecoChange(precoMin, Number(e.target.value))}
+                className="w-1/2 border border-gray-200 rounded-md px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#1a1a1a] transition"
+                placeholder="Máx"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Categorias */}
-      {categorias.length > 0 && (
-        <div>
-          <h3 className="font-semibold text-gray-700 mb-2">Categorias</h3>
-          <div className="space-y-1 max-h-60 overflow-y-auto">
-            {categorias.map(cat => (
-              <label key={cat._id} className="flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-gray-100">
+      {/* Seção Categorias */}
+      <div className="mb-6 border-b border-gray-100 pb-6">
+        <button
+          onClick={() => setCategoriasSectionOpen(!categoriasSectionOpen)}
+          className="flex items-center justify-between w-full text-sm font-medium uppercase tracking-wider text-[#1a1a1a] mb-3"
+        >
+          <span>Categorias</span>
+          {categoriasSectionOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+
+        {categoriasSectionOpen && (
+          <div className="space-y-2 max-h-60 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200">
+            {categorias.map((cat) => (
+              <label key={cat._id} className="flex items-center gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={categoriasSelecionadas.includes(cat._id)}
                   onChange={() => onCategoriaChange(cat._id)}
-                  className="w-4 h-4 text-primary rounded focus:ring-primary"
+                  className="peer h-4 w-4 appearance-none rounded-sm border border-gray-300 checked:bg-[#1a1a1a] checked:border-[#1a1a1a] transition-all cursor-pointer"
                 />
-                <span className="text-gray-700">{cat.nome}</span>
+                <span className="text-sm font-light text-[#333] group-hover:text-[#1a1a1a] transition">
+                  {cat.nome}
+                </span>
               </label>
             ))}
           </div>
-        </div>
-      )}
-    </aside>
+        )}
+      </div>
+
+      {/* Botão Limpar Filtros */}
+      <button
+        onClick={limparFiltros}
+        className="w-full py-3 text-sm font-light text-[#1a1a1a] border border-gray-200 rounded-md hover:bg-gray-50 transition"
+      >
+        Limpar Filtros
+      </button>
+    </div>
   );
 }
