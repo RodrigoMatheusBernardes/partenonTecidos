@@ -161,6 +161,7 @@ export default function Home() {
                   );
                   setPagina(1);
                 }}
+                limparFiltros={limparFiltros}   // ← ADICIONADO
               />
               <button
                 onClick={limparFiltros}
@@ -346,6 +347,7 @@ export default function Home() {
                 );
                 setPagina(1);
               }}
+              limparFiltros={limparFiltros}   // ← ADICIONADO
             />
             <button
               onClick={() => setSidebarAberta(false)}
