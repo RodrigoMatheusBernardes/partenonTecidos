@@ -9,6 +9,7 @@ import { SkeletonProduct } from '@/components/Skeleton';
 import ProductCard from '@/components/ui/ProductCard';
 import HomeBanner from '@/components/HomeBanner';
 import TrendingBar from '@/components/TrendingBar';
+import { SlidersHorizontal } from 'lucide-react'; // Ícone elegante para o filtro mobile
 
 interface Categoria { _id: string; nome: string; }
 interface Produto {
@@ -76,10 +77,8 @@ export default function Home() {
       }
       if (p.preco < precoMin || p.preco > precoMax) return false;
       if (categoriasSelecionadas.length) {
-        const idCat =
-          typeof p.categoria === 'object' ? p.categoria?._id : p.categoria;
-        if (!idCat || !categoriasSelecionadas.includes(idCat.toString()))
-          return false;
+        const idCat = typeof p.categoria === 'object' ? p.categoria?._id : p.categoria;
+        if (!idCat || !categoriasSelecionadas.includes(idCat.toString())) return false;
       }
       return true;
     });
@@ -111,7 +110,7 @@ export default function Home() {
 
   if (carregando) {
     return (
-      <div className="main-container py-8">
+      <div className="main-container py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <SkeletonProduct key={i} />
@@ -127,21 +126,23 @@ export default function Home() {
     <>
       <HomeBanner />
 
-      <div className="main-container py-12 md:py-16">
+      <div className="main-container py-12 md:py-20">
         <TrendingBar />
 
-        <div className="mb-10 md:mb-14 mt-8">
-          <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
+        {/* Título da Coleção – centralizado e com a fonte do header */}
+        <div className="text-center mb-10 md:mb-14 mt-8">
+          <h2 className="font-serif font-light text-3xl md:text-5xl text-[#1a1a1a] tracking-wider">
             Nossa Coleção
           </h2>
-          <p className="text-[#8a7a6a] font-light text-sm mt-2 tracking-wide">
-            Explore nossos tecidos
+          <p className="text-[#8a7a6a] font-light text-sm md:text-base mt-2 tracking-wide">
+            Explore nossos tecidos selecionados
           </p>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8">
-          <aside className="hidden md:block w-64 flex-shrink-0">
-            <div className="bg-white rounded-2xl shadow-sm border border-[#e8e3dc] p-6">
+        <div className="flex flex-col md:flex-row gap-10">
+          {/* Filtro Desktop */}
+          <aside className="hidden md:block w-72 flex-shrink-0">
+            <div className="bg-white rounded-xl shadow-sm border border-[#e8e3dc] p-6">
               <FiltersSidebar
                 precoMin={precoMin}
                 precoMax={precoMax}
@@ -161,7 +162,7 @@ export default function Home() {
                   );
                   setPagina(1);
                 }}
-                limparFiltros={limparFiltros}   // ← ADICIONADO
+                limparFiltros={limparFiltros}
               />
               <button
                 onClick={limparFiltros}
@@ -172,12 +173,14 @@ export default function Home() {
             </div>
           </aside>
 
+          {/* Conteúdo Principal */}
           <div className="flex-1">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            {/* Barra de busca, ordenação e contagem */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
               <div className="w-full sm:max-w-md">
                 <SearchBar value={busca} onChange={setBusca} />
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <p className="text-sm text-[#8a7a6a] font-light whitespace-nowrap">
                   {produtosFiltrados.length} produto(s)
                 </p>
@@ -187,7 +190,7 @@ export default function Home() {
                     setOrdenacao(e.target.value);
                     setPagina(1);
                   }}
-                  className="border border-[#e8e3dc] rounded-lg px-3 py-2 text-sm bg-white text-[#1a1a1a] font-light focus:outline-none focus:ring-1 focus:ring-[#c9a96e]"
+                  className="border border-[#e8e3dc] rounded-lg px-4 py-2 text-sm bg-white text-[#1a1a1a] font-light focus:outline-none focus:ring-1 focus:ring-[#c9a96e]"
                 >
                   <option value="">Mais relevantes</option>
                   <option value="menor-preco">Menor Preço</option>
@@ -198,44 +201,39 @@ export default function Home() {
             </div>
 
             {produtosFiltrados.length === 0 ? (
-              <div className="text-center py-12 bg-[#f8f6f2] rounded-2xl">
+              <div className="text-center py-16 bg-[#f8f6f2] rounded-2xl">
                 <p className="text-[#8a7a6a] font-light">Nenhum produto encontrado.</p>
                 <button
-                  onClick={() => {
-                    setBusca('');
-                    setPrecoMin(0);
-                    setPrecoMax(precoMaxGlobal);
-                    setCategoriasSelecionadas([]);
-                  }}
-                  className="mt-2 text-sm text-[#1a1a1a] hover:underline font-light"
+                  onClick={limparFiltros}
+                  className="mt-3 text-sm text-[#1a1a1a] hover:underline font-light"
                 >
                   Limpar filtros
                 </button>
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                {/* Grid de Produtos */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                   {paginaAtual.map(produto => (
                     <ProductCard key={produto._id} produto={produto} />
                   ))}
                 </div>
 
-                {/* Paginação estilo Mercado Livre – discreta e elegante */}
+                {/* Paginação Elegante */}
                 {totalPaginas > 1 && (
-                  <div className="mt-12 flex items-center justify-center gap-2">
+                  <div className="mt-14 flex flex-wrap items-center justify-center gap-2">
                     <button
                       onClick={() => {
                         setPagina(prev => Math.max(1, prev - 1));
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       disabled={pagina === 1}
-                      className="px-3 py-2 text-sm font-light text-gray-400 hover:text-gray-600 disabled:opacity-30 transition"
-                      aria-label="Anterior"
+                      className="px-4 py-2 text-sm font-light text-[#8a7a6a] hover:text-[#1a1a1a] disabled:opacity-30 transition"
                     >
                       ‹ Anterior
                     </button>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                       {Array.from({ length: totalPaginas }, (_, i) => i + 1)
                         .filter(
                           num =>
@@ -247,17 +245,17 @@ export default function Home() {
                         .map((num, idx, arr) => (
                           <React.Fragment key={num}>
                             {idx > 0 && arr[idx - 1] !== num - 1 && (
-                              <span className="text-gray-400 px-2">…</span>
+                              <span className="text-[#8a7a6a] px-1">…</span>
                             )}
                             <button
                               onClick={() => {
                                 setPagina(num);
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                               }}
-                              className={`min-w-[2rem] h-8 px-2 rounded-md text-sm font-light transition ${
+                              className={`min-w-[2.5rem] h-10 rounded-full text-sm font-light transition ${
                                 num === pagina
                                   ? 'bg-[#1a1a1a] text-white'
-                                  : 'text-gray-600 hover:bg-gray-100'
+                                  : 'text-[#8a7a6a] hover:bg-[#f8f6f2] hover:text-[#1a1a1a]'
                               }`}
                             >
                               {num}
@@ -272,8 +270,7 @@ export default function Home() {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       disabled={pagina === totalPaginas}
-                      className="px-3 py-2 text-sm font-light text-gray-400 hover:text-gray-600 disabled:opacity-30 transition"
-                      aria-label="Próximo"
+                      className="px-4 py-2 text-sm font-light text-[#8a7a6a] hover:text-[#1a1a1a] disabled:opacity-30 transition"
                     >
                       Próximo ›
                     </button>
@@ -284,46 +281,47 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Seção institucional limpa */}
-        <section className="mt-24 md:mt-32 py-16 md:py-24 border-t border-[#e8e3dc]">
+        {/* Seção de Benefícios – elegante e espaçada */}
+        <section className="mt-24 md:mt-32 pt-16 md:pt-24 border-t border-[#e8e3dc]">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
             <div>
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+              <h3 className="font-serif font-light text-2xl md:text-3xl text-[#1a1a1a] mb-3 tracking-wide">
                 Qualidade Premium
               </h3>
               <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
-                Tecidos selecionados dos melhores fornecedores
+                Tecidos selecionados dos melhores fornecedores, com acabamento impecável.
               </p>
             </div>
             <div>
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+              <h3 className="font-serif font-light text-2xl md:text-3xl text-[#1a1a1a] mb-3 tracking-wide">
                 Entrega Rápida
               </h3>
               <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
-                Enviamos para todo o Brasil com agilidade
+                Enviamos para todo o Brasil com agilidade e total rastreamento.
               </p>
             </div>
             <div>
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+              <h3 className="font-serif font-light text-2xl md:text-3xl text-[#1a1a1a] mb-3 tracking-wide">
                 Atendimento Especial
               </h3>
               <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
-                Suporte personalizado para suas necessidades
+                Suporte personalizado para ajudar na escolha do tecido ideal.
               </p>
             </div>
           </div>
         </section>
       </div>
 
-      {/* Filtro mobile */}
+      {/* Filtro Mobile – com ícone elegante */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
           onClick={() => setSidebarAberta(true)}
-          className="bg-[#1a1a1a] text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-2xl hover:bg-[#2d2d2d] transition-colors"
+          className="bg-[#1a1a1a] text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:bg-[#2d2d2d] transition-colors"
         >
-          ⚙️
+          <SlidersHorizontal className="w-6 h-6" strokeWidth={1.5} />
         </button>
       </div>
+
       {sidebarAberta && (
         <div className="md:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setSidebarAberta(false)}>
           <div
@@ -347,11 +345,11 @@ export default function Home() {
                 );
                 setPagina(1);
               }}
-              limparFiltros={limparFiltros}   // ← ADICIONADO
+              limparFiltros={limparFiltros}
             />
             <button
               onClick={() => setSidebarAberta(false)}
-              className="mt-6 w-full bg-[#f8f6f2] py-2.5 rounded-lg text-sm text-[#1a1a1a] font-light hover:bg-[#e8e3dc] transition-colors"
+              className="mt-6 w-full bg-[#f8f6f2] py-3 rounded-lg text-sm text-[#1a1a1a] font-light hover:bg-[#e8e3dc] transition-colors"
             >
               Fechar
             </button>
