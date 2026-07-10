@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, SlidersHorizontal, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
 
 interface FiltersSidebarProps {
   precoMin: number;
@@ -31,30 +31,49 @@ export default function FiltersSidebar({
   const [precoSectionOpen, setPrecoSectionOpen] = useState(true);
   const [categoriasSectionOpen, setCategoriasSectionOpen] = useState(true);
 
+  const activeCount = categoriasSelecionadas.length +
+    (precoMin > 0 || precoMax < precoMaxGlobal ? 1 : 0);
+
   return (
     <div className={`bg-white ${isMobile ? 'h-full overflow-y-auto p-6' : 'p-0'}`}>
-      {/* Cabeçalho do Filtro (Título + Botão Fechar no Mobile) */}
-      <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
-        <h3 className="text-lg font-serif font-light tracking-wider text-[#1a1a1a]">Filtrar por</h3>
+
+      {/* HEADER */}
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-mid">
+        <div className="flex items-center gap-2">
+          <h3 className="font-serif font-semibold text-dark-light tracking-wide">Filtros</h3>
+          {activeCount > 0 && (
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-dark-light text-white text-xs font-bold">
+              {activeCount}
+            </span>
+          )}
+        </div>
         {isMobile && (
-          <button onClick={onClose} className="p-1 hover:opacity-60 transition">
-            <X className="w-5 h-5 text-[#1a1a1a]" strokeWidth={1.5} />
+          <button
+            onClick={onClose}
+            className="p-2 hover:text-gold transition-colors duration-300 rounded-button focus:outline-none focus:ring-2 focus:ring-gold"
+            aria-label="Fechar filtros"
+          >
+            <X className="w-5 h-5" strokeWidth={2} />
           </button>
         )}
       </div>
 
-      {/* Seção Preço */}
-      <div className="mb-6 border-b border-gray-100 pb-6">
+      {/* SEÇÃO PREÇO */}
+      <div className="mb-6 pb-6 border-b border-gray-mid">
         <button
           onClick={() => setPrecoSectionOpen(!precoSectionOpen)}
-          className="flex items-center justify-between w-full text-sm font-medium uppercase tracking-wider text-[#1a1a1a] mb-3"
+          className="flex items-center justify-between w-full text-xs font-semibold uppercase tracking-widest text-dark-light mb-4 hover:text-gold transition-colors"
+          aria-expanded={precoSectionOpen}
         >
           <span>Preço</span>
-          {precoSectionOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {precoSectionOpen
+            ? <ChevronUp className="w-4 h-4" strokeWidth={2} />
+            : <ChevronDown className="w-4 h-4" strokeWidth={2} />
+          }
         </button>
 
         {precoSectionOpen && (
-          <div className="space-y-3 pt-2">
+          <div className="space-y-3">
             <div className="flex items-center gap-2">
               <input
                 type="number"
@@ -62,59 +81,90 @@ export default function FiltersSidebar({
                 max={precoMaxGlobal}
                 value={precoMin}
                 onChange={(e) => onPrecoChange(Number(e.target.value), precoMax)}
-                className="w-1/2 border border-gray-200 rounded-md px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#1a1a1a] transition"
-                placeholder="Mín"
+                className="w-1/2 bg-light border border-gray-mid rounded-button px-3 py-2 text-sm font-medium text-dark-light focus:outline-none focus:ring-2 focus:ring-gold transition"
+                placeholder="Min"
+                aria-label="Preço mínimo"
               />
-              <span className="text-gray-400">—</span>
+              <span className="text-text-light font-light">—</span>
               <input
                 type="number"
                 min={precoMin}
                 max={precoMaxGlobal}
                 value={precoMax}
                 onChange={(e) => onPrecoChange(precoMin, Number(e.target.value))}
-                className="w-1/2 border border-gray-200 rounded-md px-3 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-[#1a1a1a] transition"
-                placeholder="Máx"
+                className="w-1/2 bg-light border border-gray-mid rounded-button px-3 py-2 text-sm font-medium text-dark-light focus:outline-none focus:ring-2 focus:ring-gold transition"
+                placeholder="Max"
+                aria-label="Preço máximo"
               />
             </div>
+            <p className="text-xs text-text-light">
+              R$ {precoMin.toFixed(0)} – R$ {precoMax.toFixed(0)}
+            </p>
           </div>
         )}
       </div>
 
-      {/* Seção Categorias */}
-      <div className="mb-6 border-b border-gray-100 pb-6">
-        <button
-          onClick={() => setCategoriasSectionOpen(!categoriasSectionOpen)}
-          className="flex items-center justify-between w-full text-sm font-medium uppercase tracking-wider text-[#1a1a1a] mb-3"
-        >
-          <span>Categorias</span>
-          {categoriasSectionOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </button>
+      {/* SEÇÃO CATEGORIAS */}
+      {categorias.length > 0 && (
+        <div className="mb-6 pb-6 border-b border-gray-mid">
+          <button
+            onClick={() => setCategoriasSectionOpen(!categoriasSectionOpen)}
+            className="flex items-center justify-between w-full text-xs font-semibold uppercase tracking-widest text-dark-light mb-4 hover:text-gold transition-colors"
+            aria-expanded={categoriasSectionOpen}
+          >
+            <span>Categorias</span>
+            {categoriasSectionOpen
+              ? <ChevronUp className="w-4 h-4" strokeWidth={2} />
+              : <ChevronDown className="w-4 h-4" strokeWidth={2} />
+            }
+          </button>
 
-        {categoriasSectionOpen && (
-          <div className="space-y-2 max-h-60 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200">
-            {categorias.map((cat) => (
-              <label key={cat._id} className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={categoriasSelecionadas.includes(cat._id)}
-                  onChange={() => onCategoriaChange(cat._id)}
-                  className="peer h-4 w-4 appearance-none rounded-sm border border-gray-300 checked:bg-[#1a1a1a] checked:border-[#1a1a1a] transition-all cursor-pointer"
-                />
-                <span className="text-sm font-light text-[#333] group-hover:text-[#1a1a1a] transition">
-                  {cat.nome}
-                </span>
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
+          {categoriasSectionOpen && (
+            <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+              {categorias.map((cat) => (
+                <label key={cat._id} className="flex items-center gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={categoriasSelecionadas.includes(cat._id)}
+                    onChange={() => onCategoriaChange(cat._id)}
+                    className="
+                      h-4 w-4 appearance-none rounded-sm
+                      border-2 border-gray-mid cursor-pointer
+                      checked:bg-dark-light checked:border-dark-light
+                      hover:border-dark-light
+                      transition-all duration-300
+                      focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gold
+                    "
+                    aria-label={cat.nome}
+                  />
+                  <span className="
+                    text-sm font-medium text-text-secondary
+                    group-hover:text-dark-light
+                    transition-colors duration-300
+                  ">
+                    {cat.nome}
+                  </span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* Botão Limpar Filtros */}
+      {/* LIMPAR FILTROS */}
       <button
         onClick={limparFiltros}
-        className="w-full py-3 text-sm font-light text-[#1a1a1a] border border-gray-200 rounded-md hover:bg-gray-50 transition"
+        disabled={activeCount === 0}
+        className="
+          w-full py-2.5 text-sm font-medium
+          text-dark-light border border-dark-light rounded-button
+          hover:bg-dark-light hover:text-white
+          disabled:opacity-40 disabled:cursor-not-allowed
+          transition-all duration-300
+          focus:outline-none focus:ring-2 focus:ring-gold
+        "
       >
-        Limpar Filtros
+        Limpar {activeCount > 0 ? `(${activeCount})` : 'Filtros'}
       </button>
     </div>
   );

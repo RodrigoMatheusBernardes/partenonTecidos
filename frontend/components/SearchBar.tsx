@@ -1,42 +1,78 @@
 'use client';
 
+import { Search } from 'lucide-react';
+
 interface SearchBarProps {
   value?: string;
   onChange?: (value: string) => void;
   onSearch?: (termo: string) => void;
   placeholder?: string;
+  className?: string;
 }
 
-export default function SearchBar({ value, onChange, onSearch, placeholder = 'Buscar tecidos...' }: SearchBarProps) {
+export default function SearchBar({
+  value,
+  onChange,
+  onSearch,
+  placeholder = 'Buscar tecidos...',
+  className = '',
+}: SearchBarProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const novoValor = e.target.value;
     if (onChange) onChange(novoValor);
-    if (onSearch) onSearch(novoValor);      // opcional: mantém compatibilidade
   };
 
-  const handleClick = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     const termo = value || '';
     if (onSearch) onSearch(termo);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSubmit(e as any);
+    }
+  };
+
   return (
-    <div className="flex w-full max-w-2xl">
+    <form
+      onSubmit={handleSubmit}
+      className={`
+        flex items-center gap-2
+        bg-light rounded-full
+        border border-gray-mid
+        px-5 py-3
+        transition-all duration-300
+        focus-within:border-dark-light focus-within:shadow-md-luxury
+        ${className}
+      `}
+    >
       <input
         type="text"
         value={value || ''}
         onChange={handleChange}
-        onKeyDown={(e) => { if (e.key === 'Enter') handleClick(); }}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="flex-1 bg-gray-100 border border-gray-300 rounded-l-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        className="
+          flex-1 bg-transparent
+          text-sm font-medium
+          outline-none
+          placeholder:text-text-light
+        "
+        aria-label="Buscar produtos"
       />
       <button
-        onClick={handleClick}
-        className="bg-primary text-white px-6 rounded-r-full hover:bg-blue-700 transition"
+        type="submit"
+        className="
+          p-2 text-dark-light hover:text-gold
+          transition-colors duration-300
+          focus:outline-none focus:ring-2 focus:ring-gold
+          rounded-button
+        "
+        aria-label="Pesquisar"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
+        <Search className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2} />
       </button>
-    </div>
+    </form>
   );
 }

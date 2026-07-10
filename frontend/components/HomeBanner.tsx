@@ -115,33 +115,52 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
         </div>
       </div>
 
-      {/* Controles (aparecem ao passar o mouse) */}
+      {/* CONTROLES */}
       {total > 1 && (
         <>
           <button
             onClick={prev}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-3 bg-white/10 backdrop-blur-sm rounded-full shadow-md hover:bg-white/30 transition-all opacity-0 group-hover:opacity-100"
-            aria-label="Anterior"
+            className="
+              absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-40
+              p-3 bg-white/10 backdrop-blur-sm rounded-full
+              border border-white/20
+              hover:bg-white/25 transition-all duration-300
+              opacity-0 group-hover:opacity-100
+              focus:outline-none focus:ring-2 focus:ring-white/50
+            "
+            aria-label="Slide anterior"
           >
-            <ChevronLeft className="w-5 h-5 text-white" />
+            <ChevronLeft className="w-5 h-5 text-white" strokeWidth={2} />
           </button>
           <button
             onClick={next}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-3 bg-white/10 backdrop-blur-sm rounded-full shadow-md hover:bg-white/30 transition-all opacity-0 group-hover:opacity-100"
-            aria-label="Próximo"
+            className="
+              absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-40
+              p-3 bg-white/10 backdrop-blur-sm rounded-full
+              border border-white/20
+              hover:bg-white/25 transition-all duration-300
+              opacity-0 group-hover:opacity-100
+              focus:outline-none focus:ring-2 focus:ring-white/50
+            "
+            aria-label="Próximo slide"
           >
-            <ChevronRight className="w-5 h-5 text-white" />
+            <ChevronRight className="w-5 h-5 text-white" strokeWidth={2} />
           </button>
 
-          {/* Indicadores */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 flex gap-2">
+          {/* INDICADORES */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 flex gap-2" role="tablist" aria-label="Navegação de slides">
             {slides.map((_, index) => (
               <button
                 key={index}
+                role="tab"
+                aria-selected={index === current}
                 onClick={() => setCurrent(index)}
-                className={`h-1 rounded-full transition-all ${
-                  index === current ? 'w-8 bg-white' : 'w-4 bg-white/50'
-                }`}
+                className={`
+                  h-1 rounded-full transition-all duration-300
+                  focus:outline-none
+                  ${index === current ? 'w-8 bg-white' : 'w-4 bg-white/40 hover:bg-white/70'}
+                `}
+                aria-label={`Ir para slide ${index + 1}`}
               />
             ))}
           </div>

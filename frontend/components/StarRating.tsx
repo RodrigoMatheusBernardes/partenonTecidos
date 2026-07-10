@@ -1,50 +1,73 @@
 'use client';
 
+import { Star } from 'lucide-react';
+
 interface StarRatingProps {
   nota: number;
   total?: number;
-  tamanho?: 'small' | 'medium' | 'large';
+  tamanho?: 'sm' | 'md' | 'lg';
   onClick?: (nota: number) => void;
+  interactive?: boolean;
 }
 
-export default function StarRating({ nota, total, tamanho = 'medium', onClick }: StarRatingProps) {
-  const tamanhos = {
-    small: 'w-4 h-4',
-    medium: 'w-5 h-5',
-    large: 'w-7 h-7'
-  };
+const sizeMap = {
+  sm: 'w-3 h-3 md:w-4 md:h-4',
+  md: 'w-5 h-5 md:w-6 md:h-6',
+  lg: 'w-6 h-6 md:w-7 md:h-7',
+};
 
-  const tamanhoTexto = {
-    small: 'text-xs',
-    medium: 'text-sm',
-    large: 'text-base'
-  };
+const textSizeMap = {
+  sm: 'text-xs',
+  md: 'text-sm',
+  lg: 'text-base',
+};
+
+export default function StarRating({
+  nota,
+  total,
+  tamanho = 'md',
+  onClick,
+  interactive = false,
+}: StarRatingProps) {
+  const isInteractive = interactive && onClick;
 
   return (
-    <div className="flex items-center gap-1">
-      <div className="flex">
+    <div className="flex items-center gap-2">
+      <div className="flex gap-0.5">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
             type="button"
-            onClick={() => onClick?.(star)}
-            disabled={!onClick}
-            className={`${onClick ? 'cursor-pointer hover:scale-110' : 'cursor-default'} transition-transform p-0.5`}
+            onClick={() => isInteractive && onClick?.(star)}
+            disabled={!isInteractive}
+            className={`
+              p-1 rounded-button
+              transition-all duration-300
+              ${isInteractive ? 'cursor-pointer hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gold' : 'cursor-default'}
+              ${!isInteractive && 'disabled:cursor-default'}
+            `}
             aria-label={`${star} estrela${star > 1 ? 's' : ''}`}
+            tabIndex={isInteractive ? 0 : -1}
           >
-            <svg
-              className={`${tamanhos[tamanho]} ${
-                star <= nota ? 'text-amber-400 drop-shadow-sm' : 'text-gray-300'
-              } fill-current transition-colors`}
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-            </svg>
+            <Star
+              className={`
+                ${sizeMap[tamanho]}
+                transition-all duration-300
+                ${star <= nota ? 'fill-gold text-gold' : 'fill-gray-mid text-gray-mid'}
+              `}
+              strokeWidth={1.5}
+            />
           </button>
         ))}
       </div>
+
       {total !== undefined && (
-        <span className={`${tamanhoTexto[tamanho]} text-gray-500 ml-1 whitespace-nowrap`}>
+        <span className={`
+          ${textSizeMap[tamanho]}
+          text-text-light
+          ml-1 whitespace-nowrap
+          font-medium
+        `}>
           ({total} {total === 1 ? 'avaliação' : 'avaliações'})
         </span>
       )}

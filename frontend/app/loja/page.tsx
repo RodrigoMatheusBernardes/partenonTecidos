@@ -5,6 +5,8 @@ import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import FiltersSidebar from '@/components/FiltersSidebar';
+import SearchBar from '@/components/SearchBar';
+import { SkeletonProduct } from '@/components/Skeleton';
 import { SlidersHorizontal } from 'lucide-react';
 
 interface Produto {
@@ -14,6 +16,7 @@ interface Produto {
   fotos: string[];
   imagemUrl?: string;
   disponivel: number;
+  estoque?: number;
   categoria?: { _id: string; nome: string };
   preco_original?: number;
 }
@@ -27,56 +30,42 @@ export default function LojaPage() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [carregando, setCarregando] = useState(true);
-
-  // Filtros
   const [precoMin, setPrecoMin] = useState(0);
   const [precoMax, setPrecoMax] = useState(1000);
   const [precoMaxGlobal, setPrecoMaxGlobal] = useState(1000);
   const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<string[]>([]);
   const [ordenacao, setOrdenacao] = useState('');
   const [busca, setBusca] = useState('');
-
-  // Paginação e Mobile
   const [pagina, setPagina] = useState(1);
   const [sidebarAberta, setSidebarAberta] = useState(false);
-  const ITENS_POR_PAGINA = 12;
+  const ITENS_POR_PAGINA = 16;
 
   useEffect(() => {
     const apiUrl = getApiUrl();
-    const carregarDados = async () => {
-      try {
-        const [resProdutos, resCategorias] = await Promise.all([
-          axios.get(`${apiUrl}/api/produtos/vitrine`),
-          axios.get(`${apiUrl}/api/categorias`)
-        ]);
-        const produtosData = resProdutos.data;
-        const categoriasData = resCategorias.data;
-
-        setProdutos(produtosData);
-        setCategorias(categoriasData);
-        const maxPreco = Math.max(...produtosData.map((p: Produto) => p.preco), 100);
+    Promise.all([
+      axios.get(`${apiUrl}/api/produtos/vitrine`),
+      axios.get(`${apiUrl}/api/categorias`),
+    ])
+      .then(([resProdutos, resCategorias]) => {
+        const prods = Array.isArray(resProdutos.data) ? resProdutos.data : [];
+        const cats = Array.isArray(resCategorias.data) ? resCategorias.data : [];
+        setProdutos(prods);
+        setCategorias(cats);
+        const maxPreco = prods.length > 0 ? Math.max(...prods.map((p: Produto) => p.preco), 100) : 1000;
         setPrecoMaxGlobal(maxPreco);
         setPrecoMax(maxPreco);
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-      } finally {
-        setCarregando(false);
-      }
-    };
-    carregarDados();
+      })
+      .catch(console.error)
+      .finally(() => setCarregando(false));
   }, []);
 
-  // Lógica de filtro
   const produtosFiltrados = produtos
     .filter(p => {
-      if (busca.trim()) {
-        const termo = busca.toLowerCase();
-        if (!p.nome.toLowerCase().includes(termo)) return false;
-      }
+      if (busca.trim() && !p.nome.toLowerCase().includes(busca.toLowerCase())) return false;
       if (p.preco < precoMin || p.preco > precoMax) return false;
-      if (categoriasSelecionadas.length > 0) {
+      if (categoriasSelecionadas.length) {
         const idCat = typeof p.categoria === 'object' ? p.categoria?._id : p.categoria;
-        if (!idCat || !categoriasSelecionadas.includes(idCat.toString())) return false;
+        if (!idCat || !categoriasSelecionadas.includes(String(idCat))) return false;
       }
       return true;
     })
@@ -88,167 +77,177 @@ export default function LojaPage() {
     });
 
   const totalPaginas = Math.ceil(produtosFiltrados.length / ITENS_POR_PAGINA);
-  const paginaAtual = produtosFiltrados.slice(
-    (pagina - 1) * ITENS_POR_PAGINA,
-    pagina * ITENS_POR_PAGINA
-  );
+  const paginaAtual = produtosFiltrados.slice((pagina - 1) * ITENS_POR_PAGINA, pagina * ITENS_POR_PAGINA);
 
   const limparFiltros = () => {
-    setBusca('');
-    setPrecoMin(0);
-    setPrecoMax(precoMaxGlobal);
-    setCategoriasSelecionadas([]);
-    setOrdenacao('');
-    setPagina(1);
+    setBusca(''); setPrecoMin(0); setPrecoMax(precoMaxGlobal);
+    setCategoriasSelecionadas([]); setOrdenacao(''); setPagina(1);
   };
-
+  const handlePrecoChange = (min: number, max: number) => { setPrecoMin(min); setPrecoMax(max); setPagina(1); };
   const handleCategoriaChange = (catId: string) => {
-    setCategoriasSelecionadas(prev =>
-      prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]
-    );
+    setCategoriasSelecionadas(prev => prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]);
     setPagina(1);
   };
 
-  const handlePrecoChange = (min: number, max: number) => {
-    setPrecoMin(min);
-    setPrecoMax(max);
-    setPagina(1);
-  };
-
-  if (carregando) {
-    return (
-      <main className="min-h-screen bg-white pb-24 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1a1a1a]"></div>
-      </main>
-    );
-  }
+  const activeFilters = categoriasSelecionadas.length + (precoMin > 0 || precoMax < precoMaxGlobal ? 1 : 0);
 
   return (
     <main className="min-h-screen bg-white pb-24">
-      {/* Título Centralizado */}
-      <div className="max-w-[1440px] mx-auto px-6 md:px-12 pt-16 pb-8 text-center border-b border-gray-100">
-        <h1 className="text-4xl md:text-5xl font-serif font-light tracking-wider text-[#1a1a1a] mb-2">
-          Nossa Coleção
-        </h1>
-        <p className="text-sm font-light text-[#8a7a6a] tracking-wide">
-          Explore nossos tecidos selecionados com a elegância que você merece.
-        </p>
-      </div>
 
-      <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-8 flex gap-12">
-        {/* Filtro Desktop */}
-        <aside className="hidden lg:block w-64 flex-shrink-0">
-         <FiltersSidebar
-  precoMin={precoMin}
-  precoMax={precoMax}
-  precoMaxGlobal={precoMaxGlobal}
-  categorias={categorias}
-  categoriasSelecionadas={categoriasSelecionadas}
-  onPrecoChange={(min, max) => { setPrecoMin(min); setPrecoMax(max); setPagina(1); }}
-  onCategoriaChange={catId => {
-    setCategoriasSelecionadas(prev => prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]);
-    setPagina(1);
-  }}
-  limparFiltros={limparFiltros}   // ← ADICIONE ESTA LINHA
-/>
-        </aside>
-
-        {/* Conteúdo Principal */}
-        <div className="flex-1">
-          {/* Barra de controle */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-            <p className="text-sm font-light text-[#8a7a6a]">
-              {produtosFiltrados.length} produto{produtosFiltrados.length !== 1 ? 's' : ''}
-            </p>
-
-            <div className="flex items-center gap-4 w-full sm:w-auto">
-              {/* Botão Filtro Mobile */}
-              <button
-                onClick={() => setSidebarAberta(true)}
-                className="lg:hidden flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-full text-sm font-light text-[#1a1a1a] hover:bg-gray-50 transition"
-              >
-                <SlidersHorizontal className="w-4 h-4" strokeWidth={1.5} />
-                Filtros
-              </button>
-
-              <select
-                value={ordenacao}
-                onChange={(e) => { setOrdenacao(e.target.value); setPagina(1); }}
-                className="w-full sm:w-auto border border-gray-200 rounded-full px-4 py-2 text-sm font-light text-[#1a1a1a] focus:outline-none bg-transparent"
-              >
-                <option value="">Mais relevantes</option>
-                <option value="menor-preco">Menor Preço</option>
-                <option value="maior-preco">Maior Preço</option>
-                <option value="nome">Nome (A-Z)</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Grid de Produtos */}
-          {produtosFiltrados.length === 0 ? (
-            <div className="text-center py-20 text-[#8a7a6a]">
-              <p className="text-lg font-light">Nenhum produto encontrado.</p>
-              <button
-                onClick={limparFiltros}
-                className="mt-4 text-sm underline hover:text-[#1a1a1a] transition"
-              >
-                Limpar filtros
-              </button>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {paginaAtual.map((produto) => (
-                  <ProductCard key={produto._id} produto={produto} />
-                ))}
-              </div>
-
-              {/* Paginação */}
-              {totalPaginas > 1 && (
-                <div className="mt-12 flex justify-center items-center gap-2">
-                  {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(num => (
-                    <button
-                      key={num}
-                      onClick={() => { setPagina(num); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                      className={`min-w-[2rem] h-8 px-2 rounded-md text-sm font-light transition ${
-                        num === pagina
-                          ? 'bg-[#1a1a1a] text-white'
-                          : 'text-[#1a1a1a] hover:bg-gray-100'
-                      }`}
-                    >
-                      {num}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
+      {/* HERO DA LOJA */}
+      <div className="bg-light border-b border-gray-mid py-12 md:py-16">
+        <div className="container-main text-center">
+          <h1 className="font-serif font-semibold text-4xl md:text-5xl text-dark-light tracking-wide mb-3">
+            Nossa Coleção
+          </h1>
+          <p className="text-text-secondary text-sm md:text-base max-w-lg mx-auto">
+            Explore nossos tecidos selecionados com a elegância que você merece.
+          </p>
         </div>
       </div>
 
-      {/* Drawer Mobile de Filtros */}
-      {sidebarAberta && (
-        <div className="fixed inset-0 bg-black/50 z-50 lg:hidden" onClick={() => setSidebarAberta(false)} />
-      )}
-      <div
-        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-50 transform transition-transform duration-300 lg:hidden ${
-          sidebarAberta ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <FiltersSidebar
-  precoMin={precoMin}
-  precoMax={precoMax}
-  precoMaxGlobal={precoMaxGlobal}
-  categorias={categorias}
-  categoriasSelecionadas={categoriasSelecionadas}
-  onPrecoChange={(min, max) => { setPrecoMin(min); setPrecoMax(max); setPagina(1); }}
-  onCategoriaChange={catId => {
-    setCategoriasSelecionadas(prev => prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]);
-    setPagina(1);
-  }}
-  limparFiltros={limparFiltros}   // ← ADICIONE ESTA LINHA
-/>
+      <div className="container-main py-8 md:py-12">
+        <div className="flex gap-8 lg:gap-12">
+
+          {/* FILTRO DESKTOP */}
+          <aside className="hidden lg:block w-64 flex-shrink-0">
+            <div className="sticky top-8 bg-white rounded-card shadow-sm-luxury border border-gray-mid p-6">
+              <FiltersSidebar
+                precoMin={precoMin}
+                precoMax={precoMax}
+                precoMaxGlobal={precoMaxGlobal}
+                categorias={categorias}
+                categoriasSelecionadas={categoriasSelecionadas}
+                onPrecoChange={handlePrecoChange}
+                onCategoriaChange={handleCategoriaChange}
+                limparFiltros={limparFiltros}
+              />
+            </div>
+          </aside>
+
+          {/* CONTEÚDO */}
+          <div className="flex-1 min-w-0">
+
+            {/* BARRA DE CONTROLES */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
+              <div className="w-full sm:max-w-xs">
+                <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
+              </div>
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <button
+                  onClick={() => setSidebarAberta(true)}
+                  className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-mid rounded-button text-sm font-medium text-dark-light hover:bg-light hover:border-dark-light transition-all focus:outline-none focus:ring-2 focus:ring-gold"
+                >
+                  <SlidersHorizontal className="w-4 h-4" strokeWidth={2} />
+                  Filtros
+                  {activeFilters > 0 && (
+                    <span className="w-5 h-5 rounded-full bg-dark-light text-white text-xs flex items-center justify-center font-bold">
+                      {activeFilters}
+                    </span>
+                  )}
+                </button>
+
+                <p className="text-sm text-text-secondary font-medium whitespace-nowrap ml-auto sm:ml-0">
+                  {produtosFiltrados.length} produto{produtosFiltrados.length !== 1 ? 's' : ''}
+                </p>
+
+                <select
+                  value={ordenacao}
+                  onChange={e => { setOrdenacao(e.target.value); setPagina(1); }}
+                  className="border border-gray-mid rounded-button px-4 py-2.5 text-sm font-medium bg-white text-dark-light focus:outline-none focus:ring-2 focus:ring-gold transition"
+                >
+                  <option value="">Mais relevantes</option>
+                  <option value="menor-preco">Menor Preço</option>
+                  <option value="maior-preco">Maior Preço</option>
+                  <option value="nome">Nome (A-Z)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* ESTADO VAZIO */}
+            {!carregando && produtosFiltrados.length === 0 && (
+              <div className="text-center py-20 bg-light rounded-card">
+                <p className="text-text-secondary font-medium text-lg mb-4">
+                  Nenhum produto encontrado.
+                </p>
+                <button onClick={limparFiltros} className="text-sm font-semibold text-dark-light underline-offset-4 hover:text-gold hover:underline transition-colors">
+                  Limpar filtros
+                </button>
+              </div>
+            )}
+
+            {/* GRID */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
+              {carregando
+                ? Array.from({ length: 16 }).map((_, i) => <SkeletonProduct key={i} />)
+                : paginaAtual.map(p => <ProductCard key={p._id} produto={p} />)
+              }
+            </div>
+
+            {/* PAGINAÇÃO */}
+            {!carregando && totalPaginas > 1 && (
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-2">
+                <button
+                  onClick={() => { setPagina(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  disabled={pagina === 1}
+                  className="px-5 py-2.5 text-sm font-medium text-dark-light border border-gray-mid rounded-button hover:bg-dark-light hover:text-white disabled:opacity-40 transition-all"
+                >
+                  ← Anterior
+                </button>
+                {Array.from({ length: totalPaginas }, (_, i) => i + 1)
+                  .filter(n => totalPaginas <= 7 || n === 1 || n === totalPaginas || Math.abs(n - pagina) <= 2)
+                  .map((num, idx, arr) => (
+                    <span key={num} className="flex items-center">
+                      {idx > 0 && arr[idx - 1] !== num - 1 && <span className="px-2 text-text-light">…</span>}
+                      <button
+                        onClick={() => { setPagina(num); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                        className={`w-10 h-10 rounded-button text-sm font-medium transition-all ${num === pagina ? 'bg-dark-light text-white' : 'text-text-secondary hover:bg-light hover:text-dark-light'}`}
+                      >
+                        {num}
+                      </button>
+                    </span>
+                  ))
+                }
+                <button
+                  onClick={() => { setPagina(p => Math.min(totalPaginas, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  disabled={pagina === totalPaginas}
+                  className="px-5 py-2.5 text-sm font-medium text-dark-light border border-gray-mid rounded-button hover:bg-dark-light hover:text-white disabled:opacity-40 transition-all"
+                >
+                  Próximo →
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+
+      {/* FILTRO MOBILE DRAWER */}
+      {sidebarAberta && (
+        <>
+          <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setSidebarAberta(false)} />
+          <div className="fixed left-0 top-0 h-full w-80 max-w-full bg-white shadow-xl-luxury z-50 flex flex-col lg:hidden">
+            <div className="flex-1 overflow-y-auto p-6">
+              <FiltersSidebar
+                precoMin={precoMin}
+                precoMax={precoMax}
+                precoMaxGlobal={precoMaxGlobal}
+                categorias={categorias}
+                categoriasSelecionadas={categoriasSelecionadas}
+                onPrecoChange={handlePrecoChange}
+                onCategoriaChange={handleCategoriaChange}
+                limparFiltros={limparFiltros}
+                isMobile
+                onClose={() => setSidebarAberta(false)}
+              />
+            </div>
+            <div className="p-6 border-t border-gray-mid">
+              <button onClick={() => setSidebarAberta(false)} className="w-full py-3 bg-dark-light text-white rounded-button font-medium text-sm hover:bg-gold hover:text-dark-light transition-all">
+                Ver {produtosFiltrados.length} produto{produtosFiltrados.length !== 1 ? 's' : ''}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </main>
   );
 }
