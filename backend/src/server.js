@@ -6,6 +6,7 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const compression = require('compression');
 const connectDB = require('./database');
 
 const app = express();
@@ -27,6 +28,12 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// ✅ Compression middleware para reduzir tamanho de respostas (até 90%)
+app.use(compression({
+  level: 6,
+  threshold: 1024  // Apenas comprimir respostas > 1KB
+}));
 
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));

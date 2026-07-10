@@ -5,17 +5,29 @@ import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
+import { Heart } from 'lucide-react';
 
 interface FavoritoButtonProps {
   produtoId: string;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'icon' | 'button';
 }
 
-export default function FavoritoButton({ produtoId }: FavoritoButtonProps) {
+const sizeMap = {
+  sm: 'w-4 h-4',
+  md: 'w-5 h-5',
+  lg: 'w-6 h-6',
+};
+
+export default function FavoritoButton({
+  produtoId,
+  size = 'md',
+  variant = 'icon',
+}: FavoritoButtonProps) {
   const { isAuthenticated, user } = useAuth();
   const [isFavorito, setIsFavorito] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Buscar o estado inicial do favorito
   const checkFavorito = useCallback(async () => {
     if (!isAuthenticated || !user?.id) return;
     try {
@@ -25,7 +37,7 @@ export default function FavoritoButton({ produtoId }: FavoritoButtonProps) {
     } catch (err) {
       console.error('Erro ao verificar favorito:', err);
     }
-  }, [isAuthenticated, user, produtoId]);
+  }, [isAuthenticated, user?.id, produtoId]);
 
   useEffect(() => {
     checkFavorito();
@@ -40,7 +52,7 @@ export default function FavoritoButton({ produtoId }: FavoritoButtonProps) {
 
     setLoading(true);
     const novoEstado = !isFavorito;
-    setIsFavorito(novoEstado); // otimista: muda antes da resposta
+    setIsFavorito(novoEstado);
 
     try {
       const apiUrl = getApiUrl();
@@ -48,12 +60,10 @@ export default function FavoritoButton({ produtoId }: FavoritoButtonProps) {
         cliente_id: user.id,
         produto_id: produtoId,
       });
-      // Pequeno delay para garantir que a mudança foi persistida
       setTimeout(() => {
         checkFavorito();
       }, 300);
     } catch (err) {
-      // Reverte se falhar
       setIsFavorito(!novoEstado);
       console.error(err);
       toast.error('Erro ao atualizar favorito.');
@@ -64,21 +74,55 @@ export default function FavoritoButton({ produtoId }: FavoritoButtonProps) {
 
   if (!isAuthenticated) return null;
 
+  if (variant === 'icon') {
+    return (
+      <button
+        onClick={toggle}
+        disabled={loading}
+        className={`
+          p-2 rounded-button
+          transition-all duration-300
+          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-error
+          ${isFavorito ? 'text-error' : 'text-text-light hover:text-error'}
+          ${loading ? 'opacity-50 cursor-wait' : 'cursor-pointer hover:scale-110'}
+        `}
+        aria-label={isFavorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+        title={isFavorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+      >
+        <Heart
+          className={sizeMap[size]}
+          strokeWidth={2}
+          fill={isFavorito ? 'currentColor' : 'none'}
+        />
+      </button>
+    );
+  }
+
   return (
     <button
       onClick={toggle}
       disabled={loading}
-      className={`p-1.5 rounded-full transition-all duration-300 ${
-        isFavorito
-          ? 'text-red-500 scale-110'
-          : 'text-gray-400 hover:text-red-400 hover:scale-105'
-      } ${loading ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
+      className={`
+        px-4 py-2 rounded-button
+        border transition-all duration-300
+        ${isFavorito
+          ? 'bg-error text-white border-error hover:bg-red-700'
+          : 'border-dark-light text-dark-light hover:bg-dark-light hover:text-white'
+        }
+        font-medium text-sm
+        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-error
+        ${loading ? 'opacity-50 cursor-wait' : 'cursor-pointer'}
+      `}
       aria-label={isFavorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-      title={isFavorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
     >
-      <svg className="w-6 h-6" viewBox="0 0 24 24" fill={isFavorito ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-      </svg>
+      <div className="flex items-center gap-2">
+        <Heart
+          className="w-4 h-4"
+          strokeWidth={2}
+          fill={isFavorito ? 'currentColor' : 'none'}
+        />
+        {isFavorito ? 'Nos Favoritos' : 'Adicionar'}
+      </div>
     </button>
   );
 }

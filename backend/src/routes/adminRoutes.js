@@ -17,8 +17,12 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
     const pedidosPendentes = await Pedido.countDocuments({ status: 'pendente' });
     const totalCupons = await Cupom.countDocuments({ ativo: true });
 
-    const pedidos = await Pedido.find({ status: { $ne: 'cancelado' } }, 'total');
-    const faturamento = pedidos.reduce((acc, p) => acc + (p.total || 0), 0);
+    // ✅ Usar aggregation para calcular faturamento em vez de find + reduce
+    const faturamentoResult = await Pedido.aggregate([
+      { $match: { status: { $ne: 'cancelado' } } },
+      { $group: { _id: null, total: { $sum: '$total' } } }
+    ]);
+    const faturamento = faturamentoResult[0]?.total || 0;
     const ticketMedio = totalPedidos > 0 ? faturamento / totalPedidos : 0;
 
     const produtosBaixoEstoque = await Produto.countDocuments({
@@ -76,11 +80,17 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
 router.get('/stats', authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
+    
     const totalProdutos = await Produto.countDocuments();
     const totalPedidos = await Pedido.countDocuments();
     const totalCupons = await Cupom.countDocuments({ ativo: true });
-    const pedidos = await Pedido.find({}, 'total');
-    const faturamento = pedidos.reduce((acc, p) => acc + (p.total || 0), 0);
+    
+    // ✅ Usar aggregation para calcular faturamento
+    const faturamentoResult = await Pedido.aggregate([
+      { $group: { _id: null, total: { $sum: '$total' } } }
+    ]);
+    const faturamento = faturamentoResult[0]?.total || 0;
+    
     res.json({ totalProdutos, totalPedidos, totalCupons, faturamento });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

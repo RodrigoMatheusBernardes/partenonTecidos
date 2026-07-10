@@ -5,6 +5,8 @@ import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
+import { X, Trash2, Plus, Minus } from 'lucide-react';
+import Button from '@/components/ui/Button';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -30,11 +32,11 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   const handleRemove = (id: string, nome: string) => {
     removeItem(id);
-    toast.success(`${nome} removido`, { className: 'toast-success' });
+    toast.success(`${nome} removido do carrinho`);
   };
 
-  const handleUpdateQuantity = (id: string, quantidade: number) => {
-    if (isNaN(quantidade) || quantidade < 1) return;
+  const handleUpdateQuantity = (id: string, quantidade: number, maxEstoque: number) => {
+    if (isNaN(quantidade) || quantidade < 1 || quantidade > maxEstoque) return;
     updateQuantity(id, quantidade);
   };
 
@@ -42,79 +44,224 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   return (
     <>
-      {/* Overlay */}
+      {/* OVERLAY */}
       <div
-        className="fixed inset-0 bg-black/50 z-50 transition-opacity duration-300"
+        className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 md:hidden"
         onClick={onClose}
       />
-      {/* Drawer */}
+
+      {/* DRAWER */}
       <div
-        className={`fixed top-0 right-0 w-full max-w-md h-full bg-white shadow-xl z-50 flex flex-col transition-transform duration-300 ${
-          animate ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`
+          fixed top-0 right-0 h-full w-full max-w-md
+          bg-white shadow-xl-luxury z-50
+          flex flex-col transition-transform duration-300
+          ${animate ? 'translate-x-0' : 'translate-x-full'}
+        `}
       >
-        {/* Cabeçalho */}
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-bold">
-            🛒 Carrinho ({totalItems} {totalItems === 1 ? 'item' : 'itens'})
+        {/* HEADER */}
+        <div className="
+          flex items-center justify-between
+          p-6 border-b border-gray-mid
+          bg-light
+        ">
+          <h2 className="
+            font-serif text-2xl font-semibold
+            text-dark-light
+          ">
+            Carrinho
           </h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">✕</button>
+          <span className="
+            inline-flex items-center justify-center
+            bg-dark-light text-white
+            w-7 h-7 rounded-full
+            text-xs font-bold
+          ">
+            {totalItems}
+          </span>
+          <button
+            onClick={onClose}
+            className="
+              p-2 hover:bg-white hover:text-gold
+              transition-all duration-300
+              rounded-button
+              focus:outline-none focus:ring-2 focus:ring-gold
+            "
+            aria-label="Fechar carrinho"
+          >
+            <X className="w-5 h-5" strokeWidth={2} />
+          </button>
         </div>
 
-        {/* Itens */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {/* ITEMS */}
+        <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <p>Seu carrinho está vazio</p>
-              <button onClick={onClose} className="mt-4 text-primary hover:underline">Continuar comprando</button>
+            <div className="
+              h-full flex flex-col items-center justify-center
+              p-8 text-center
+            ">
+              <div className="
+                w-16 h-16 rounded-card
+                bg-light flex items-center justify-center
+                mb-4
+              ">
+                <svg className="w-8 h-8 text-text-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
+              <p className="text-text-secondary font-medium mb-4">Seu carrinho está vazio</p>
+              <Button
+                variant="primary"
+                size="md"
+                onClick={onClose}
+              >
+                Continuar comprando
+              </Button>
             </div>
           ) : (
-            items.map(item => (
-              <div key={item.id} className="flex gap-3 border-b pb-3">
-                {item.foto && (
-                  <Image src={item.foto} alt={item.nome} width={60} height={60} className="object-cover rounded" />
-                )}
-                <div className="flex-1">
-                  <h3 className="font-semibold text-sm">{item.nome}</h3>
-                  <p className="text-primary font-bold text-sm">R$ {item.preco.toFixed(2)}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <select
-                      value={item.quantidade}
-                      onChange={e => handleUpdateQuantity(item.id, Number(e.target.value))}
-                      className="border rounded px-1 py-0.5 text-sm"
-                    >
-                      {[...Array(Math.min(item.maxEstoque, 10))].map((_, i) => (
-                        <option key={i + 1} value={i + 1}>{i + 1}</option>
-                      ))}
-                    </select>
-                    <button onClick={() => handleRemove(item.id, item.nome)} className="text-red-500 text-xs hover:underline">Remover</button>
+            <div className="p-4 space-y-4">
+              {items.map(item => (
+                <div
+                  key={item.id}
+                  className="
+                    flex gap-4 p-4
+                    bg-light rounded-card
+                    border border-gray-mid
+                    transition-all duration-300
+                    hover:border-dark-light
+                  "
+                >
+                  {/* IMAGEM */}
+                  {item.foto && (
+                    <div className="
+                      relative w-20 h-20 flex-shrink-0
+                      rounded-card overflow-hidden
+                      bg-gray-mid
+                    ">
+                      <Image
+                        src={item.foto.replace('http://localhost:5000', 'https://partenontecidos.onrender.com')}
+                        alt={item.nome}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                      />
+                    </div>
+                  )}
+
+                  {/* INFO */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="
+                      font-serif font-medium text-dark-light
+                      text-sm md:text-base
+                      line-clamp-2 mb-2
+                    ">
+                      {item.nome}
+                    </h3>
+                    <p className="
+                      text-gold font-semibold
+                      text-sm md:text-base mb-3
+                    ">
+                      R$ {item.preco.toFixed(2)}
+                    </p>
+
+                    {/* QUANTIDADE */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleUpdateQuantity(item.id, item.quantidade - 1, item.maxEstoque)}
+                        disabled={item.quantidade <= 1}
+                        className="
+                          p-1 rounded-button
+                          border border-gray-mid
+                          hover:bg-white hover:border-dark-light
+                          disabled:opacity-50 disabled:cursor-not-allowed
+                          transition-all duration-300
+                        "
+                      >
+                        <Minus className="w-3 h-3" strokeWidth={2} />
+                      </button>
+                      <span className="w-8 text-center font-medium text-sm">
+                        {item.quantidade}
+                      </span>
+                      <button
+                        onClick={() => handleUpdateQuantity(item.id, item.quantidade + 1, item.maxEstoque)}
+                        disabled={item.quantidade >= item.maxEstoque}
+                        className="
+                          p-1 rounded-button
+                          border border-gray-mid
+                          hover:bg-white hover:border-dark-light
+                          disabled:opacity-50 disabled:cursor-not-allowed
+                          transition-all duration-300
+                        "
+                      >
+                        <Plus className="w-3 h-3" strokeWidth={2} />
+                      </button>
+                      <span className="ml-auto text-right text-sm font-semibold text-dark-light">
+                        R$ {(item.preco * item.quantidade).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
+
+                  {/* REMOVER */}
+                  <button
+                    onClick={() => handleRemove(item.id, item.nome)}
+                    className="
+                      p-2 text-error hover:bg-red-50
+                      rounded-button transition-all duration-300
+                      focus:outline-none focus:ring-2 focus:ring-error
+                    "
+                    aria-label={`Remover ${item.nome} do carrinho`}
+                  >
+                    <Trash2 className="w-4 h-4" strokeWidth={2} />
+                  </button>
                 </div>
-                <div className="text-right font-semibold text-sm">
-                  R$ {(item.preco * item.quantidade).toFixed(2)}
-                </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
 
-        {/* Rodapé */}
+        {/* FOOTER */}
         {items.length > 0 && (
-          <div className="border-t p-4">
-            <div className="flex justify-between mb-4">
-              <span className="font-semibold">Total:</span>
-              <span className="text-xl font-bold text-primary">R$ {totalPrice.toFixed(2)}</span>
+          <div className="
+            border-t border-gray-mid
+            p-6 bg-light space-y-4
+          ">
+            {/* SUBTOTAL */}
+            <div className="
+              flex items-center justify-between
+              pb-4 border-b border-gray-mid
+            ">
+              <span className="text-text-secondary font-medium">Subtotal:</span>
+              <span className="text-2xl font-serif font-semibold text-dark-light">
+                R$ {totalPrice.toFixed(2)}
+              </span>
             </div>
-            <Link
-              href="/checkout"
-              onClick={onClose}
-              className="w-full bg-primary text-white py-3 rounded-xl text-center block font-semibold hover:bg-green-700 transition active:scale-[0.98]"
-            >
-              Finalizar compra
-            </Link>
-            <button onClick={onClose} className="w-full mt-2 text-primary text-sm hover:underline">
-              Continuar comprando
-            </button>
+
+            {/* CTA BUTTONS */}
+            <div className="space-y-3">
+              <Link href="/checkout" onClick={onClose} className="block">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
+                >
+                  Finalizar Compra
+                </Button>
+              </Link>
+
+              <button
+                onClick={onClose}
+                className="
+                  w-full py-3 px-4 rounded-button
+                  text-dark-light font-medium
+                  border border-dark-light
+                  hover:bg-dark-light hover:text-white
+                  transition-all duration-300
+                  focus:outline-none focus:ring-2 focus:ring-gold
+                "
+              >
+                Continuar Comprando
+              </button>
+            </div>
           </div>
         )}
       </div>

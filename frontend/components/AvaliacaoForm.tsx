@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import StarRating from './StarRating';
+import Button from '@/components/ui/Button';
 
 interface AvaliacaoFormProps {
   produtoId: string;
@@ -27,14 +28,18 @@ export default function AvaliacaoForm({ produtoId, onSuccess }: AvaliacaoFormPro
       const res = await fetch(`${apiUrl}/api/produtos/${produtoId}/avaliar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cliente_nome: nome || 'Anônimo', nota, comentario })
+        body: JSON.stringify({
+          cliente_nome: nome || 'Anônimo',
+          nota,
+          comentario,
+        }),
       });
       if (res.ok) {
-        toast.success('Avaliação enviada!');
+        toast.success('Avaliação enviada com sucesso!');
         setNota(0);
         setNome('');
         setComentario('');
-        onSuccess(); // chama a função para recarregar a lista
+        onSuccess();
       } else {
         const data = await res.json();
         toast.error(data.error || 'Erro ao enviar avaliação');
@@ -46,43 +51,103 @@ export default function AvaliacaoForm({ produtoId, onSuccess }: AvaliacaoFormPro
     }
   };
 
-  const inputClass = "w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400";
-
   return (
-    <div className="border-t pt-8 mt-8">
-      <h3 className="text-xl font-semibold mb-5">Deixe sua avaliação</h3>
-      <form onSubmit={handleSubmit} className="space-y-5">
+    <div className="
+      border-t border-gray-mid
+      pt-8 md:pt-12 mt-8 md:mt-12
+    ">
+      <h3 className="
+        font-serif text-2xl font-semibold
+        text-dark-light mb-6 md:mb-8
+      ">
+        Deixe sua avaliação
+      </h3>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* NOTA */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Sua nota *</label>
-          <StarRating nota={nota} tamanho="large" onClick={setNota} />
+          <label className="
+            block text-sm font-semibold uppercase
+            tracking-widest text-dark-light mb-4
+          ">
+            Sua nota <span className="text-error">*</span>
+          </label>
+          <StarRating
+            nota={nota}
+            tamanho="lg"
+            onClick={setNota}
+            interactive
+          />
         </div>
+
+        {/* NOME */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Seu nome</label>
+          <label className="
+            block text-sm font-semibold uppercase
+            tracking-widest text-dark-light mb-3
+          ">
+            Seu nome
+          </label>
           <input
             type="text"
             placeholder="Como gostaria de ser chamado?"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            className={inputClass}
+            maxLength={100}
+            className="
+              w-full px-4 py-3
+              border border-gray-mid rounded-button
+              bg-light text-dark-light
+              text-sm font-medium
+              placeholder:text-text-light
+              focus:outline-none focus:ring-2 focus:ring-gold
+              focus:border-transparent
+              transition-all duration-300
+            "
           />
         </div>
+
+        {/* COMENTÁRIO */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Comentário (opcional)</label>
+          <label className="
+            block text-sm font-semibold uppercase
+            tracking-widest text-dark-light mb-3
+          ">
+            Comentário <span className="text-text-light font-normal">(opcional)</span>
+          </label>
           <textarea
             placeholder="Conte sua experiência com este produto"
             value={comentario}
             onChange={(e) => setComentario(e.target.value)}
+            maxLength={500}
             rows={4}
-            className={inputClass}
+            className="
+              w-full px-4 py-3
+              border border-gray-mid rounded-button
+              bg-light text-dark-light
+              text-sm font-medium
+              placeholder:text-text-light
+              focus:outline-none focus:ring-2 focus:ring-gold
+              focus:border-transparent
+              resize-none
+              transition-all duration-300
+            "
           />
+          <p className="text-xs text-text-light mt-2">
+            {comentario.length}/500 caracteres
+          </p>
         </div>
-        <button
+
+        {/* SUBMIT */}
+        <Button
           type="submit"
-          disabled={enviando}
-          className="bg-primary text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 active:scale-[0.98] transition disabled:opacity-50"
+          variant="primary"
+          size="lg"
+          isLoading={enviando}
+          className="w-full md:w-auto"
         >
-          {enviando ? 'Enviando...' : 'Enviar avaliação'}
-        </button>
+          Enviar avaliação
+        </Button>
       </form>
     </div>
   );

@@ -2,10 +2,12 @@
 
 import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { getApiUrl } from '@/lib/api';
 import toast from 'react-hot-toast';
+import Button from '@/components/ui/Button';
 
 interface CupomAplicado {
   codigo: string;
@@ -195,145 +197,237 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <main className="max-w-3xl mx-auto px-4 py-8 text-center">
-        <p className="text-gray-500">Seu carrinho está vazio.</p>
+      <main className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-text-secondary font-medium text-lg">Seu carrinho está vazio.</p>
+        <Link href="/loja" className="text-sm font-semibold text-dark-light underline-offset-4 hover:text-gold hover:underline transition-colors">
+          Ir para a loja
+        </Link>
       </main>
     );
   }
 
-  const inputClass = "w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow placeholder:text-gray-400";
+  const inputCls = `
+    w-full bg-light border border-gray-mid rounded-button px-4 py-3
+    text-sm font-medium text-dark-light
+    placeholder:text-text-light
+    focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent
+    disabled:opacity-60 disabled:cursor-not-allowed
+    transition-all duration-300
+  `;
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Finalizar Pedido</h1>
-      {erro && <div className="bg-red-50 text-red-700 p-3 rounded mb-4">{erro}</div>}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <h2 className="text-xl font-semibold">Dados de contato</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input name="nome" placeholder="Nome completo" value={form.nome} onChange={handleChange} required disabled={isAuthenticated} className={inputClass} />
-          <input name="email" type="email" placeholder="E-mail" value={form.email} onChange={handleChange} required disabled={isAuthenticated} className={inputClass} />
-          <input name="telefone" placeholder="Telefone" value={form.telefone} onChange={handleChange} className={inputClass} />
+    <main className="min-h-screen bg-white pb-20">
+      <div className="container-main py-8 md:py-14">
+
+        {/* HEADER */}
+        <div className="mb-8 md:mb-12">
+          <h1 className="font-serif font-semibold text-3xl md:text-4xl text-dark-light">
+            Finalizar Pedido
+          </h1>
         </div>
 
-        <h2 className="text-xl font-semibold">Endereço de entrega</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <input
-              name="cep"
-              placeholder="CEP (automático)"
-              value={form.cep}
-              onChange={(e) => {
-                handleChange(e);
-                buscarEndereco(e.target.value);
-              }}
-              required
-              className={inputClass}
-            />
-            {calculandoFrete && <p className="text-xs text-gray-500 mt-1">Calculando...</p>}
-            {!calculandoFrete && frete.valor > 0 && (
-              <p className="text-xs text-green-700 mt-1">
-                Frete: R$ {frete.valor.toFixed(2)} – até {frete.prazo_dias} dias úteis
-                {frete.transportadora && ` (${frete.transportadora})`}
-              </p>
-            )}
-            {!calculandoFrete && frete.mensagem && (
-              <p className="text-xs text-red-600 mt-1">{frete.mensagem}</p>
-            )}
+        {erro && (
+          <div className="mb-6 p-4 bg-red-50 border border-error rounded-card text-error text-sm font-medium">
+            {erro}
           </div>
-          <input name="logradouro" placeholder="Logradouro" value={form.logradouro} onChange={handleChange} required className={inputClass} />
-          <input name="numero" placeholder="Número" value={form.numero} onChange={handleChange} required className={inputClass} />
-          <input name="complemento" placeholder="Complemento" value={form.complemento} onChange={handleChange} className={inputClass} />
-          <input name="bairro" placeholder="Bairro" value={form.bairro} onChange={handleChange} required className={inputClass} />
-          <input name="cidade" placeholder="Cidade" value={form.cidade} onChange={handleChange} required className={inputClass} />
-          <input name="estado" placeholder="Estado" value={form.estado} onChange={handleChange} required className={inputClass} />
-        </div>
+        )}
 
-        {/* Código do vendedor */}
-        <div className="border rounded-lg p-4 bg-gray-50">
-          <h2 className="font-semibold mb-2">Código do vendedor (opcional)</h2>
-          <input
-            type="text"
-            placeholder="Código do vendedor"
-            value={codigoVendedor}
-            onChange={(e) => setCodigoVendedor(e.target.value.toUpperCase())}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-          />
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
 
-        {/* Cupom de desconto */}
-        <div className="border rounded-lg p-4 bg-gray-50">
-          <h2 className="font-semibold mb-2">Cupom de desconto</h2>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Código do cupom"
-              value={cupomInput}
-              onChange={(e) => setCupomInput(e.target.value)}
-              className="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400"
-            />
-            <button
-              type="button"
-              onClick={aplicarCupom}
-              disabled={validandoCupom}
-              className="bg-primary text-white px-5 py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50"
-            >
-              {validandoCupom ? '...' : 'Aplicar'}
-            </button>
-          </div>
-          {cupomAplicado && (
-            <p className="mt-2 text-sm text-green-700">
-              Cupom {cupomAplicado.codigo}: -R$ {(cupomAplicado.desconto ?? 0).toFixed(2)}
-            </p>
-          )}
-        </div>
+          {/* FORMULÁRIO */}
+          <form onSubmit={handleSubmit} className="lg:col-span-2 space-y-8">
 
-        {/* Resumo */}
-        <div className="border-t pt-4">
-          <ul className="space-y-2">
-            {items.map((item) => (
-              <li key={item.id} className="flex justify-between text-sm">
-                <span>{item.nome} x {item.quantidade}</span>
-                <span>R$ {(item.preco * item.quantidade).toFixed(2)}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="flex justify-between text-sm mt-2">
-            <span>Subtotal</span>
-            <span>R$ {totalPrice.toFixed(2)}</span>
-          </div>
-          {cupomAplicado && (
-            <div className="flex justify-between text-sm text-green-600">
-              <span>Desconto ({cupomAplicado.codigo})</span>
-              <span>-R$ {(cupomAplicado.desconto ?? 0).toFixed(2)}</span>
+            {/* DADOS DE CONTATO */}
+            <div className="bg-white rounded-card border border-gray-mid p-6 md:p-8 space-y-5">
+              <h2 className="font-serif font-semibold text-xl text-dark-light">Dados de contato</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-dark-light mb-2">Nome completo *</label>
+                  <input name="nome" placeholder="Seu nome" value={form.nome} onChange={handleChange} required disabled={isAuthenticated} className={inputCls} />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-dark-light mb-2">E-mail *</label>
+                  <input name="email" type="email" placeholder="seu@email.com" value={form.email} onChange={handleChange} required disabled={isAuthenticated} className={inputCls} />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-dark-light mb-2">Telefone</label>
+                  <input name="telefone" placeholder="(11) 99999-9999" value={form.telefone} onChange={handleChange} className={inputCls} />
+                </div>
+              </div>
             </div>
-          )}
-          <div className="flex justify-between text-sm mt-1">
-            <span>Frete</span>
-            <span>
-              {frete.valor > 0 ? `R$ ${frete.valor.toFixed(2)}` : frete.mensagem ? 'Indisponível' : 'A calcular'}
-            </span>
-          </div>
-          <div className="flex justify-between font-bold text-xl border-t pt-2 mt-3">
-            <span>Total</span>
-            <span>R$ {totalFinal.toFixed(2)}</span>
-          </div>
-        </div>
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="w-full bg-primary text-white py-3 rounded-xl font-semibold text-lg hover:bg-green-700 active:scale-[0.98] transition disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          {saving ? 'Finalizando...' : (
-            <>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Finalizar compra
-            </>
-          )}
-        </button>
-      </form>
+            {/* ENDEREÇO */}
+            <div className="bg-white rounded-card border border-gray-mid p-6 md:p-8 space-y-5">
+              <h2 className="font-serif font-semibold text-xl text-dark-light">Endereço de entrega</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2 md:col-span-1">
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-dark-light mb-2">CEP *</label>
+                  <input
+                    name="cep"
+                    placeholder="00000-000"
+                    value={form.cep}
+                    onChange={e => { handleChange(e); buscarEndereco(e.target.value); }}
+                    required
+                    className={inputCls}
+                  />
+                  {calculandoFrete && <p className="text-xs text-text-light mt-1">Calculando frete...</p>}
+                  {!calculandoFrete && frete.valor > 0 && (
+                    <p className="text-xs text-success mt-1 font-medium">
+                      Frete: R$ {frete.valor.toFixed(2)} – {frete.prazo_dias} dias úteis
+                      {frete.transportadora && ` (${frete.transportadora})`}
+                    </p>
+                  )}
+                  {!calculandoFrete && frete.mensagem && (
+                    <p className="text-xs text-error mt-1">{frete.mensagem}</p>
+                  )}
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-dark-light mb-2">Logradouro *</label>
+                  <input name="logradouro" placeholder="Rua, Av..." value={form.logradouro} onChange={handleChange} required className={inputCls} />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-dark-light mb-2">Número *</label>
+                  <input name="numero" placeholder="123" value={form.numero} onChange={handleChange} required className={inputCls} />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-dark-light mb-2">Complemento</label>
+                  <input name="complemento" placeholder="Apto, Bloco..." value={form.complemento} onChange={handleChange} className={inputCls} />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-dark-light mb-2">Bairro *</label>
+                  <input name="bairro" placeholder="Bairro" value={form.bairro} onChange={handleChange} required className={inputCls} />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-dark-light mb-2">Cidade *</label>
+                  <input name="cidade" placeholder="Cidade" value={form.cidade} onChange={handleChange} required className={inputCls} />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-widest text-dark-light mb-2">Estado *</label>
+                  <input name="estado" placeholder="SP" value={form.estado} onChange={handleChange} required maxLength={2} className={inputCls} />
+                </div>
+              </div>
+            </div>
+
+            {/* VENDEDOR & CUPOM */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white rounded-card border border-gray-mid p-6 space-y-3">
+                <h3 className="font-semibold text-dark-light text-sm uppercase tracking-widest">Código do vendedor</h3>
+                <input
+                  type="text"
+                  placeholder="Ex: VEND001"
+                  value={codigoVendedor}
+                  onChange={e => setCodigoVendedor(e.target.value.toUpperCase())}
+                  className={inputCls}
+                />
+              </div>
+
+              <div className="bg-white rounded-card border border-gray-mid p-6 space-y-3">
+                <h3 className="font-semibold text-dark-light text-sm uppercase tracking-widest">Cupom de desconto</h3>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Código do cupom"
+                    value={cupomInput}
+                    onChange={e => setCupomInput(e.target.value)}
+                    className={`${inputCls} flex-1`}
+                  />
+                  <button
+                    type="button"
+                    onClick={aplicarCupom}
+                    disabled={validandoCupom}
+                    className="px-4 py-3 bg-dark-light text-white rounded-button text-sm font-semibold hover:bg-gold hover:text-dark-light disabled:opacity-50 transition-all"
+                  >
+                    {validandoCupom ? '...' : 'OK'}
+                  </button>
+                </div>
+                {cupomAplicado && (
+                  <p className="text-xs text-success font-medium">
+                    {cupomAplicado.codigo}: −R$ {(cupomAplicado.desconto ?? 0).toFixed(2)}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* SUBMIT MOBILE */}
+            <div className="lg:hidden">
+              <Button type="submit" variant="primary" size="lg" isLoading={saving} className="w-full">
+                Finalizar Compra
+              </Button>
+            </div>
+          </form>
+
+          {/* RESUMO */}
+          <aside className="lg:col-span-1">
+            <div className="sticky top-8 bg-white rounded-card border border-gray-mid p-6 space-y-5">
+              <h2 className="font-serif font-semibold text-xl text-dark-light">Resumo do pedido</h2>
+
+              <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                {items.map(item => (
+                  <div key={item.id} className="flex items-center justify-between gap-3 text-sm">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-dark-light line-clamp-1">{item.nome}</p>
+                      <p className="text-text-light text-xs">× {item.quantidade}</p>
+                    </div>
+                    <span className="font-semibold text-dark-light whitespace-nowrap">
+                      R$ {(item.preco * item.quantidade).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-2 border-t border-gray-mid pt-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-text-secondary">Subtotal</span>
+                  <span className="font-medium">R$ {totalPrice.toFixed(2)}</span>
+                </div>
+                {cupomAplicado && (
+                  <div className="flex justify-between text-sm text-success">
+                    <span>Desconto</span>
+                    <span>−R$ {(cupomAplicado.desconto ?? 0).toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-text-secondary">Frete</span>
+                  <span className="font-medium">
+                    {frete.valor > 0 ? `R$ ${frete.valor.toFixed(2)}` : 'A calcular'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-mid pt-4 flex justify-between items-baseline">
+                <span className="text-dark-light font-semibold">Total</span>
+                <span className="font-serif font-semibold text-2xl text-dark-light">
+                  R$ {totalFinal.toFixed(2)}
+                </span>
+              </div>
+
+              {/* SUBMIT DESKTOP */}
+              <div className="hidden lg:block">
+                <Button
+                  type="submit"
+                  form="checkout-form"
+                  variant="primary"
+                  size="lg"
+                  isLoading={saving}
+                  className="w-full"
+                  onClick={e => {
+                    e.preventDefault();
+                    const f = document.querySelector('form');
+                    f?.requestSubmit();
+                  }}
+                >
+                  Finalizar Compra
+                </Button>
+              </div>
+
+              <p className="text-xs text-text-light text-center flex items-center justify-center gap-1.5">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                Compra 100% segura
+              </p>
+            </div>
+          </aside>
+        </div>
+      </div>
     </main>
   );
 }

@@ -38,11 +38,24 @@ router.post('/validar', async (req, res) => {
   }
 });
 
-// Admin – listar todos
+// Admin – listar todos COM PAGINAÇÃO
 router.get('/admin', authMiddleware, async (req, res) => {
   try {
-    const cupons = await Cupom.find().sort({ createdAt: -1 });
-    res.json(cupons);
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
+
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, parseInt(req.query.limit) || 20);
+    const skip = (page - 1) * limit;
+
+    const [cupons, total] = await Promise.all([
+      Cupom.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Cupom.countDocuments()
+    ]);
+
+    res.json({
+      data: cupons,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -51,6 +64,7 @@ router.get('/admin', authMiddleware, async (req, res) => {
 // Admin – criar
 router.post('/admin', authMiddleware, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
     const cupom = new Cupom(req.body);
     await cupom.save();
     res.status(201).json(cupom);
@@ -62,6 +76,7 @@ router.post('/admin', authMiddleware, async (req, res) => {
 // Admin – excluir
 router.delete('/admin/:id', authMiddleware, async (req, res) => {
   try {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
     const cupom = await Cupom.findByIdAndDelete(req.params.id);
     if (!cupom) return res.status(404).json({ error: 'Cupom não encontrado.' });
     res.json({ message: 'Cupom excluído.' });

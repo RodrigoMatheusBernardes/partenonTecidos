@@ -74,40 +74,70 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// GET /api/produtos - listar todos (admin)
+// GET /api/produtos - listar todos (admin) COM PAGINAÇÃO
 router.get('/', noCache, async (req, res) => {
   try {
-    const produtos = await Produto.find().sort({ createdAt: -1 }).lean();
-    res.json(produtos);
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, parseInt(req.query.limit) || 20);
+    const skip = (page - 1) * limit;
+
+    const [produtos, total] = await Promise.all([
+      Produto.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Produto.countDocuments()
+    ]);
+
+    res.json({
+      data: produtos,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) }
+    });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// GET /api/produtos/vitrine - produtos disponíveis para loja
+// GET /api/produtos/vitrine - produtos disponíveis para loja COM PAGINAÇÃO
 router.get('/vitrine', noCache, async (req, res) => {
   try {
-    const produtos = await Produto.find({ ativo: true })
-      .sort({ createdAt: -1 })
-      .populate('categoria', 'nome slug')
-      .lean();
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, parseInt(req.query.limit) || 12);
+    const skip = (page - 1) * limit;
+
+    const [produtos, total] = await Promise.all([
+      Produto.find({ ativo: true })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('categoria', 'nome slug')
+        .lean(),
+      Produto.countDocuments({ ativo: true })
+    ]);
+
     const disponiveis = produtos.map(p => ({
       ...p,
       disponivel: (p.estoque || 0) - (p.reservado || 0)
     }));
-    res.json(disponiveis);
+
+    res.json({
+      data: disponiveis,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) }
+    });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// GET /api/produtos/destaques – Mais Vendidos
+// GET /api/produtos/destaques – Mais Vendidos COM LIMITE
 router.get('/destaques', noCache, async (req, res) => {
   try {
+    const limit = Math.min(50, parseInt(req.query.limit) || 12);
+
     const produtos = await Produto.find({ ativo: true })
       .sort({ vendas: -1 })
+      .limit(limit)
       .populate('categoria', 'nome slug')
       .lean();
+
     const resultado = produtos.map(p => ({
       ...p,
       disponivel: (p.estoque || 0) - (p.reservado || 0)
     }));
+
     res.json(resultado);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

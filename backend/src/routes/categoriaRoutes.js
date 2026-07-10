@@ -13,11 +13,24 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Admin – todas (inclusive inativas)
+// Admin – todas (inclusive inativas) COM PAGINAÇÃO
 router.get('/admin', authMiddleware, async (req, res) => {
   try {
-    const categorias = await Categoria.find().sort('ordem');
-    res.json(categorias);
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
+
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, parseInt(req.query.limit) || 20);
+    const skip = (page - 1) * limit;
+
+    const [categorias, total] = await Promise.all([
+      Categoria.find().sort('ordem').skip(skip).limit(limit).lean(),
+      Categoria.countDocuments()
+    ]);
+
+    res.json({
+      data: categorias,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -56,8 +69,7 @@ router.put('/admin/:id', authMiddleware, async (req, res) => {
 
 // Admin – excluir
 router.delete('/admin/:id', authMiddleware, async (req, res) => {
-  try {
-    const categoria = await Categoria.findByIdAndDelete(req.params.id);
+  try {    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });    const categoria = await Categoria.findByIdAndDelete(req.params.id);
     if (!categoria) return res.status(404).json({ error: 'Categoria não encontrada' });
     res.json({ message: 'Categoria excluída' });
   } catch (err) {
