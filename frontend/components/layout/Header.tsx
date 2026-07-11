@@ -85,12 +85,12 @@ export default function Header() {
             </Link>
 
             {/* AÇÕES + BUSCA - Direita */}
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex items-center gap-0.5 shrink-0">
 
               {/* Busca - Ícone que abre overlay */}
               <button 
                 onClick={() => setSearchOverlayOpen(!searchOverlayOpen)}
-                className="p-2 hover:bg-parthenon-light rounded-button transition-colors"
+                className="p-2.5 hover:bg-parthenon-light rounded-button transition-all duration-200 hover:scale-105"
                 aria-label="Buscar"
                 title="Buscar tecidos"
               >
@@ -100,7 +100,7 @@ export default function Header() {
               {/* Favoritos */}
               <Link 
                 href="/favoritos" 
-                className="p-2 hover:bg-parthenon-light rounded-button transition-colors"
+                className="p-2.5 hover:bg-parthenon-light rounded-button transition-all duration-200 hover:scale-105"
                 aria-label="Favoritos"
                 title="Meus favoritos"
               >
@@ -110,13 +110,13 @@ export default function Header() {
               {/* Carrinho com Badge */}
               <button
                 onClick={() => setCartOpen(true)}
-                className="p-2 hover:bg-parthenon-light rounded-button transition-colors relative"
+                className="p-2.5 hover:bg-parthenon-light rounded-button transition-all duration-200 hover:scale-105 relative"
                 aria-label="Carrinho"
                 title="Meu carrinho"
               >
                 <ShoppingBag className="w-5 h-5 text-parthenon-navy" strokeWidth={1.5} />
                 {totalItems > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-parthenon-royal text-white text-xs font-bold flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-parthenon-royal text-white text-xs font-bold flex items-center justify-center shadow-md-luxury">
                     {totalItems > 99 ? '99+' : totalItems}
                   </span>
                 )}
@@ -126,20 +126,20 @@ export default function Header() {
               <div className="relative hidden lg:block" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="p-2 hover:bg-parthenon-light rounded-button transition-colors flex items-center gap-1.5"
+                  className="p-2.5 hover:bg-parthenon-light rounded-button transition-all duration-200 hover:scale-105 flex items-center gap-1.5"
                   title={isAuthenticated ? `Olá, ${user?.nome}` : 'Sua conta'}
                 >
-                  <div className="w-5 h-5 rounded-full bg-parthenon-navy flex items-center justify-center">
-                    <User className="w-3 h-3 text-white" strokeWidth={2} />
+                  <div className="w-6 h-6 rounded-full bg-parthenon-navy flex items-center justify-center shadow-sm-luxury">
+                    <User className="w-3 h-3 text-white" strokeWidth={2.5} />
                   </div>
                   <ChevronDown className="w-3.5 h-3.5 text-text-secondary" strokeWidth={2} />
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-72 bg-white rounded-card shadow-lg-luxury border border-gray-mid py-2 z-50 animate-fade-in">
+                  <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-card shadow-lg-luxury border border-gray-mid overflow-hidden z-50 animate-fade-in">
                     {isAuthenticated ? (
                       <>
-                        <div className="px-5 py-3 border-b border-gray-mid bg-parthenon-light/40">
+                        <div className="px-5 py-4 border-b border-gray-mid bg-parthenon-light/50">
                           <p className="text-sm font-semibold text-parthenon-navy">{user?.nome}</p>
                           <p className="text-xs text-parthenon-dark font-light mt-0.5 capitalize">{user?.role === 'vendedor' ? 'Vendedor' : user?.role === 'admin' ? 'Administrador' : 'Cliente'}</p>
                         </div>
@@ -148,7 +148,7 @@ export default function Header() {
                           <Link
                             href="/admin"
                             onClick={() => setUserMenuOpen(false)}
-                            className="flex items-center gap-3 px-5 py-2.5 text-sm text-parthenon-navy hover:bg-parthenon-light/40 transition-colors"
+                            className="flex items-center gap-3 px-5 py-3 text-sm text-parthenon-navy hover:bg-parthenon-light/60 transition-all duration-150"
                           >
                             <Shield className="w-4 h-4" strokeWidth={2} />
                             <span>Painel Admin</span>
@@ -158,7 +158,7 @@ export default function Header() {
                         <Link
                           href="/meu-perfil"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-3 px-5 py-2.5 text-sm text-parthenon-navy hover:bg-parthenon-light/40 transition-colors"
+                          className="flex items-center gap-3 px-5 py-3 text-sm text-parthenon-navy hover:bg-parthenon-light/60 transition-all duration-150"
                         >
                           <User className="w-4 h-4" strokeWidth={2} />
                           <span>Meu Perfil</span>
@@ -167,7 +167,7 @@ export default function Header() {
                         <Link
                           href="/meus-pedidos"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-3 px-5 py-2.5 text-sm text-parthenon-navy hover:bg-parthenon-light/40 transition-colors"
+                          className="flex items-center gap-3 px-5 py-3 text-sm text-parthenon-navy hover:bg-parthenon-light/60 transition-all duration-150"
                         >
                           <Package className="w-4 h-4" strokeWidth={2} />
                           <span>Meus Pedidos</span>
@@ -175,7 +175,7 @@ export default function Header() {
 
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-5 py-2.5 text-sm text-parthenon-navy hover:bg-parthenon-light/40 transition-colors border-t border-gray-mid"
+                          className="w-full flex items-center gap-3 px-5 py-3 text-sm text-parthenon-navy hover:bg-parthenon-light/60 transition-all duration-150 border-t border-gray-mid"
                         >
                           <LogOut className="w-4 h-4" strokeWidth={2} />
                           <span>Sair</span>
@@ -186,14 +186,14 @@ export default function Header() {
                         <Link
                           href="/login"
                           onClick={() => setUserMenuOpen(false)}
-                          className="block px-5 py-2.5 text-sm text-parthenon-navy hover:bg-parthenon-light/40 transition-colors"
+                          className="block px-5 py-3 text-sm text-parthenon-navy hover:bg-parthenon-light/60 transition-all duration-150"
                         >
                           Entrar
                         </Link>
                         <Link
                           href="/cadastro"
                           onClick={() => setUserMenuOpen(false)}
-                          className="block px-5 py-2.5 text-sm text-parthenon-navy hover:bg-parthenon-light/40 transition-colors border-t border-gray-mid"
+                          className="block px-5 py-3 text-sm text-parthenon-navy hover:bg-parthenon-light/60 transition-all duration-150 border-t border-gray-mid"
                         >
                           Criar Conta
                         </Link>
@@ -206,7 +206,7 @@ export default function Header() {
               {/* Menu Mobile Toggle */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 hover:bg-parthenon-light rounded-button transition-colors"
+                className="lg:hidden p-2.5 hover:bg-parthenon-light rounded-button transition-all duration-200 hover:scale-105"
                 aria-label="Menu"
               >
                 {mobileMenuOpen ? (
@@ -221,10 +221,10 @@ export default function Header() {
 
         {/* SEARCH OVERLAY - Elegant reveal animation */}
         {searchOverlayOpen && (
-          <div className="border-t border-gray-mid bg-parthenon-light/60 backdrop-blur-sm animate-fade-in">
+          <div className="border-t border-gray-mid bg-parthenon-light/50 backdrop-blur-sm animate-fade-in">
             <div className="container-main w-full px-0">
-              <form onSubmit={handleSearch} className="p-4">
-                <div className="flex gap-3">
+              <form onSubmit={handleSearch} className="p-4 md:p-5">
+                <div className="flex gap-3 items-center">
                   <div className="flex-1 relative">
                     <Input
                       type="search"
@@ -233,7 +233,7 @@ export default function Header() {
                       onChange={(e) => setSearchTerm(e.target.value)}
                       inputSize="md"
                       icon={<Search className="w-4 h-4" />}
-                      className="!border-2 !border-parthenon-navy focus:!border-parthenon-royal"
+                      className="!border-2 !border-parthenon-navy focus:!ring-parthenon-royal focus:!border-parthenon-royal transition-all"
                       autoFocus
                     />
                   </div>
@@ -243,7 +243,7 @@ export default function Header() {
                       setSearchOverlayOpen(false);
                       setSearchTerm('');
                     }}
-                    className="p-2 hover:bg-white rounded-button transition-colors"
+                    className="p-2.5 hover:bg-white rounded-button transition-all duration-200 hover:scale-105 flex-shrink-0"
                   >
                     <X className="w-5 h-5 text-parthenon-navy" strokeWidth={2} />
                   </button>
@@ -297,13 +297,13 @@ export default function Header() {
             </div>
 
             {/* Navegação Mobile */}
-            <nav className="flex flex-col p-4 gap-1">
+            <nav className="flex flex-col p-4 gap-0.5">
               {navLinks.map(link => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-4 py-3 text-sm font-bold text-parthenon-navy rounded-button hover:bg-parthenon-light/60 transition-colors"
+                  className="px-4 py-3 text-sm font-bold text-parthenon-navy rounded-button hover:bg-parthenon-light/60 transition-all duration-150"
                 >
                   {link.label}
                 </Link>
@@ -311,7 +311,7 @@ export default function Header() {
             </nav>
 
             {/* Divisor */}
-            <div className="border-t border-gray-mid my-2" />
+            <div className="border-t border-gray-mid my-3" />
 
             {/* User Menu Mobile */}
             <div className="p-4">
@@ -326,7 +326,7 @@ export default function Header() {
                     <Link
                       href="/admin"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-parthenon-navy rounded-button hover:bg-parthenon-light/60 transition-colors"
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-parthenon-navy rounded-button hover:bg-parthenon-light/60 transition-all duration-150"
                     >
                       <Shield className="w-4 h-4" strokeWidth={2} />
                       <span>Painel Admin</span>
@@ -336,7 +336,7 @@ export default function Header() {
                   <Link
                     href="/meu-perfil"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 text-sm text-parthenon-navy rounded-button hover:bg-parthenon-light/60 transition-colors"
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-parthenon-navy rounded-button hover:bg-parthenon-light/60 transition-all duration-150"
                   >
                     <User className="w-4 h-4" strokeWidth={2} />
                     <span>Meu Perfil</span>
@@ -345,7 +345,7 @@ export default function Header() {
                   <Link
                     href="/meus-pedidos"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 text-sm text-parthenon-navy rounded-button hover:bg-parthenon-light/60 transition-colors"
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-parthenon-navy rounded-button hover:bg-parthenon-light/60 transition-all duration-150"
                   >
                     <Package className="w-4 h-4" strokeWidth={2} />
                     <span>Meus Pedidos</span>
