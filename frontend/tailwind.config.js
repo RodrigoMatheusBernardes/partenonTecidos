@@ -9,8 +9,14 @@ module.exports = {
     extend: {
       /* Design System Premium */
       colors: {
+        /* Paleta Parthenon - Azul Profissional */
+        'parthenon-dark': '#0A3D62',        /* Azul Marinho Profundo */
+        'parthenon-navy': '#1F5A8E',        /* Azul Escuro Premium */
+        'parthenon-royal': '#003D82',       /* Azul Royal */
+        'parthenon-light': '#E8F1F8',       /* Azul Claro (backgrounds) */
+        
         /* Neutros Principais */
-        'dark': '#0a1628',          /* Navy profundo */
+        'dark': '#0a1628',          /* Navy profundo (compatibilidade) */
         'dark-light': '#1a1a1a',    /* Preto sofisticado */
         'light': '#f5f4f0',         /* Bege claro */
         'light-mid': '#ede9e3',     /* Bege médio */
@@ -19,7 +25,7 @@ module.exports = {
         'text-secondary': '#5c5c5c',/* Texto secundário */
         
         /* Acentos Refinados */
-        'gold': '#c2a56c',          /* Dourado luxuoso */
+        'gold': '#c2a56c',          /* Dourado (mantido para compatibilidade) */
         'gold-light': '#e5d9c4',    /* Dourado claro */
         
         /* Cores Funcionais */
