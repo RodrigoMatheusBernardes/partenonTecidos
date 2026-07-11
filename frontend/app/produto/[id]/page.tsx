@@ -12,7 +12,7 @@ import ProdutosRelacionados from '@/components/ProdutosRelacionados';
 import AvaliacoesList from '@/components/AvaliacoesList';
 import AvaliacaoForm from '@/components/AvaliacaoForm';
 import FavoritoButton from '@/components/FavoritoButton';
-import Button from '@/components/ui/Button';
+import { Button } from '@/components/ui/Button';
 
 interface Produto {
   _id: string;
