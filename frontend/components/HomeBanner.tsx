@@ -156,47 +156,56 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
           {/* Left Content Block - 55% desktop, full mobile */}
           <div className="w-full lg:w-1/2 text-white space-y-4 md:space-y-6 lg:space-y-8 animate-fade-in max-w-xl">
             
-            {/* LABEL PREMIUM - Com ícone e linha visual (style 471674c), textos brancos legíveis */}
-            {currentSlide?.badge && (
-              <div className="flex items-center gap-3">
-                <div className="h-0.5 w-12 bg-white shadow-md" />
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-white drop-shadow-md" strokeWidth={2.5} />
-                  <p className="text-xs md:text-sm tracking-widest uppercase font-semibold text-white drop-shadow-md"
-                     style={{
-                       textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                     }}>
-                    {currentSlide.badge}
-                  </p>
+            {/* BACKGROUND SEMI-TRANSPARENTE PREMIUM - Garante legibilidade */}
+            <div className="absolute -inset-8 bg-gradient-to-r from-black/40 via-black/25 to-transparent rounded-lg z-0 pointer-events-none" />
+            
+            {/* CONTENT WRAPPER - Posicionamento relativo para estar acima do background */}
+            <div className="relative z-10 space-y-4 md:space-y-6 lg:space-y-8">
+            
+              {/* LABEL PREMIUM - Com ícone e linha visual (style 471674c), textos brancos legíveis */}
+              {currentSlide?.badge && (
+                <div className="flex items-center gap-3">
+                  <div className="h-0.5 w-12 bg-white shadow-lg" />
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-white drop-shadow-lg" strokeWidth={2.5} />
+                    <p className="text-xs md:text-sm tracking-widest uppercase font-bold text-white drop-shadow-lg"
+                       style={{
+                         textShadow: '0 3px 8px rgba(0,0,0,0.8), 0 6px 16px rgba(0,0,0,0.4)',
+                       }}>
+                      {currentSlide.badge}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* TÍTULO PRINCIPAL - Branco PURO, peso semibold, text-shadow máximo contraste */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-semibold leading-tight tracking-tight text-white"
-                style={{
-                  textShadow: '0 3px 12px rgba(0,0,0,0.7), 0 6px 24px rgba(0,0,0,0.4)',
-                }}>
-              {currentSlide?.title || 'Parthenon Tecidos'}
-            </h1>
+              {/* TÍTULO PRINCIPAL - Branco PURO, peso bold, text-shadow máximo contraste */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-tight tracking-tight text-white"
+                  style={{
+                    textShadow: '0 4px 16px rgba(0,0,0,0.9), 0 8px 32px rgba(0,0,0,0.5), 0 12px 48px rgba(0,0,0,0.3)',
+                    WebkitTextStroke: '0.5px rgba(0,0,0,0.3)',
+                  }}>
+                {currentSlide?.title || 'Parthenon Tecidos'}
+              </h1>
 
-            {/* SUBTÍTULO - Branco PURO, extremamente legível */}
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-white max-w-md leading-relaxed"
-               style={{
-                 textShadow: '0 2px 8px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.3)',
-               }}>
-              {currentSlide?.subtitle || 'Qualidade e sofisticação em cada fio'}
-            </p>
-
-            {/* DESCRIÇÃO ADICIONAL - Branco, máxima legibilidade */}
-            {currentSlide?.description && (
-              <p className="text-sm md:text-base font-medium text-white max-w-md leading-relaxed"
+              {/* SUBTÍTULO - Branco PURO, extremamente legível */}
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white max-w-md leading-relaxed"
                  style={{
-                   textShadow: '0 2px 8px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.25)',
+                   textShadow: '0 3px 12px rgba(0,0,0,0.8), 0 6px 20px rgba(0,0,0,0.4)',
+                   WebkitTextStroke: '0.3px rgba(0,0,0,0.2)',
                  }}>
-                {currentSlide.description}
+                {currentSlide?.subtitle || 'Qualidade e sofisticação em cada fio'}
               </p>
-            )}
+
+              {/* DESCRIÇÃO ADICIONAL - Branco, máxima legibilidade */}
+              {currentSlide?.description && (
+                <p className="text-sm md:text-base font-semibold text-white max-w-md leading-relaxed"
+                   style={{
+                     textShadow: '0 3px 12px rgba(0,0,0,0.8), 0 6px 18px rgba(0,0,0,0.4)',
+                     WebkitTextStroke: '0.2px rgba(0,0,0,0.15)',
+                   }}>
+                  {currentSlide.description}
+                </p>
+              )}
 
             {/* CTA BOTÃO - Terra Bruciata Premium */}
             <div className="pt-2 md:pt-4 lg:pt-6">
@@ -218,6 +227,9 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
                 {currentSlide?.buttonLabel || 'Explorar Coleção'}
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover/cta:translate-x-1 transition-transform duration-300" />
               </Link>
+            </div>
+
+            {/* Fechamento do Content Wrapper */}
             </div>
           </div>
 
