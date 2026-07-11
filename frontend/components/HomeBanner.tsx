@@ -88,11 +88,11 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
   const currentSlide = slides[current];
   const overlayOpacity = currentSlide?.overlayOpacity || 'medium';
   
-  // Mapa de opacidades de overlay
+  // Mapa de opacidades de overlay - REDUZIDO para deixar imagem mais visível
   const overlayMap = {
-    light: 'bg-gradient-to-t from-black/20 via-black/10 to-transparent',
-    medium: 'bg-gradient-to-t from-black/35 via-black/20 to-transparent',
-    dark: 'bg-gradient-to-t from-black/50 via-black/30 to-transparent',
+    light: 'bg-gradient-to-t from-black/10 via-black/5 to-transparent',
+    medium: 'bg-gradient-to-t from-black/15 via-black/8 to-transparent',
+    dark: 'bg-gradient-to-t from-black/25 via-black/12 to-transparent',
   };
 
   const next = useCallback(() => {
@@ -156,21 +156,22 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
           {/* Centered Content Block - Centralizado em todas as resoluções */}
           <div className="w-full md:w-3/4 lg:w-2/3 text-white space-y-4 md:space-y-6 lg:space-y-8 animate-fade-in max-w-2xl">
             
-            {/* BACKGROUND SEMI-TRANSPARENTE PREMIUM - Garante legibilidade */}
-            <div className="absolute -inset-8 bg-gradient-to-r from-black/40 via-black/25 to-transparent rounded-lg z-0 pointer-events-none" />
+            {/* BACKGROUND PREMIUM ELEGANTE - Bege Linho com border refinado (Loro Piana style) */}
+            <div className="absolute -inset-8 bg-gradient-to-br from-parthenon-beige/98 via-parthenon-beige/95 to-parthenon-beige/85 rounded-2xl z-0 pointer-events-none border border-parthenon-brown/20 shadow-2xl" />
             
             {/* CONTENT WRAPPER - Posicionamento relativo para estar acima do background */}
-            <div className="relative z-10 space-y-4 md:space-y-6 lg:space-y-8">
+            <div className="relative z-10 space-y-3 md:space-y-5 lg:space-y-7">
             
-              {/* LABEL PREMIUM - Com ícone e linha visual (style 471674c), textos brancos legíveis */}
+              {/* LABEL PREMIUM - Com ícone e linha visual (style 471674c) - TERRA BRUCIATA */}
               {currentSlide?.badge && (
                 <div className="flex items-center gap-3">
-                  <div className="h-0.5 w-12 bg-white shadow-lg" />
+                  <div className="h-0.5 w-12 bg-parthenon-brown shadow-md" />
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-white drop-shadow-lg" strokeWidth={2.5} />
-                    <p className="text-xs md:text-sm tracking-widest uppercase font-bold text-white drop-shadow-lg"
+                    <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-parthenon-brown drop-shadow-sm" strokeWidth={2.5} />
+                    <p className="text-xs md:text-sm tracking-widest uppercase font-bold text-parthenon-brown drop-shadow-sm leading-tight"
                        style={{
-                         textShadow: '0 3px 8px rgba(0,0,0,0.8), 0 6px 16px rgba(0,0,0,0.4)',
+                         letterSpacing: '0.15em',
+                         fontWeight: '700',
                        }}>
                       {currentSlide.badge}
                     </p>
@@ -178,30 +179,30 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
                 </div>
               )}
 
-              {/* TÍTULO PRINCIPAL - Branco PURO, peso bold, text-shadow máximo contraste */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-tight tracking-tight text-white"
+              {/* TÍTULO PRINCIPAL - Terra Bruciata, elegante, profissional (Hugo Boss/Loro Piana style) */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-tight text-parthenon-brown drop-shadow-lg"
                   style={{
-                    textShadow: '0 4px 16px rgba(0,0,0,0.9), 0 8px 32px rgba(0,0,0,0.5), 0 12px 48px rgba(0,0,0,0.3)',
-                    WebkitTextStroke: '0.5px rgba(0,0,0,0.3)',
+                    letterSpacing: '-0.02em',
+                    fontWeight: '700',
                   }}>
                 {currentSlide?.title || 'Parthenon Tecidos'}
               </h1>
 
-              {/* SUBTÍTULO - Branco PURO, extremamente legível */}
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white max-w-md leading-relaxed"
+              {/* SUBTÍTULO - Terra Bruciata, sofisticado */}
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-parthenon-brown/90 max-w-md leading-relaxed drop-shadow-md"
                  style={{
-                   textShadow: '0 3px 12px rgba(0,0,0,0.8), 0 6px 20px rgba(0,0,0,0.4)',
-                   WebkitTextStroke: '0.3px rgba(0,0,0,0.2)',
+                   letterSpacing: '0.01em',
+                   fontWeight: '600',
                  }}>
                 {currentSlide?.subtitle || 'Qualidade e sofisticação em cada fio'}
               </p>
 
-              {/* DESCRIÇÃO ADICIONAL - Branco, máxima legibilidade */}
+              {/* DESCRIÇÃO ADICIONAL - Terra Bruciata, elegante */}
               {currentSlide?.description && (
-                <p className="text-sm md:text-base font-semibold text-white max-w-md leading-relaxed"
+                <p className="text-sm md:text-base font-medium text-parthenon-brown/85 max-w-md leading-relaxed drop-shadow-md"
                    style={{
-                     textShadow: '0 3px 12px rgba(0,0,0,0.8), 0 6px 18px rgba(0,0,0,0.4)',
-                     WebkitTextStroke: '0.2px rgba(0,0,0,0.15)',
+                     letterSpacing: '0.005em',
+                     fontWeight: '500',
                    }}>
                   {currentSlide.description}
                 </p>
