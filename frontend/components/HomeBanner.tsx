@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, ArrowRight, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 
 interface Slide {
   src: string;
@@ -13,7 +13,8 @@ interface Slide {
   buttonLabel?: string;
   buttonHref?: string;
   badge?: string;
-  overlayOpacity?: 'light' | 'medium' | 'dark'; // Overlay variável por slide
+  overlayOpacity?: 'light' | 'medium' | 'dark';
+  description?: string; // Adicionado para descrição adicional (novo)
 }
 
 // Slides padrão - REDESIGN PREMIUM
@@ -23,9 +24,10 @@ const DEFAULT_SLIDES: Slide[] = [
     alt: 'Modelo Parthenon',
     title: 'Sofisticação em Tecido',
     subtitle: 'Descubra tecidos premium selecionados com precisão',
+    description: 'Tecidos escolhidos com rigor, combinando tradição com inovação',
     buttonLabel: 'Explorar Coleção',
     buttonHref: '/loja',
-    badge: 'NOVO',
+    badge: 'COLEÇÃO EXCLUSIVA',
     overlayOpacity: 'light',
   },
   {
@@ -33,8 +35,10 @@ const DEFAULT_SLIDES: Slide[] = [
     alt: 'Qualidade Suprema',
     title: 'Qualidade Inigualável',
     subtitle: 'Cada fio escolhido para excelência',
+    description: 'Seleção rigorosa de matérias-primas premium',
     buttonLabel: 'Ver Coleção Premium',
     buttonHref: '/loja',
+    badge: 'QUALIDADE SUPREMA',
     overlayOpacity: 'medium',
   },
   {
@@ -42,8 +46,10 @@ const DEFAULT_SLIDES: Slide[] = [
     alt: 'Elegância Natural',
     title: 'Elegância Natural',
     subtitle: 'Linhos e algodões que respiram sofisticação',
+    description: 'Fibras naturais que transmitem elegância e conforto',
     buttonLabel: 'Conhecer Linhos',
     buttonHref: '/loja',
+    badge: 'NATUREZA PURA',
     overlayOpacity: 'light',
   },
   {
@@ -51,8 +57,10 @@ const DEFAULT_SLIDES: Slide[] = [
     alt: 'Confecção Artesanal',
     title: 'Arte em Cada Fio',
     subtitle: 'Tecidos para criações extraordinárias',
+    description: 'Perfeição artesanal em cada detalhe confeccionado',
     buttonLabel: 'Ver Inspirações',
     buttonHref: '/loja',
+    badge: 'MAESTRIA ARTESANAL',
     overlayOpacity: 'medium',
   },
   {
@@ -60,8 +68,10 @@ const DEFAULT_SLIDES: Slide[] = [
     alt: 'Conforto Premium',
     title: 'Conforto que Inspira',
     subtitle: 'Sensação de luxo em cada uso',
+    description: 'Investimento em qualidade que perdura ao longo do tempo',
     buttonLabel: 'Descobrir Conforto',
     buttonHref: '/loja',
+    badge: 'LUXO E CONFORTO',
     overlayOpacity: 'light',
   },
 ];
@@ -146,13 +156,15 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
           {/* Left Content Block - 55% desktop, full mobile */}
           <div className="w-full lg:w-1/2 text-white space-y-4 md:space-y-6 lg:space-y-8 animate-fade-in max-w-xl">
             
-            {/* BADGE - Opcional, discreto e sofisticado */}
+            {/* LABEL PREMIUM - Com linha visual, similar ao commit 471674c */}
             {currentSlide?.badge && (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-parthenon-brown/20 backdrop-blur-sm rounded-full border border-parthenon-brown/40 w-fit">
-                <Sparkles className="w-3 h-3 text-parthenon-brown" strokeWidth={2.5} />
-                <span className="text-xs font-bold uppercase tracking-widest text-parthenon-brown">
-                  {currentSlide.badge}
-                </span>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-0.5 w-12 bg-parthenon-brown" />
+                  <span className="text-xs md:text-sm tracking-widest uppercase font-light text-white">
+                    {currentSlide.badge}
+                  </span>
+                </div>
               </div>
             )}
 
@@ -164,6 +176,9 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
               {currentSlide?.title || 'Parthenon Tecidos'}
             </h1>
 
+            {/* LINHA VISUAL sob título - Premium touch */}
+            <div className="h-1 w-16 bg-parthenon-brown" />
+
             {/* SUBTÍTULO - Branco puro, legível e elegante */}
             <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light text-white max-w-md leading-relaxed"
                style={{
@@ -171,6 +186,16 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
                }}>
               {currentSlide?.subtitle || 'Qualidade e sofisticação em cada fio'}
             </p>
+
+            {/* DESCRIÇÃO ADICIONAL - Premium narrative */}
+            {currentSlide?.description && (
+              <p className="text-sm md:text-base font-light text-white/90 max-w-md leading-relaxed"
+                 style={{
+                   textShadow: '0 1px 6px rgba(0,0,0,0.3)',
+                 }}>
+                {currentSlide.description}
+              </p>
+            )}
 
             {/* CTA BOTÃO - Terra Bruciata Premium */}
             <div className="pt-2 md:pt-4 lg:pt-6">
