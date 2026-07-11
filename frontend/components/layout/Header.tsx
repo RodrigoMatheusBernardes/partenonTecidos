@@ -56,12 +56,14 @@ export default function Header() {
     router.push('/');
   };
 
-  // Navegação conforme Manual: Home, Coleção, Sobre, Contato (sem Promoções)
+  // Navegação completa: Home, Coleção, Sobre, Contato, Novidades, Promoções
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/loja', label: 'Coleção' },
     { href: '/sobre', label: 'Sobre' },
     { href: '/contato', label: 'Contato' },
+    { href: '/novidades', label: 'Novidades' },
+    { href: '/promocoes', label: 'Promoções' },
   ];
 
   return (
