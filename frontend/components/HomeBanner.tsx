@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight, Sparkles } from 'lucide-react';
 
 interface Slide {
   src: string;
@@ -156,42 +156,43 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
           {/* Left Content Block - 55% desktop, full mobile */}
           <div className="w-full lg:w-1/2 text-white space-y-4 md:space-y-6 lg:space-y-8 animate-fade-in max-w-xl">
             
-            {/* LABEL PREMIUM - Com linha visual, similar ao commit 471674c */}
+            {/* LABEL PREMIUM - Com ícone e linha visual (style 471674c), textos brancos legíveis */}
             {currentSlide?.badge && (
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="h-0.5 w-12 bg-parthenon-brown" />
-                  <span className="text-xs md:text-sm tracking-widest uppercase font-light text-white">
+              <div className="flex items-center gap-3">
+                <div className="h-0.5 w-12 bg-white shadow-md" />
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-white drop-shadow-md" strokeWidth={2.5} />
+                  <p className="text-xs md:text-sm tracking-widest uppercase font-semibold text-white drop-shadow-md"
+                     style={{
+                       textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                     }}>
                     {currentSlide.badge}
-                  </span>
+                  </p>
                 </div>
               </div>
             )}
 
-            {/* TÍTULO PRINCIPAL - Branco puro, peso normal, text-shadow premium discreto */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-normal leading-tight tracking-tight text-white"
+            {/* TÍTULO PRINCIPAL - Branco PURO, peso semibold, text-shadow máximo contraste */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-semibold leading-tight tracking-tight text-white"
                 style={{
-                  textShadow: '0 2px 10px rgba(0,0,0,0.5), 0 4px 20px rgba(0,0,0,0.25)',
+                  textShadow: '0 3px 12px rgba(0,0,0,0.7), 0 6px 24px rgba(0,0,0,0.4)',
                 }}>
               {currentSlide?.title || 'Parthenon Tecidos'}
             </h1>
 
-            {/* LINHA VISUAL sob título - Premium touch */}
-            <div className="h-1 w-16 bg-parthenon-brown" />
-
-            {/* SUBTÍTULO - Branco puro, legível e elegante */}
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light text-white max-w-md leading-relaxed"
+            {/* SUBTÍTULO - Branco PURO, extremamente legível */}
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-white max-w-md leading-relaxed"
                style={{
-                 textShadow: '0 1px 6px rgba(0,0,0,0.4)',
+                 textShadow: '0 2px 8px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.3)',
                }}>
               {currentSlide?.subtitle || 'Qualidade e sofisticação em cada fio'}
             </p>
 
-            {/* DESCRIÇÃO ADICIONAL - Premium narrative */}
+            {/* DESCRIÇÃO ADICIONAL - Branco, máxima legibilidade */}
             {currentSlide?.description && (
-              <p className="text-sm md:text-base font-light text-white/90 max-w-md leading-relaxed"
+              <p className="text-sm md:text-base font-medium text-white max-w-md leading-relaxed"
                  style={{
-                   textShadow: '0 1px 6px rgba(0,0,0,0.3)',
+                   textShadow: '0 2px 8px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.25)',
                  }}>
                 {currentSlide.description}
               </p>
