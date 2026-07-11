@@ -6,27 +6,27 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import CartDrawer from '@/components/CartDrawer';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import {
-  Search, ShoppingBag, User, Heart, LogOut, Package, LayoutDashboard, Menu, X
+  Search, ShoppingBag, Heart, LogOut, Package, LayoutDashboard, Menu, X, ChevronDown, Home
 } from 'lucide-react';
 
-export default function Header() {
+export default function HeaderNew() {
   const router = useRouter();
   const { totalItems } = useCart();
   const { isAuthenticated, isAdmin, logout, user } = useAuth();
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchDrawerOpen, setSearchDrawerOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -38,33 +38,19 @@ export default function Header() {
     if (searchTerm.trim()) {
       router.push(`/loja?busca=${encodeURIComponent(searchTerm.trim())}`);
       setSearchTerm('');
-      setSearchDrawerOpen(false);
       setMobileMenuOpen(false);
     }
   };
 
   const handleLogout = () => {
     logout();
-    setIsDropdownOpen(false);
+    setUserMenuOpen(false);
     setMobileMenuOpen(false);
     router.push('/');
   };
 
-  const getPedidosLabel = () => {
-    if (!user) return 'Meus Pedidos';
-    if (user.role === 'admin') return 'Gerenciar Pedidos';
-    if (user.role === 'vendedor') return 'Pedidos dos Vendedores';
-    return 'Meus Pedidos';
-  };
-
-  const getPedidosLink = () => {
-    if (!user) return '/meus-pedidos';
-    if (user.role === 'admin') return '/admin/pedidos';
-    if (user.role === 'vendedor') return '/meus-pedidos';
-    return '/meus-pedidos';
-  };
-
   const navLinks = [
+    { href: '/', label: 'Home', icon: Home },
     { href: '/loja', label: 'Coleção' },
     { href: '/novidades', label: 'Novidades' },
     { href: '/promocoes', label: 'Promoções' },
@@ -72,107 +58,103 @@ export default function Header() {
 
   return (
     <>
-      {/* HEADER PRINCIPAL - Estrutura sem sobreposições */}
-      <header className="sticky top-0 w-full bg-white border-b border-gray-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)] z-40">
+      {/* HEADER LINHA 1: Logo | Busca | Ações */}
+      <header className="sticky top-0 w-full bg-white border-b border-gray-mid shadow-sm-luxury z-40">
         <div className="container-main w-full">
-          {/* Layout: Logo | Nav (flex) | Actions (shrink) */}
-          <div className="flex items-center justify-between h-20 md:h-24 px-0 gap-3 md:gap-6">
+          <div className="flex items-center justify-between h-24 gap-6">
 
-            {/* SEÇÃO 1: LOGO (não encolhe) */}
+            {/* LOGO */}
             <Link 
               href="/" 
-              className="shrink-0 hover:opacity-75 transition-opacity duration-300"
-              aria-label="Voltar para home"
+              className="shrink-0 flex items-center gap-2 hover:opacity-75 transition-opacity"
             >
-              <div className="flex flex-col leading-none">
-                <span className="text-2xl md:text-4xl font-serif font-bold tracking-tight text-dark-light">
-                  PARTHENON
-                </span>
-                <span className="text-xs md:text-sm font-serif font-light tracking-[0.15em] text-text-light">
-                  TECIDOS
-                </span>
+              <div className="w-12 h-12 bg-dark-light rounded-lg flex items-center justify-center">
+                <span className="text-white font-serif font-bold text-lg">P</span>
+              </div>
+              <div className="hidden sm:flex flex-col leading-tight">
+                <span className="text-sm font-serif font-bold tracking-tight text-dark-light">PARTHENON</span>
+                <span className="text-xs font-serif font-light tracking-[0.1em] text-text-light">TECIDOS</span>
               </div>
             </Link>
 
-            {/* SEÇÃO 2: NAVEGAÇÃO (Desktop, centralizada) */}
-            <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center">
-              {navLinks.map(link => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="
-                    px-4 py-2 text-xs font-semibold uppercase tracking-widest
-                    text-dark-light relative
-                    hover:text-gold transition-colors duration-300
-                    after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-gold
-                    after:w-0 hover:after:w-full after:transition-all after:duration-300
-                  "
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
+            {/* BUSCA - Centro e Destaque (Desktop) */}
+            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-2xl">
+              <div className="w-full relative">
+                <Input
+                  type="search"
+                  placeholder="Buscar tecidos, características, coleções..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  inputSize="lg"
+                  icon={<Search className="w-5 h-5" />}
+                  className="!border-2 !border-gold"
+                />
+              </div>
+            </form>
 
-            {/* SEÇÃO 3: AÇÕES (não encolhem, espaço definido) */}
-            <div className="flex items-center gap-1 md:gap-2 shrink-0">
-              
-              {/* SEARCH BUTTON */}
-              <button
-                onClick={() => setSearchDrawerOpen(true)}
-                className="p-2.5 md:p-3 rounded-button text-dark-light hover:text-gold hover:bg-light transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2"
-                aria-label="Abrir barra de pesquisa"
+            {/* AÇÕES - Direita */}
+            <div className="flex items-center gap-2 shrink-0">
+
+              {/* Busca Mobile */}
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2.5 hover:bg-light rounded-button transition-colors"
+                aria-label="Busca"
               >
-                <Search className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2} />
+                <Search className="w-6 h-6 text-dark-light" strokeWidth={2} />
               </button>
 
-              {/* FAVORITOS */}
+              {/* Favoritos */}
               <Link 
                 href="/favoritos" 
-                className="p-2.5 md:p-3 rounded-button text-dark-light hover:text-gold hover:bg-light transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2"
-                aria-label="Ir para favoritos"
+                className="p-2.5 hover:bg-light rounded-button transition-colors relative"
+                aria-label="Favoritos"
               >
-                <Heart className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2} />
+                <Heart className="w-6 h-6 text-dark-light" strokeWidth={1.5} />
               </Link>
 
-              {/* CARRINHO */}
+              {/* Carrinho com Badge */}
               <button
                 onClick={() => setCartOpen(true)}
-                className="relative p-2.5 md:p-3 rounded-button text-dark-light hover:text-gold hover:bg-light transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2"
-                aria-label="Abrir carrinho"
+                className="p-2.5 hover:bg-light rounded-button transition-colors relative"
+                aria-label="Carrinho"
               >
-                <ShoppingBag className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2} />
+                <ShoppingBag className="w-6 h-6 text-dark-light" strokeWidth={1.5} />
                 {totalItems > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gold text-dark-light text-xs font-bold flex items-center justify-center">
-                    {totalItems > 9 ? '9+' : totalItems}
+                    {totalItems > 99 ? '99+' : totalItems}
                   </span>
                 )}
               </button>
 
-              {/* DROPDOWN DO USUÁRIO (Desktop) */}
-              <div className="relative hidden md:block" ref={dropdownRef}>
+              {/* Menu Usuário (Desktop) */}
+              <div className="relative hidden lg:block" ref={userMenuRef}>
                 <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="p-2.5 md:p-3 rounded-button text-dark-light hover:text-gold hover:bg-light transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2"
-                  aria-label="Menu do usuário"
-                  aria-expanded={isDropdownOpen}
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="p-2.5 hover:bg-light rounded-button transition-colors flex items-center gap-1"
                 >
-                  <User className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2} />
+                  <div className="w-6 h-6 rounded-full bg-dark-light flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">
+                      {user?.nome?.charAt(0).toUpperCase() || 'U'}
+                    </span>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-text-secondary" strokeWidth={2} />
                 </button>
 
-                {isDropdownOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50 animate-fade-in">
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-full mt-1 w-80 bg-white rounded-card shadow-lg-luxury border border-gray-mid py-2 z-50 animate-fade-in">
                     {isAuthenticated ? (
                       <>
-                        <div className="px-4 py-4 border-b border-gray-100">
-                          <p className="text-sm font-semibold text-dark-light truncate">{user?.nome}</p>
-                          <p className="text-xs text-text-light capitalize font-medium mt-0.5">{user?.role}</p>
+                        <div className="px-6 py-4 border-b border-gray-mid bg-light/50">
+                          <p className="text-sm font-semibold text-dark-light">{user?.nome}</p>
+                          <p className="text-xs text-text-secondary font-light mt-1 capitalize">{user?.role === 'vendedor' ? 'Vendedor' : user?.role === 'admin' ? 'Administrador' : 'Cliente'}</p>
                         </div>
 
                         {isAdmin && (
                           <Link
                             href="/admin"
-                            onClick={() => setIsDropdownOpen(false)}
-                            className="flex items-center gap-3 px-4 py-3 text-sm text-dark-light font-medium hover:bg-light transition-colors"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-6 py-3 text-sm text-dark-light hover:bg-light transition-colors"
                           >
                             <LayoutDashboard className="w-4 h-4" />
                             Painel Admin
@@ -181,25 +163,25 @@ export default function Header() {
 
                         <Link
                           href="/meu-perfil"
-                          onClick={() => setIsDropdownOpen(false)}
-                          className="flex items-center gap-3 px-4 py-3 text-sm text-dark-light font-medium hover:bg-light transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-6 py-3 text-sm text-dark-light hover:bg-light transition-colors"
                         >
-                          <User className="w-4 h-4" />
+                          <span>👤</span>
                           Meu Perfil
                         </Link>
 
                         <Link
-                          href={getPedidosLink()}
-                          onClick={() => setIsDropdownOpen(false)}
-                          className="flex items-center gap-3 px-4 py-3 text-sm text-dark-light font-medium hover:bg-light transition-colors"
+                          href="/meus-pedidos"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-6 py-3 text-sm text-dark-light hover:bg-light transition-colors"
                         >
                           <Package className="w-4 h-4" />
-                          {getPedidosLabel()}
+                          Meus Pedidos
                         </Link>
 
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-dark-light font-medium hover:bg-light transition-colors border-t border-gray-100"
+                          className="w-full flex items-center gap-3 px-6 py-3 text-sm text-dark-light hover:bg-light transition-colors border-t border-gray-mid"
                         >
                           <LogOut className="w-4 h-4" />
                           Logout
@@ -209,17 +191,17 @@ export default function Header() {
                       <>
                         <Link
                           href="/login"
-                          onClick={() => setIsDropdownOpen(false)}
-                          className="block px-4 py-3 text-sm text-dark-light font-medium hover:bg-light transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="block px-6 py-3 text-sm text-dark-light hover:bg-light transition-colors"
                         >
                           Login
                         </Link>
                         <Link
                           href="/cadastro"
-                          onClick={() => setIsDropdownOpen(false)}
-                          className="block px-4 py-3 text-sm text-dark-light font-medium hover:bg-light transition-colors border-t border-gray-100"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="block px-6 py-3 text-sm text-dark-light hover:bg-light transition-colors border-t border-gray-mid"
                         >
-                          Cadastro
+                          Criar Conta
                         </Link>
                       </>
                     )}
@@ -227,16 +209,15 @@ export default function Header() {
                 )}
               </div>
 
-              {/* MENU MOBILE */}
+              {/* Menu Mobile */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2.5 rounded-button text-dark-light hover:text-gold hover:bg-light transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gold"
-                aria-label="Menu mobile"
+                className="lg:hidden p-2.5 hover:bg-light rounded-button transition-colors"
               >
                 {mobileMenuOpen ? (
-                  <X className="w-6 h-6" strokeWidth={2} />
+                  <X className="w-6 h-6 text-dark-light" strokeWidth={2} />
                 ) : (
-                  <Menu className="w-6 h-6" strokeWidth={2} />
+                  <Menu className="w-6 h-6 text-dark-light" strokeWidth={2} />
                 )}
               </button>
             </div>
@@ -244,122 +225,119 @@ export default function Header() {
         </div>
       </header>
 
-      {/* MOBILE MENU - z-30 (abaixo de overlays) */}
+      {/* HEADER LINHA 2: Navegação Secundária (Desktop Only) */}
+      <nav className="hidden lg:block sticky top-24 w-full bg-light border-b border-gray-mid z-30">
+        <div className="container-main w-full">
+          <div className="flex items-center gap-8 h-12 px-0">
+            {navLinks.map(link => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-semibold uppercase tracking-wider text-dark-light hover:text-gold transition-colors duration-300 relative group"
+              >
+                {link.label}
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gold group-hover:w-full transition-all duration-300" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      {/* MOBILE MENU */}
       {mobileMenuOpen && (
         <>
-          <div className="fixed inset-0 bg-black/20 z-30 md:hidden" onClick={() => setMobileMenuOpen(false)} />
-          <div className="fixed right-0 top-20 h-[calc(100vh-5rem)] w-80 max-w-full bg-white z-30 shadow-lg-luxury overflow-y-auto md:hidden">
+          <div className="fixed inset-0 bg-black/20 z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)} />
+          <div className="fixed right-0 top-24 h-[calc(100vh-6rem)] w-80 max-w-full bg-white z-40 shadow-lg-luxury overflow-y-auto lg:hidden animate-slide-up">
+            
+            {/* Busca Mobile */}
+            <div className="p-6 border-b border-gray-mid">
+              <form onSubmit={handleSearch}>
+                <Input
+                  type="search"
+                  placeholder="Buscar..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  inputSize="md"
+                  icon={<Search className="w-4 h-4" />}
+                />
+              </form>
+            </div>
+
+            {/* Navegação */}
             <nav className="flex flex-col p-6 gap-1">
               {navLinks.map(link => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-4 py-3 text-sm font-medium text-dark-light rounded-button hover:bg-light transition-colors"
+                  className="px-4 py-3 text-sm font-semibold text-dark-light rounded-button hover:bg-light transition-colors"
                 >
                   {link.label}
                 </Link>
               ))}
-
-              <div className="border-t border-gray-200 my-4 pt-4">
-                {isAuthenticated ? (
-                  <>
-                    <div className="px-4 py-3 mb-2">
-                      <p className="text-sm font-semibold text-dark-light">{user?.nome}</p>
-                      <p className="text-xs text-text-light capitalize">{user?.role}</p>
-                    </div>
-
-                    {isAdmin && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-dark-light rounded-button hover:bg-light transition-colors"
-                      >
-                        <LayoutDashboard className="w-4 h-4" />
-                        Painel Admin
-                      </Link>
-                    )}
-
-                    <Link
-                      href="/meu-perfil"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-dark-light rounded-button hover:bg-light transition-colors"
-                    >
-                      <User className="w-4 h-4" />
-                      Meu Perfil
-                    </Link>
-
-                    <Link
-                      href={getPedidosLink()}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-dark-light rounded-button hover:bg-light transition-colors"
-                    >
-                      <Package className="w-4 h-4" />
-                      {getPedidosLabel()}
-                    </Link>
-
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-sm text-dark-light rounded-button hover:bg-light transition-colors"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/login"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-4 py-3 text-sm text-dark-light rounded-button hover:bg-light transition-colors"
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      href="/cadastro"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-4 py-3 text-sm text-dark-light rounded-button hover:bg-light transition-colors"
-                    >
-                      Cadastro
-                    </Link>
-                  </>
-                )}
-              </div>
             </nav>
-          </div>
-        </>
-      )}
 
-      {/* SEARCH DRAWER OVERLAY - z-50 (acima de tudo) */}
-      {searchDrawerOpen && (
-        <>
-          <div 
-            className="fixed inset-0 bg-black/30 z-50" 
-            onClick={() => setSearchDrawerOpen(false)} 
-          />
-          <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 md:pt-32 px-4 pointer-events-none">
-            <div className="w-full max-w-2xl animate-fade-in pointer-events-auto">
-              <form onSubmit={handleSearch} className="w-full">
-                <div className="flex items-center gap-3 bg-white rounded-lg px-5 py-4 shadow-xl-luxury border-2 border-gold">
-                  <Search className="w-6 h-6 text-gold flex-shrink-0" strokeWidth={2} />
-                  <input
-                    type="text"
-                    placeholder="Buscar tecidos, coleções, características..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    autoFocus
-                    className="flex-1 bg-transparent text-lg font-medium outline-none placeholder:text-text-light"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setSearchDrawerOpen(false)}
-                    className="text-text-light hover:text-dark-light transition-colors p-1"
-                    aria-label="Fechar busca"
+            {/* Divisor */}
+            <div className="border-t border-gray-mid my-4" />
+
+            {/* User Menu Mobile */}
+            <div className="p-6">
+              {isAuthenticated ? (
+                <>
+                  <div className="mb-4 pb-4 border-b border-gray-mid">
+                    <p className="text-sm font-semibold text-dark-light">{user?.nome}</p>
+                    <p className="text-xs text-text-secondary capitalize">{user?.role}</p>
+                  </div>
+
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-dark-light rounded-button hover:bg-light transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      Painel Admin
+                    </Link>
+                  )}
+
+                  <Link
+                    href="/meu-perfil"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-dark-light rounded-button hover:bg-light transition-colors"
                   >
-                    <X className="w-6 h-6" strokeWidth={2} />
-                  </button>
-                </div>
-              </form>
+                    <span>👤</span>
+                    Meu Perfil
+                  </Link>
+
+                  <Link
+                    href="/meus-pedidos"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-dark-light rounded-button hover:bg-light transition-colors"
+                  >
+                    <Package className="w-4 h-4" />
+                    Meus Pedidos
+                  </Link>
+
+                  <Button
+                    onClick={handleLogout}
+                    variant="secondary"
+                    fullWidth
+                    className="mt-4"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="block mb-2">
+                    <Button variant="primary" fullWidth>Login</Button>
+                  </Link>
+                  <Link href="/cadastro" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="secondary" fullWidth>Criar Conta</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </>
