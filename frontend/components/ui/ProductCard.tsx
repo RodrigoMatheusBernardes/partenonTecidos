@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag, Sparkles } from 'lucide-react';
+import { ShoppingBag, Sparkles, Package } from 'lucide-react';
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import toast from 'react-hot-toast';
@@ -13,7 +13,6 @@ const DEFAULT_IMAGE = '/images/placeholder.jpg';
 export default function ProductCard({ produto }: { produto: any }) {
   const { addItem } = useCart();
   const [imgError, setImgError] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
 
   // Dados seguros
   const id = produto._id || '';
@@ -23,6 +22,12 @@ export default function ProductCard({ produto }: { produto: any }) {
   const estoque = typeof produto.estoque === 'number' ? produto.estoque : 0;
   const isNovo = produto.isNovo || false;
   const avaliacao = produto.avaliacao || 0;
+  const preco_original = produto.preco_original || 0;
+  
+  // Calcular desconto %
+  const desconto = preco_original > preco 
+    ? Math.round(((preco_original - preco) / preco_original) * 100)
+    : 0;
 
   const imageSrc = imgError
     ? DEFAULT_IMAGE
@@ -49,16 +54,14 @@ export default function ProductCard({ produto }: { produto: any }) {
           transition-all duration-400 ease-out
           hover:-translate-y-2
         "
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
       >
-        {/* IMAGEM DO PRODUTO */}
+        {/* IMAGEM DO PRODUTO - 4:3 proportion */}
         <div className="
-          relative w-full aspect-square
+          relative w-full aspect-video
           bg-gradient-to-br from-light via-light-mid to-gray-mid
           overflow-hidden flex-shrink-0
         ">
-          {/* Background shimmer effect em carregamento */}
+          {/* Shimmer effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
           
           <Image
@@ -72,87 +75,64 @@ export default function ProductCard({ produto }: { produto: any }) {
             "
             sizes="(max-width: 640px) calc(100vw - 32px),
                    (max-width: 1024px) calc(50vw - 24px),
-                   calc(33.333vw - 20px)"
+                   calc(25vw - 20px)"
             onError={() => setImgError(true)}
             priority={false}
           />
 
-          {/* INDICADOR "NOVO" */}
+          {/* Badge "NOVO" */}
           {isNovo && (
             <div className="
-              absolute top-4 left-4
-              flex items-center gap-1.5
+              absolute top-3 left-3
+              flex items-center gap-1
               bg-gold text-dark-light text-xs font-bold
-              uppercase tracking-[0.1em] px-3.5 py-2
-              rounded-full animate-fade-in
-              shadow-md-luxury
+              uppercase tracking-[0.1em] px-3 py-1.5
+              rounded-full shadow-md-luxury
             ">
-              <Sparkles className="w-3.5 h-3.5" strokeWidth={2.5} />
+              <Sparkles className="w-3 h-3" strokeWidth={2.5} />
               Novo
             </div>
           )}
 
-          {/* BADGE DE ESTOQUE BAIXO */}
-          {!isNovo && estoque > 0 && estoque <= 5 && (
+          {/* Badge DESCONTO % */}
+          {desconto > 0 && (
             <div className="
-              absolute top-4 left-4
-              bg-error/90 text-white text-xs font-bold
-              uppercase tracking-[0.08em] px-3 py-1.5
-              rounded-full animate-fade-in
-              shadow-md-luxury
+              absolute top-3 right-3
+              bg-error text-white text-xs font-bold
+              px-2.5 py-1 rounded-full shadow-md-luxury
             ">
-              Últimas
+              -{desconto}%
             </div>
           )}
 
-          {/* BADGE DE ESGOTADO */}
+          {/* Overlay para Esgotado */}
           {estoque <= 0 && (
             <div className="
-              absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent
-              backdrop-blur-sm flex items-center justify-center
-              rounded-t-card group-hover:from-black/60
-              transition-colors duration-300
+              absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent
+              backdrop-blur-sm flex items-center justify-center rounded-t-card
             ">
               <span className="
-                text-white font-serif font-semibold text-lg
-                uppercase tracking-widest
+                text-white font-serif font-bold text-base
+                uppercase tracking-widest text-center
               ">
                 Esgotado
               </span>
             </div>
           )}
 
-          {/* BOTÃO FAVORITO */}
-          <div className="
-            absolute top-4 right-4
-            opacity-0 group-hover:opacity-100
-            transition-opacity duration-300 ease-out
-            z-10
-          ">
+          {/* Botão Favorito - SEMPRE VISÍVEL */}
+          <div className="absolute top-3 right-3 z-20">
             <FavoritoButton produtoId={id} />
           </div>
-
-          {/* Overlay hover sutil - glow effect */}
-          {isHovering && (
-            <div className="
-              absolute inset-0 rounded-t-card
-              bg-gradient-to-br from-gold/0 via-transparent to-dark-light/0
-              pointer-events-none opacity-20
-              transition-opacity duration-400
-            " />
-          )}
         </div>
 
-        {/* INFORMAÇÕES DO PRODUTO */}
-        <div className="
-          flex flex-col flex-grow px-4 pt-5 pb-3
-          gap-2.5
-        ">
-          {/* Nome - Hierarquia 1 */}
+        {/* CONTEÚDO DO CARD */}
+        <div className="flex flex-col flex-grow px-4 py-3 gap-2">
+          
+          {/* Nome do Produto */}
           <h3 className="
-            font-serif font-semibold
-            text-dark-light
-            text-sm md:text-base
+            font-serif font-bold
+            text-dark-light text-sm
             line-clamp-2 leading-tight
             group-hover:text-gold
             transition-colors duration-300
@@ -160,59 +140,68 @@ export default function ProductCard({ produto }: { produto: any }) {
             {nome}
           </h3>
 
-          {/* Rating - Se disponível */}
-          {avaliacao > 0 && (
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <div className="flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span
-                    key={i}
-                    className={`
-                      text-xs transition-colors duration-300
-                      ${i < Math.round(avaliacao) ? 'text-gold' : 'text-gray-mid'}
-                    `}
-                  >
-                    ★
-                  </span>
-                ))}
-              </div>
+          {/* Avaliação - SEMPRE VISÍVEL */}
+          <div className="flex items-center gap-1">
+            <div className="flex gap-0.5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <span
+                  key={i}
+                  className={`
+                    text-xs transition-colors duration-300
+                    ${i < Math.round(avaliacao) ? 'text-gold' : 'text-gray-mid'}
+                  `}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            {avaliacao > 0 && (
               <span className="text-xs text-text-secondary font-medium">
                 ({avaliacao.toFixed(1)})
-              </span>
-            </div>
-          )}
-
-          {/* Preço - Hierarquia 2 */}
-          <div className="flex items-baseline gap-2.5 mt-1">
-            <span className="
-              text-dark-light font-bold
-              text-base md:text-lg leading-none
-            ">
-              R$ {preco.toFixed(2)}
-            </span>
-            {produto.preco_original && produto.preco_original > preco && (
-              <span className="
-                text-text-light text-xs
-                line-through font-medium
-              ">
-                R$ {produto.preco_original.toFixed(2)}
               </span>
             )}
           </div>
 
-          {/* Descrição/Stock - Hierarquia 3 */}
-          <p className="
-            text-text-secondary text-xs
-            uppercase tracking-widest font-medium
-            mt-1
-          ">
-            {estoque > 0 ? 'Peça por metro' : 'Indisponível'}
-          </p>
+          {/* PREÇO GRANDE - DESTAQUE */}
+          <div className="flex items-baseline gap-2 mt-1">
+            {/* Preço Atual - GRANDE E BOLD */}
+            <span className="
+              text-dark-light font-black
+              text-lg md:text-xl leading-none
+            ">
+              R$ {preco.toFixed(2).replace('.', ',')}
+            </span>
+            
+            {/* Preço Original se houver desconto */}
+            {preco_original > preco && (
+              <span className="
+                text-text-light text-xs
+                line-through font-medium
+              ">
+                R$ {preco_original.toFixed(2).replace('.', ',')}
+              </span>
+            )}
+          </div>
+
+          {/* Frete Grátis / Estoque */}
+          <div className="space-y-1 text-xs">
+            <div className="flex items-center gap-1.5 text-success font-medium">
+              <span>✓</span>
+              <span>Frete Grátis</span>
+            </div>
+            
+            {estoque > 0 && (
+              <div className="flex items-center gap-1.5 text-text-secondary font-medium">
+                <Package className="w-3 h-3" strokeWidth={2} />
+                <span>{estoque}+ em estoque</span>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* AÇÃO DE COMPRA */}
+        {/* BOTÃO COMPRA - GRANDE E PROEMINENTE */}
         <div className="
-          px-4 pb-4 pt-3
+          px-4 py-3 mt-auto
           border-t border-gray-mid
           bg-gradient-to-r from-white/40 to-white/0
           group-hover:bg-gradient-to-r group-hover:from-gold/5 group-hover:to-white/0
@@ -221,23 +210,20 @@ export default function ProductCard({ produto }: { produto: any }) {
           <button
             onClick={handleAddToCart}
             disabled={estoque <= 0}
-            className="
+            className={`
               w-full
               py-3
-              rounded-button
-              bg-dark-light text-white
-              border-2 border-dark-light
-              font-semibold text-xs uppercase tracking-wider
+              rounded-button border-2
+              font-bold text-xs uppercase tracking-wider
               transition-all duration-400 ease-out
-              hover:bg-gold hover:text-dark-light hover:border-gold
-              hover:shadow-md-luxury
               active:scale-95
-              disabled:opacity-40 disabled:cursor-not-allowed 
-              disabled:hover:bg-dark-light disabled:hover:text-white 
-              disabled:hover:border-dark-light disabled:hover:shadow-sm-luxury
               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold
-              flex items-center justify-center gap-2.5
-            "
+              flex items-center justify-center gap-2
+              ${estoque <= 0
+                ? 'bg-gray-mid/50 text-text-secondary border-gray-mid cursor-not-allowed'
+                : 'bg-dark-light text-white border-dark-light hover:bg-gold hover:text-dark-light hover:border-gold hover:shadow-md-luxury'
+              }
+            `}
           >
             <ShoppingBag className="w-4 h-4" strokeWidth={2.5} />
             <span>Adicionar</span>
