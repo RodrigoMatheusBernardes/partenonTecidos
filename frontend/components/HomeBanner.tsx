@@ -162,13 +162,13 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
             {/* CONTENT WRAPPER - Posicionamento relativo para estar acima do background */}
             <div className="relative z-10 space-y-3 md:space-y-5 lg:space-y-7">
             
-              {/* LABEL PREMIUM - Com ícone e linha visual (style 471674c) - TERRA BRUCIATA */}
+              {/* LABEL PREMIUM - Com ícone e linha visual (style 471674c) - DOURADO ELEGANTE */}
               {currentSlide?.badge && (
                 <div className="flex items-center gap-3">
-                  <div className="h-0.5 w-12 bg-parthenon-brown shadow-md" />
+                  <div className="h-0.5 w-12 bg-secondary shadow-md" />
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-parthenon-brown drop-shadow-sm" strokeWidth={2.5} />
-                    <p className="text-xs md:text-sm tracking-widest uppercase font-bold text-parthenon-brown drop-shadow-sm leading-tight"
+                    <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-secondary drop-shadow-sm" strokeWidth={2.5} />
+                    <p className="text-xs md:text-sm tracking-widest uppercase font-bold text-secondary drop-shadow-sm leading-tight"
                        style={{
                          letterSpacing: '0.15em',
                          fontWeight: '700',
@@ -179,8 +179,8 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
                 </div>
               )}
 
-              {/* TÍTULO PRINCIPAL - Terra Bruciata, elegante, profissional (Hugo Boss/Loro Piana style) */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-tight text-parthenon-brown drop-shadow-lg"
+              {/* TÍTULO PRINCIPAL - Dourado elegante, luxury brand (Loro Piana/Hugo Boss style) */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-tight text-secondary drop-shadow-lg"
                   style={{
                     letterSpacing: '-0.02em',
                     fontWeight: '700',
@@ -188,8 +188,8 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
                 {currentSlide?.title || 'Parthenon Tecidos'}
               </h1>
 
-              {/* SUBTÍTULO - Terra Bruciata, sofisticado */}
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-parthenon-brown/90 max-w-md leading-relaxed drop-shadow-md"
+              {/* SUBTÍTULO - Dourado com leve transparência, sofisticado */}
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-secondary/95 max-w-md leading-relaxed drop-shadow-md"
                  style={{
                    letterSpacing: '0.01em',
                    fontWeight: '600',
@@ -197,9 +197,9 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
                 {currentSlide?.subtitle || 'Qualidade e sofisticação em cada fio'}
               </p>
 
-              {/* DESCRIÇÃO ADICIONAL - Terra Bruciata, elegante */}
+              {/* DESCRIÇÃO ADICIONAL - Dourado, elegante */}
               {currentSlide?.description && (
-                <p className="text-sm md:text-base font-medium text-parthenon-brown/85 max-w-md leading-relaxed drop-shadow-md"
+                <p className="text-sm md:text-base font-medium text-secondary/90 max-w-md leading-relaxed drop-shadow-md"
                    style={{
                      letterSpacing: '0.005em',
                      fontWeight: '500',
