@@ -9,11 +9,17 @@ module.exports = {
     extend: {
       /* Design System Premium */
       colors: {
-        /* Paleta Parthenon - Azul Profissional */
-        'parthenon-dark': '#0A3D62',        /* Azul Marinho Profundo */
-        'parthenon-navy': '#1F5A8E',        /* Azul Escuro Premium */
-        'parthenon-royal': '#003D82',       /* Azul Royal */
-        'parthenon-light': '#E8F1F8',       /* Azul Claro (backgrounds) */
+        /* Paleta Parthenon - MANUAL DE DESIGN */
+        /* Cor Principal: Terra Bruciata */
+        'parthenon-brown': '#6B5344',       /* Terra Bruciata Premium - cor principal */
+        'parthenon-brown-dark': '#4A3A2E',  /* Terra Bruciata Escura - hover states */
+        
+        /* Cor Secundária: Bege Linho */
+        'parthenon-beige': '#E8DCC8',       /* Linho Premium - backgrounds */
+        
+        /* Cor Terciária: Azul Cinza */
+        'parthenon-navy': '#3D4E5C',        /* Azul Cinza Profundo - navegação */
+        'parthenon-navy-light': '#556B7F',  /* Azul Cinza Claro - hover states */
         
         /* Neutros Principais */
         'dark': '#0a1628',          /* Navy profundo (compatibilidade) */
@@ -21,12 +27,19 @@ module.exports = {
         'light': '#f5f4f0',         /* Bege claro */
         'light-mid': '#ede9e3',     /* Bege médio */
         'gray-mid': '#dcd9d4',      /* Cinza médio */
+        'gray-premium': '#9B9B9B',  /* Cinza Premium */
         'text-primary': '#1a1a1a',  /* Texto principal */
         'text-secondary': '#5c5c5c',/* Texto secundário */
+        'text-light': '#9B9B9B',    /* Texto claro */
         
-        /* Acentos Refinados */
-        'gold': '#c2a56c',          /* Dourado (mantido para compatibilidade) */
-        'gold-light': '#e5d9c4',    /* Dourado claro */
+        /* Acentos Funcionais */
+        'success': '#6B9B6B',       /* Verde natural */
+        'error': '#C85C5C',         /* Vermelho mornado */
+        'warning': '#D4A574',       /* Ocre quente */
+        
+        /* Legacy (manter compatibilidade) */
+        'gold': '#c2a56c',          /* Dourado genérico (deprecado) */
+        'gold-light': '#e5d9c4',    /* Dourado claro (deprecado) */
         
         /* Cores Funcionais */
         'primary': '#2c5f2d',       /* Verde (manter compatibilidade) */
