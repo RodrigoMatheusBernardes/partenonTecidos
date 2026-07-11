@@ -102,12 +102,11 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
               className="
                 inline-flex items-center justify-center gap-2
                 px-6 md:px-8 py-2.5 md:py-3
-                bg-gold text-dark-light
+                bg-parthenon-royal text-white
                 rounded-button font-semibold text-xs sm:text-sm md:text-base
                 uppercase tracking-wider
-                hover:bg-white transition-all duration-300
-                focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-black/30
-                hover:shadow-lg
+                hover:bg-parthenon-navy transition-all duration-300 hover:scale-105 hover:shadow-lg
+                focus:outline-none focus:ring-2 focus:ring-parthenon-royal focus:ring-offset-2 focus:ring-offset-black/30
               "
             >
               Explorar Coleção
@@ -125,10 +124,10 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
             onClick={prev}
             className="
               absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-40
-              p-2 md:p-2.5 bg-white/5 hover:bg-white/15
-              rounded-full border border-white/20 hover:border-white/40
-              transition-all duration-300
-              focus:outline-none focus:ring-2 focus:ring-white/30
+              p-2 md:p-2.5 bg-white/10 hover:bg-white/25
+              rounded-full border border-white/30 hover:border-white/60
+              transition-all duration-300 hover:scale-110
+              focus:outline-none focus:ring-2 focus:ring-white/50
               hidden sm:flex items-center justify-center
             "
             aria-label="Slide anterior"
@@ -140,10 +139,10 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
             onClick={next}
             className="
               absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-40
-              p-2 md:p-2.5 bg-white/5 hover:bg-white/15
-              rounded-full border border-white/20 hover:border-white/40
-              transition-all duration-300
-              focus:outline-none focus:ring-2 focus:ring-white/30
+              p-2 md:p-2.5 bg-white/10 hover:bg-white/25
+              rounded-full border border-white/30 hover:border-white/60
+              transition-all duration-300 hover:scale-110
+              focus:outline-none focus:ring-2 focus:ring-white/50
               hidden sm:flex items-center justify-center
             "
             aria-label="Próximo slide"
@@ -163,7 +162,7 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
                   h-1.5 rounded-full transition-all duration-400 cursor-pointer
                   focus:outline-none focus:ring-1 focus:ring-white/50
                   ${index === current 
-                    ? 'w-6 bg-gold' 
+                    ? 'w-6 bg-parthenon-royal shadow-lg' 
                     : 'w-1.5 bg-white/40 hover:bg-white/60'
                   }
                 `}
