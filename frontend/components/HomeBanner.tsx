@@ -150,11 +150,11 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
         {/* OVERLAY GRADIENTE - Variável por Slide */}
         <div className={`absolute inset-0 ${overlayMap[overlayOpacity as keyof typeof overlayMap]} z-20 transition-opacity duration-1000`} />
 
-        {/* CONTEÚDO PRINCIPAL - Assimétrico à esquerda, espaço vazio à direita (premium pattern) */}
-        <div className="relative z-30 flex items-center justify-start h-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+        {/* CONTEÚDO PRINCIPAL - Centralizado com espaço responsivo */}
+        <div className="relative z-30 flex items-center justify-center h-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           
-          {/* Left Content Block - 55% desktop, full mobile */}
-          <div className="w-full lg:w-1/2 text-white space-y-4 md:space-y-6 lg:space-y-8 animate-fade-in max-w-xl">
+          {/* Centered Content Block - Centralizado em todas as resoluções */}
+          <div className="w-full md:w-3/4 lg:w-2/3 text-white space-y-4 md:space-y-6 lg:space-y-8 animate-fade-in max-w-2xl">
             
             {/* BACKGROUND SEMI-TRANSPARENTE PREMIUM - Garante legibilidade */}
             <div className="absolute -inset-8 bg-gradient-to-r from-black/40 via-black/25 to-transparent rounded-lg z-0 pointer-events-none" />
@@ -232,9 +232,6 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
             {/* Fechamento do Content Wrapper */}
             </div>
           </div>
-
-          {/* Right Space - Espaço vazio luxuoso (premium aesthetic) */}
-          <div className="hidden lg:block flex-1" />
         </div>
 
         {/* CONTROLES DE NAVEGAÇÃO - Premium refinado */}
