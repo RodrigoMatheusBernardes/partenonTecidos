@@ -245,8 +245,8 @@ export default function Home() {
                 </div>
               )}
 
-              {/* GRID DE PRODUTOS */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 pb-4">
+              {/* GRID DE PRODUTOS - 2 colunas mobile, 3 tablet, 4 desktop */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 pb-4">
                 {carregando
                   ? Array.from({ length: 12 }).map((_, i) => <SkeletonProduct key={i} />)
                   : paginaAtual.map(produto => (
