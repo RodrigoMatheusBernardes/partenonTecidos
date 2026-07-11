@@ -165,11 +165,12 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
               {/* LABEL PREMIUM - Com ícone e linha visual (style 471674c) - DOURADO ELEGANTE */}
               {currentSlide?.badge && (
                 <div className="flex items-center gap-3">
-                  <div className="h-0.5 w-12 bg-secondary shadow-md" />
+                  <div className="h-0.5 w-12 shadow-md" style={{ backgroundColor: '#d4a373' }} />
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-secondary drop-shadow-sm" strokeWidth={2.5} />
-                    <p className="text-xs md:text-sm tracking-widest uppercase font-bold text-secondary drop-shadow-sm leading-tight"
+                    <Sparkles className="w-3 h-3 md:w-4 md:h-4 drop-shadow-sm" strokeWidth={2.5} style={{ color: '#d4a373' }} />
+                    <p className="text-xs md:text-sm tracking-widest uppercase font-bold drop-shadow-sm leading-tight"
                        style={{
+                         color: '#d4a373',
                          letterSpacing: '0.15em',
                          fontWeight: '700',
                        }}>
@@ -180,8 +181,9 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
               )}
 
               {/* TÍTULO PRINCIPAL - Dourado elegante, luxury brand (Loro Piana/Hugo Boss style) */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-tight text-secondary drop-shadow-lg"
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-tight drop-shadow-lg"
                   style={{
+                    color: '#d4a373',
                     letterSpacing: '-0.02em',
                     fontWeight: '700',
                   }}>
@@ -189,8 +191,9 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
               </h1>
 
               {/* SUBTÍTULO - Dourado com leve transparência, sofisticado */}
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-secondary/95 max-w-md leading-relaxed drop-shadow-md"
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold max-w-md leading-relaxed drop-shadow-md"
                  style={{
+                   color: 'rgba(212, 163, 115, 0.95)',
                    letterSpacing: '0.01em',
                    fontWeight: '600',
                  }}>
@@ -199,8 +202,9 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
 
               {/* DESCRIÇÃO ADICIONAL - Dourado, elegante */}
               {currentSlide?.description && (
-                <p className="text-sm md:text-base font-medium text-secondary/90 max-w-md leading-relaxed drop-shadow-md"
+                <p className="text-sm md:text-base font-medium max-w-md leading-relaxed drop-shadow-md"
                    style={{
+                     color: 'rgba(212, 163, 115, 0.90)',
                      letterSpacing: '0.005em',
                      fontWeight: '500',
                    }}>
