@@ -9,7 +9,7 @@ import CartDrawer from '@/components/CartDrawer';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import {
-  Search, ShoppingBag, Heart, LogOut, Package, Shield, Menu, X, ChevronDown, User
+  Search, ShoppingBag, Heart, LogOut, Package, Shield, Menu, X, ChevronDown, User, LogIn
 } from 'lucide-react';
 
 export default function Header() {
@@ -66,27 +66,27 @@ export default function Header() {
 
   return (
     <>
-      {/* HEADER - LINHA 1: Logo | Navegação | Ações */}
-      <header className="sticky top-0 w-full bg-white border-b border-gray-mid shadow-sm-luxury z-40">
+      {/* HEADER - LINHA 1: Logo | Navegação | Ações - Com presença visual */}
+      <header className="sticky top-0 w-full bg-gradient-to-r from-parthenon-beige/30 via-white to-white border-b border-gray-mid shadow-sm-luxury z-40">
         <div className="container-main w-full">
           <div className="flex items-center justify-between h-20 gap-4">
 
-            {/* LOGO - TERRA BRUCIATA: Sempre visível, nunca comprimida, com Playfair Display */}
+            {/* LOGO - TERRA BRUCIATA: Luxury brand inspirado em Loro Piana, Zara, Hugo Boss */}
             <Link 
               href="/" 
-              className="shrink-0 flex items-center gap-3 hover:opacity-85 transition-opacity duration-300"
+              className="shrink-0 flex items-center gap-3.5 hover:opacity-90 transition-opacity duration-300"
             >
-              <div className="w-11 h-11 bg-gradient-to-br from-parthenon-brown to-parthenon-brown-dark rounded-lg flex items-center justify-center shadow-md-luxury hover:shadow-lg-luxury transition-shadow duration-300">
-                <span className="text-white font-serif font-bold text-lg leading-none">Π</span>
+              <div className="w-16 h-16 bg-gradient-to-br from-parthenon-brown to-parthenon-brown-dark rounded-lg flex items-center justify-center shadow-md-luxury hover:shadow-lg-luxury transition-shadow duration-300">
+                <span className="text-white font-serif font-bold text-2xl leading-none">Π</span>
               </div>
               <div className="hidden sm:flex flex-col leading-tight">
-                <span className="font-serif font-bold tracking-tight text-sm text-parthenon-brown">PARTHENON</span>
-                <span className="font-serif font-light tracking-widest text-xs text-parthenon-brown-dark">TECIDOS</span>
+                <span className="font-serif font-bold tracking-tight text-base text-parthenon-brown">PARTHENON</span>
+                <span className="font-serif font-light tracking-widest text-xs text-parthenon-brown-dark">TECIDOS PREMIUM</span>
               </div>
             </Link>
 
-            {/* NAVEGAÇÃO - Desktop only, centrada, Terra Bruciata */}
-            <nav className="hidden lg:flex items-center gap-1">
+            {/* NAVEGAÇÃO - Desktop only, espaçada elegantemente, Terra Bruciata */}
+            <nav className="hidden lg:flex items-center gap-8">
               {navLinks.map(link => (
                 <Link
                   key={link.href}
@@ -201,16 +201,18 @@ export default function Header() {
                         <Link
                           href="/login"
                           onClick={() => setUserMenuOpen(false)}
-                          className="block px-5 py-3 text-sm text-parthenon-brown hover:bg-parthenon-beige/50 transition-all duration-150"
+                          className="flex items-center gap-3 px-5 py-3 text-sm text-parthenon-brown hover:bg-parthenon-beige/50 transition-all duration-150"
                         >
-                          Entrar
+                          <LogIn className="w-4 h-4" strokeWidth={2} />
+                          <span>Entrar</span>
                         </Link>
                         <Link
                           href="/cadastro"
                           onClick={() => setUserMenuOpen(false)}
-                          className="block px-5 py-3 text-sm text-parthenon-brown hover:bg-parthenon-beige/50 transition-all duration-150 border-t border-gray-mid"
+                          className="flex items-center gap-3 px-5 py-3 text-sm text-parthenon-brown hover:bg-parthenon-beige/50 transition-all duration-150 border-t border-gray-mid"
                         >
-                          Criar Conta
+                          <User className="w-4 h-4" strokeWidth={2} />
+                          <span>Criar Conta</span>
                         </Link>
                       </>
                     )}
@@ -377,11 +379,21 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="block mb-2">
-                    <Button variant="primary" fullWidth>Entrar</Button>
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-parthenon-brown rounded-button hover:bg-parthenon-beige/60 transition-all duration-150 mb-2"
+                  >
+                    <LogIn className="w-4 h-4" strokeWidth={2} />
+                    <span>Entrar</span>
                   </Link>
-                  <Link href="/cadastro" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="secondary" fullWidth>Criar Conta</Button>
+                  <Link
+                    href="/cadastro"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-parthenon-brown rounded-button hover:bg-parthenon-beige/60 transition-all duration-150 border-t border-gray-mid"
+                  >
+                    <User className="w-4 h-4" strokeWidth={2} />
+                    <span>Criar Conta</span>
                   </Link>
                 </>
               )}
