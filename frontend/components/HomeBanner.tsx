@@ -156,18 +156,18 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
               </div>
             )}
 
-            {/* TÍTULO PRINCIPAL - Grande, bold, com text-shadow para garantir legibilidade */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-light leading-tight tracking-tight"
+            {/* TÍTULO PRINCIPAL - Branco puro, peso normal, text-shadow premium discreto */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-normal leading-tight tracking-tight text-white"
                 style={{
-                  textShadow: '0 2px 8px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2)',
+                  textShadow: '0 2px 10px rgba(0,0,0,0.5), 0 4px 20px rgba(0,0,0,0.25)',
                 }}>
               {currentSlide?.title || 'Parthenon Tecidos'}
             </h1>
 
-            {/* SUBTÍTULO - Legível, informativo */}
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light opacity-95 max-w-md leading-relaxed"
+            {/* SUBTÍTULO - Branco puro, legível e elegante */}
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light text-white max-w-md leading-relaxed"
                style={{
-                 textShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                 textShadow: '0 1px 6px rgba(0,0,0,0.4)',
                }}>
               {currentSlide?.subtitle || 'Qualidade e sofisticação em cada fio'}
             </p>
