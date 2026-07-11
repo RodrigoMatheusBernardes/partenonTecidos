@@ -3,22 +3,67 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight, Sparkles } from 'lucide-react';
 
 interface Slide {
   src: string;
   alt: string;
   title?: string;
   subtitle?: string;
+  buttonLabel?: string;
+  buttonHref?: string;
+  badge?: string;
+  overlayOpacity?: 'light' | 'medium' | 'dark'; // Overlay variável por slide
 }
 
-// Slides padrão (caso não sejam passados)
+// Slides padrão - REDESIGN PREMIUM
 const DEFAULT_SLIDES: Slide[] = [
-  { src: '/images/img/meio rosto.webp', alt: 'Modelo Parthenon', title: 'Sofisticação em Tecido', subtitle: 'Conheça nossa coleção premium' },
-  { src: '/images/img/meio rosto.webp', alt: 'Meio Rosto', title: 'Qualidade Inigualável', subtitle: 'Tecidos selecionados com precisão' },
-  { src: '/images/img/modelo.jpg', alt: 'Modelo linho', title: 'Elegância Natural', subtitle: 'Linhos e algodões exclusivos' },
-  { src: '/images/img/morena rosto.jpg', alt: 'Alfaiataria', title: 'Arte e Confecção', subtitle: 'Tecidos para criações incríveis' },
-  { src: '/images/img/olhos verdes.avif', alt: 'Fluidez', title: 'Fluidez e Conforto', subtitle: 'Sensação premium em cada fio' },
+  {
+    src: '/images/img/meio rosto.webp',
+    alt: 'Modelo Parthenon',
+    title: 'Sofisticação em Tecido',
+    subtitle: 'Descubra tecidos premium selecionados com precisão',
+    buttonLabel: 'Explorar Coleção',
+    buttonHref: '/loja',
+    badge: 'NOVO',
+    overlayOpacity: 'light',
+  },
+  {
+    src: '/images/img/meio rosto.webp',
+    alt: 'Qualidade Suprema',
+    title: 'Qualidade Inigualável',
+    subtitle: 'Cada fio escolhido para excelência',
+    buttonLabel: 'Ver Coleção Premium',
+    buttonHref: '/loja',
+    overlayOpacity: 'medium',
+  },
+  {
+    src: '/images/img/modelo.jpg',
+    alt: 'Elegância Natural',
+    title: 'Elegância Natural',
+    subtitle: 'Linhos e algodões que respiram sofisticação',
+    buttonLabel: 'Conhecer Linhos',
+    buttonHref: '/loja',
+    overlayOpacity: 'light',
+  },
+  {
+    src: '/images/img/morena rosto.jpg',
+    alt: 'Confecção Artesanal',
+    title: 'Arte em Cada Fio',
+    subtitle: 'Tecidos para criações extraordinárias',
+    buttonLabel: 'Ver Inspirações',
+    buttonHref: '/loja',
+    overlayOpacity: 'medium',
+  },
+  {
+    src: '/images/img/olhos verdes.avif',
+    alt: 'Conforto Premium',
+    title: 'Conforto que Inspira',
+    subtitle: 'Sensação de luxo em cada uso',
+    buttonLabel: 'Descobrir Conforto',
+    buttonHref: '/loja',
+    overlayOpacity: 'light',
+  },
 ];
 
 interface HomeBannerProps {
@@ -29,6 +74,16 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
   const [current, setCurrent] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const total = slides.length;
+
+  const currentSlide = slides[current];
+  const overlayOpacity = currentSlide?.overlayOpacity || 'medium';
+  
+  // Mapa de opacidades de overlay
+  const overlayMap = {
+    light: 'bg-gradient-to-t from-black/20 via-black/10 to-transparent',
+    medium: 'bg-gradient-to-t from-black/35 via-black/20 to-transparent',
+    dark: 'bg-gradient-to-t from-black/50 via-black/30 to-transparent',
+  };
 
   const next = useCallback(() => {
     if (isTransitioning || total <= 1) return;
@@ -42,136 +97,172 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
     setCurrent((prev) => (prev - 1 + total) % total);
   }, [total, isTransitioning]);
 
-  // Troca automática a cada 6.5 segundos
+  // Autoplay 6.5 segundos
   useEffect(() => {
     if (total <= 1) return;
     const timer = setInterval(next, 6500);
     return () => clearInterval(timer);
   }, [next, total]);
 
-  // Libera a trava de transição após a animação
+  // Libera trava após transição
   useEffect(() => {
     const timeout = setTimeout(() => setIsTransitioning(false), 900);
     return () => clearTimeout(timeout);
   }, [current]);
 
   return (
-    <section className="relative w-full bg-dark-light group h-48 sm:h-64 md:h-80 lg:h-96 overflow-hidden">
-      {/* Slides de fundo */}
-      <div className="absolute inset-0 w-full h-full">
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              index === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-          >
-            <Image
-              src={slide.src}
-              alt={slide.alt}
-              fill
-              className="object-cover object-center"
-              priority={index === 0}
-              sizes="100vw"
-              quality={85}
-            />
-          </div>
-        ))}
-      </div>
+    <section className="relative w-full overflow-hidden group">
+      {/* HERO CONTAINER - Altura Premium */}
+      <div className="relative w-full h-56 sm:h-80 md:h-96 lg:h-[600px] xl:h-[700px] bg-dark-light">
 
-      {/* Overlay gradiente profissional */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/25 to-transparent z-20" />
-
-      {/* Conteúdo centralizado e simples */}
-      <div className="relative z-30 flex items-center justify-center h-full px-4 md:px-6">
-        <div className="text-center text-white space-y-3 md:space-y-4 animate-fade-in">
-          {/* Título principal */}
-          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-light leading-tight tracking-tight">
-            {slides[current]?.title || 'Parthenon Tecidos'}
-          </h1>
-
-          {/* Subtítulo */}
-          <p className="text-xs sm:text-sm md:text-base font-light opacity-90">
-            {slides[current]?.subtitle || 'Qualidade e sofisticação em cada fio'}
-          </p>
-
-          {/* CTA Principal */}
-          <div className="pt-2 md:pt-4">
-            <Link
-              href="/loja"
-              className="
-                inline-flex items-center justify-center gap-2
-                px-6 md:px-8 py-2.5 md:py-3
-                bg-parthenon-royal text-white
-                rounded-button font-semibold text-xs sm:text-sm md:text-base
-                uppercase tracking-wider
-                hover:bg-parthenon-navy transition-all duration-300 hover:scale-105 hover:shadow-lg
-                focus:outline-none focus:ring-2 focus:ring-parthenon-royal focus:ring-offset-2 focus:ring-offset-black/30
-              "
+        {/* BACKGROUND SLIDES */}
+        <div className="absolute inset-0 w-full h-full">
+          {slides.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              }`}
             >
-              Explorar Coleção
-              <ArrowRight className="w-3 h-3 md:w-4 md:h-4 group-hover/cta:translate-x-1 transition-transform duration-300" />
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Controles minimizados - apenas indicadores discretos */}
-      {total > 1 && (
-        <>
-          {/* Botões de navegação discretos */}
-          <button
-            onClick={prev}
-            className="
-              absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-40
-              p-2 md:p-2.5 bg-white/10 hover:bg-white/25
-              rounded-full border border-white/30 hover:border-white/60
-              transition-all duration-300 hover:scale-110
-              focus:outline-none focus:ring-2 focus:ring-white/50
-              hidden sm:flex items-center justify-center
-            "
-            aria-label="Slide anterior"
-          >
-            <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-white" strokeWidth={2} />
-          </button>
-
-          <button
-            onClick={next}
-            className="
-              absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-40
-              p-2 md:p-2.5 bg-white/10 hover:bg-white/25
-              rounded-full border border-white/30 hover:border-white/60
-              transition-all duration-300 hover:scale-110
-              focus:outline-none focus:ring-2 focus:ring-white/50
-              hidden sm:flex items-center justify-center
-            "
-            aria-label="Próximo slide"
-          >
-            <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-white" strokeWidth={2} />
-          </button>
-
-          {/* Indicadores discretos - Bottom */}
-          <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-40 flex gap-2" role="tablist" aria-label="Navegação de slides">
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                role="tab"
-                aria-selected={index === current}
-                onClick={() => !isTransitioning && setCurrent(index)}
-                className={`
-                  h-1.5 rounded-full transition-all duration-400 cursor-pointer
-                  focus:outline-none focus:ring-1 focus:ring-white/50
-                  ${index === current 
-                    ? 'w-6 bg-parthenon-royal shadow-lg' 
-                    : 'w-1.5 bg-white/40 hover:bg-white/60'
-                  }
-                `}
-                aria-label={`Ir para slide ${index + 1}`}
+              <Image
+                src={slide.src}
+                alt={slide.alt}
+                fill
+                className="object-cover object-center"
+                priority={index === 0}
+                sizes="100vw"
+                quality={90}
               />
-            ))}
+            </div>
+          ))}
+        </div>
+
+        {/* OVERLAY GRADIENTE - Variável por Slide */}
+        <div className={`absolute inset-0 ${overlayMap[overlayOpacity as keyof typeof overlayMap]} z-20 transition-opacity duration-1000`} />
+
+        {/* CONTEÚDO PRINCIPAL - Assimétrico à esquerda, espaço vazio à direita (premium pattern) */}
+        <div className="relative z-30 flex items-center justify-start h-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+          
+          {/* Left Content Block - 55% desktop, full mobile */}
+          <div className="w-full lg:w-1/2 text-white space-y-4 md:space-y-6 lg:space-y-8 animate-fade-in max-w-xl">
+            
+            {/* BADGE - Opcional, discreto e sofisticado */}
+            {currentSlide?.badge && (
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-parthenon-brown/20 backdrop-blur-sm rounded-full border border-parthenon-brown/40 w-fit">
+                <Sparkles className="w-3 h-3 text-parthenon-brown" strokeWidth={2.5} />
+                <span className="text-xs font-bold uppercase tracking-widest text-parthenon-brown">
+                  {currentSlide.badge}
+                </span>
+              </div>
+            )}
+
+            {/* TÍTULO PRINCIPAL - Grande, bold, com text-shadow para garantir legibilidade */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-light leading-tight tracking-tight"
+                style={{
+                  textShadow: '0 2px 8px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2)',
+                }}>
+              {currentSlide?.title || 'Parthenon Tecidos'}
+            </h1>
+
+            {/* SUBTÍTULO - Legível, informativo */}
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light opacity-95 max-w-md leading-relaxed"
+               style={{
+                 textShadow: '0 1px 4px rgba(0,0,0,0.3)',
+               }}>
+              {currentSlide?.subtitle || 'Qualidade e sofisticação em cada fio'}
+            </p>
+
+            {/* CTA BOTÃO - Terra Bruciata Premium */}
+            <div className="pt-2 md:pt-4 lg:pt-6">
+              <Link
+                href={currentSlide?.buttonHref || '/loja'}
+                className="
+                  inline-flex items-center justify-center gap-2.5
+                  px-6 sm:px-8 md:px-10 lg:px-12 py-3 md:py-3.5 lg:py-4
+                  bg-parthenon-brown text-white
+                  rounded-button font-semibold text-sm md:text-base lg:text-lg
+                  uppercase tracking-wider
+                  shadow-md-luxury hover:shadow-lg-luxury
+                  hover:bg-parthenon-brown-dark 
+                  transition-all duration-300 hover:scale-105
+                  focus:outline-none focus:ring-2 focus:ring-parthenon-brown focus:ring-offset-2 focus:ring-offset-black/30
+                  group/cta
+                "
+              >
+                {currentSlide?.buttonLabel || 'Explorar Coleção'}
+                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover/cta:translate-x-1 transition-transform duration-300" />
+              </Link>
+            </div>
           </div>
-        </>
-      )}
+
+          {/* Right Space - Espaço vazio luxuoso (premium aesthetic) */}
+          <div className="hidden lg:block flex-1" />
+        </div>
+
+        {/* CONTROLES DE NAVEGAÇÃO - Premium refinado */}
+        {total > 1 && (
+          <>
+            {/* Botão Anterior - Esquerda */}
+            <button
+              onClick={prev}
+              className="
+                absolute left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-40
+                p-2.5 md:p-3 lg:p-3.5
+                bg-white/15 hover:bg-white/30
+                rounded-full border border-white/30 hover:border-white/60
+                transition-all duration-300 hover:scale-110 hover:shadow-lg-luxury
+                focus:outline-none focus:ring-2 focus:ring-white/50
+                hidden sm:flex items-center justify-center
+                group/nav
+              "
+              aria-label="Slide anterior"
+              title="Slide anterior"
+            >
+              <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white group-hover/nav:scale-125 transition-transform" strokeWidth={2} />
+            </button>
+
+            {/* Botão Próximo - Direita */}
+            <button
+              onClick={next}
+              className="
+                absolute right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 z-40
+                p-2.5 md:p-3 lg:p-3.5
+                bg-white/15 hover:bg-white/30
+                rounded-full border border-white/30 hover:border-white/60
+                transition-all duration-300 hover:scale-110 hover:shadow-lg-luxury
+                focus:outline-none focus:ring-2 focus:ring-white/50
+                hidden sm:flex items-center justify-center
+                group/nav
+              "
+              aria-label="Próximo slide"
+              title="Próximo slide"
+            >
+              <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white group-hover/nav:scale-125 transition-transform" strokeWidth={2} />
+            </button>
+
+            {/* INDICADORES DE SLIDES - Bottom, discreto e elegante */}
+            <div className="absolute bottom-4 md:bottom-6 lg:bottom-8 left-1/2 -translate-x-1/2 z-40 flex gap-2.5 md:gap-3" role="tablist" aria-label="Navegação de slides">
+              {slides.map((_, index) => (
+                <button
+                  key={index}
+                  role="tab"
+                  aria-selected={index === current}
+                  aria-label={`Ir para slide ${index + 1}`}
+                  onClick={() => !isTransitioning && setCurrent(index)}
+                  className={`
+                    h-2 rounded-full transition-all duration-400 cursor-pointer
+                    focus:outline-none focus:ring-1 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black/30
+                    ${index === current 
+                      ? 'w-8 md:w-10 bg-parthenon-brown shadow-lg-luxury' 
+                      : 'w-2 bg-white/40 hover:bg-white/60'
+                    }
+                  `}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </section>
   );
 }
