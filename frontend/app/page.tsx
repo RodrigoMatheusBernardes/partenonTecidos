@@ -126,189 +126,235 @@ export default function Home() {
       <TrendingBar />
 
       {/* SEÇÃO COLEÇÃO */}
-      <main className="container-main py-12 md:py-20">
+      <main className="container-main py-16 md:py-28">
+        {/* BACKGROUND REFINADO */}
+        <div className="absolute inset-0 pointer-events-none opacity-40">
+          <div className="absolute inset-0 bg-gradient-to-b from-gold/3 via-transparent to-light/20" />
+        </div>
 
-        {/* TÍTULO */}
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="font-serif font-semibold text-3xl md:text-5xl text-dark-light tracking-wide">
-            Nossa Coleção
-          </h2>
-          <p className="text-text-secondary text-sm md:text-base mt-3">
-            Explore nossos tecidos selecionados com a elegância que você merece
+        <div className="relative z-10">
+          {/* TÍTULO COM DIVIDER VISUAL */}
+          <div className="text-center mb-14 md:mb-20">
+            <div className="flex items-center justify-center gap-4 mb-5">
+              <div className="h-0.5 w-12 bg-gradient-to-r from-transparent to-gold" />
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+                Excelência em Tecidos
+              </span>
+              <div className="h-0.5 w-12 bg-gradient-to-l from-transparent to-gold" />
+            </div>
+            <h2 className="font-serif font-bold text-4xl md:text-6xl text-dark-light tracking-tight leading-tight mb-4">
+              Nossa Coleção Premium
+            </h2>
+            <p className="text-text-secondary text-base md:text-lg font-light max-w-2xl mx-auto">
+              Explore nossa seleção refinada de tecidos de alta qualidade, escolhidos com excelência para elevar seus projetos
+            </p>
+          </div>
+
+          <div className="flex gap-8 lg:gap-12">
+
+            {/* FILTRO DESKTOP */}
+            <aside className="hidden lg:block w-64 flex-shrink-0">
+              <div className="sticky top-28 bg-white rounded-card shadow-sm-luxury border border-gray-mid p-6 backdrop-blur-sm">
+                <FiltersSidebar
+                  precoMin={precoMin}
+                  precoMax={precoMax}
+                  precoMaxGlobal={precoMaxGlobal}
+                  categorias={categorias}
+                  categoriasSelecionadas={categoriasSelecionadas}
+                  onPrecoChange={handlePrecoChange}
+                  onCategoriaChange={handleCategoriaChange}
+                  limparFiltros={limparFiltros}
+                />
+              </div>
+            </aside>
+
+            {/* CONTEÚDO PRINCIPAL */}
+            <div className="flex-1 min-w-0">
+
+              {/* BARRA DE CONTROLES */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-10">
+                <div className="w-full sm:max-w-xs">
+                  <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
+                </div>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  {/* Botão Filtro Mobile */}
+                  <button
+                    onClick={() => setSidebarAberta(true)}
+                    className="
+                      lg:hidden flex items-center gap-2
+                      px-4 py-3
+                      border-2 border-gray-mid rounded-button
+                      text-sm font-semibold text-dark-light
+                      bg-white hover:bg-light hover:border-dark-light
+                      transition-all duration-300
+                      focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2
+                    "
+                  >
+                    <SlidersHorizontal className="w-4 h-4" strokeWidth={2} />
+                    Filtros
+                    {(categoriasSelecionadas.length > 0 || precoMin > 0 || precoMax < precoMaxGlobal) && (
+                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold text-dark-light text-xs font-bold ml-1">
+                        {categoriasSelecionadas.length + (precoMin > 0 || precoMax < precoMaxGlobal ? 1 : 0)}
+                      </span>
+                    )}
+                  </button>
+
+                  <p className="text-sm text-text-secondary font-medium whitespace-nowrap">
+                    <span className="font-bold text-dark-light">{produtosFiltrados.length}</span> produto{produtosFiltrados.length !== 1 ? 's' : ''}
+                  </p>
+
+                  <select
+                    value={ordenacao}
+                    onChange={e => { setOrdenacao(e.target.value); setPagina(1); }}
+                    className="
+                      border-2 border-gray-mid rounded-button
+                      px-4 py-3 text-sm font-medium
+                      bg-white text-dark-light
+                      focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2
+                      transition-all duration-300 cursor-pointer
+                    "
+                  >
+                    <option value="">Mais relevantes</option>
+                    <option value="menor-preco">Menor Preço</option>
+                    <option value="maior-preco">Maior Preço</option>
+                    <option value="nome">Nome (A-Z)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* ESTADO VAZIO */}
+              {!carregando && produtosFiltrados.length === 0 && (
+                <div className="text-center py-24 bg-gradient-to-br from-light via-light-mid to-gray-mid rounded-card border border-gray-mid">
+                  <Package className="w-16 h-16 text-text-light mx-auto mb-4 opacity-40" strokeWidth={1} />
+                  <p className="text-text-secondary font-semibold text-lg mb-6">
+                    Nenhum produto encontrado.
+                  </p>
+                  <button
+                    onClick={limparFiltros}
+                    className="
+                      text-sm font-bold
+                      text-gold uppercase tracking-wide
+                      border-b-2 border-gold
+                      hover:text-dark-light hover:border-dark-light
+                      transition-all duration-300
+                      pb-1
+                    "
+                  >
+                    Limpar todos os filtros
+                  </button>
+                </div>
+              )}
+
+              {/* GRID DE PRODUTOS */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 pb-4">
+                {carregando
+                  ? Array.from({ length: 12 }).map((_, i) => <SkeletonProduct key={i} />)
+                  : paginaAtual.map(produto => (
+                      <ProductCard key={produto._id} produto={produto} />
+                    ))
+                }
+              </div>
+
+              {/* PAGINAÇÃO */}
+              {!carregando && totalPaginas > 1 && (
+                <div className="mt-16 pt-8 border-t border-gray-mid">
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    <button
+                      onClick={() => { setPagina(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      disabled={pagina === 1}
+                      className="px-6 py-3 text-sm font-semibold text-dark-light border-2 border-gray-mid rounded-button hover:bg-dark-light hover:text-white hover:border-dark-light disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 uppercase tracking-wide"
+                    >
+                      ← Anterior
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPaginas }, (_, i) => i + 1)
+                        .filter(num => totalPaginas <= 7 || num === 1 || num === totalPaginas || Math.abs(num - pagina) <= 2)
+                        .map((num, idx, arr) => (
+                          <React.Fragment key={num}>
+                            {idx > 0 && arr[idx - 1] !== num - 1 && (
+                              <span className="text-text-secondary px-2 py-3 text-sm font-medium">…</span>
+                            )}
+                            <button
+                              onClick={() => { setPagina(num); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                              className={`
+                                w-11 h-11 rounded-button text-sm font-bold
+                                transition-all duration-300
+                                ${num === pagina
+                                  ? 'bg-dark-light text-white shadow-md-luxury border-2 border-dark-light'
+                                  : 'text-text-secondary border-2 border-gray-mid hover:bg-light hover:text-dark-light hover:border-dark-light'
+                                }
+                              `}
+                            >
+                              {num}
+                            </button>
+                          </React.Fragment>
+                        ))}
+                    </div>
+
+                    <button
+                      onClick={() => { setPagina(p => Math.min(totalPaginas, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      disabled={pagina === totalPaginas}
+                      className="px-6 py-3 text-sm font-semibold text-dark-light border-2 border-gray-mid rounded-button hover:bg-dark-light hover:text-white hover:border-dark-light disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 uppercase tracking-wide"
+                    >
+                      Próximo →
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* BENEFÍCIOS - Seção Premium */}
+      <section className="container-main mt-24 md:mt-40 pt-20 border-t border-gray-mid">
+        <div className="text-center mb-16">
+          <h3 className="font-serif font-bold text-3xl md:text-4xl text-dark-light mb-3">
+            Por que escolher Parthenon
+          </h3>
+          <p className="text-text-secondary font-light text-base">
+            Qualidade, confiança e excelência em cada detalhe
           </p>
         </div>
-
-        <div className="flex gap-8 lg:gap-12">
-
-          {/* FILTRO DESKTOP */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="sticky top-8 bg-white rounded-card shadow-sm-luxury border border-gray-mid p-6">
-              <FiltersSidebar
-                precoMin={precoMin}
-                precoMax={precoMax}
-                precoMaxGlobal={precoMaxGlobal}
-                categorias={categorias}
-                categoriasSelecionadas={categoriasSelecionadas}
-                onPrecoChange={handlePrecoChange}
-                onCategoriaChange={handleCategoriaChange}
-                limparFiltros={limparFiltros}
-              />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+          {[
+            { 
+              icon: <Package className="w-10 h-10 text-gold" strokeWidth={1.5} />, 
+              title: 'Qualidade Premium', 
+              desc: 'Tecidos selecionados dos melhores fornecedores, com acabamento impecável e características únicas.' 
+            },
+            { 
+              icon: <Truck className="w-10 h-10 text-gold" strokeWidth={1.5} />, 
+              title: 'Entrega Rápida', 
+              desc: 'Enviamos para todo o Brasil com agilidade, total rastreamento e embalagem cuidadosa.' 
+            },
+            { 
+              icon: <Headphones className="w-10 h-10 text-gold" strokeWidth={1.5} />, 
+              title: 'Suporte Especializado', 
+              desc: 'Atendimento personalizado para ajudar na escolha do tecido ideal para seu projeto.' 
+            },
+          ].map(({ icon, title, desc }) => (
+            <div 
+              key={title} 
+              className="
+                p-8 rounded-card border-2 border-gray-mid
+                bg-gradient-to-br from-white to-light/30
+                hover:shadow-lg-luxury hover:border-gold
+                transition-all duration-400
+              "
+            >
+              <div className="mb-5">{icon}</div>
+              <h4 className="font-serif font-bold text-xl text-dark-light mb-3">
+                {title}
+              </h4>
+              <p className="text-text-secondary text-sm leading-relaxed">
+                {desc}
+              </p>
             </div>
-          </aside>
-
-          {/* CONTEÚDO PRINCIPAL */}
-          <div className="flex-1 min-w-0">
-
-            {/* BARRA DE CONTROLES */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
-              <div className="w-full sm:max-w-xs">
-                <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
-              </div>
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                {/* Botão Filtro Mobile */}
-                <button
-                  onClick={() => setSidebarAberta(true)}
-                  className="
-                    lg:hidden flex items-center gap-2
-                    px-4 py-2.5
-                    border border-gray-mid rounded-button
-                    text-sm font-medium text-dark-light
-                    hover:bg-light hover:border-dark-light
-                    transition-all duration-300
-                    focus:outline-none focus:ring-2 focus:ring-gold
-                  "
-                >
-                  <SlidersHorizontal className="w-4 h-4" strokeWidth={2} />
-                  Filtros
-                  {(categoriasSelecionadas.length > 0 || precoMin > 0 || precoMax < precoMaxGlobal) && (
-                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-dark-light text-white text-xs font-bold ml-1">
-                      {categoriasSelecionadas.length + (precoMin > 0 || precoMax < precoMaxGlobal ? 1 : 0)}
-                    </span>
-                  )}
-                </button>
-
-                <p className="text-sm text-text-secondary font-medium whitespace-nowrap ml-auto sm:ml-0">
-                  {produtosFiltrados.length} produto{produtosFiltrados.length !== 1 ? 's' : ''}
-                </p>
-
-                <select
-                  value={ordenacao}
-                  onChange={e => { setOrdenacao(e.target.value); setPagina(1); }}
-                  className="
-                    border border-gray-mid rounded-button
-                    px-4 py-2.5 text-sm font-medium
-                    bg-white text-dark-light
-                    focus:outline-none focus:ring-2 focus:ring-gold
-                    transition
-                  "
-                >
-                  <option value="">Mais relevantes</option>
-                  <option value="menor-preco">Menor Preço</option>
-                  <option value="maior-preco">Maior Preço</option>
-                  <option value="nome">Nome (A-Z)</option>
-                </select>
-              </div>
-            </div>
-
-            {/* ESTADO VAZIO */}
-            {!carregando && produtosFiltrados.length === 0 && (
-              <div className="text-center py-20 bg-light rounded-card">
-                <p className="text-text-secondary font-medium text-lg mb-4">
-                  Nenhum produto encontrado.
-                </p>
-                <button
-                  onClick={limparFiltros}
-                  className="
-                    text-sm font-semibold
-                    text-dark-light underline-offset-4
-                    hover:text-gold hover:underline
-                    transition-colors
-                  "
-                >
-                  Limpar filtros
-                </button>
-              </div>
-            )}
-
-            {/* GRID DE PRODUTOS */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
-              {carregando
-                ? Array.from({ length: 12 }).map((_, i) => <SkeletonProduct key={i} />)
-                : paginaAtual.map(produto => (
-                    <ProductCard key={produto._id} produto={produto} />
-                  ))
-              }
-            </div>
-
-            {/* PAGINAÇÃO */}
-            {!carregando && totalPaginas > 1 && (
-              <div className="mt-12 flex flex-wrap items-center justify-center gap-2">
-                <button
-                  onClick={() => { setPagina(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  disabled={pagina === 1}
-                  className="px-5 py-2.5 text-sm font-medium text-dark-light border border-gray-mid rounded-button hover:bg-dark-light hover:text-white disabled:opacity-40 transition-all"
-                >
-                  ← Anterior
-                </button>
-
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPaginas }, (_, i) => i + 1)
-                    .filter(num => totalPaginas <= 7 || num === 1 || num === totalPaginas || Math.abs(num - pagina) <= 2)
-                    .map((num, idx, arr) => (
-                      <React.Fragment key={num}>
-                        {idx > 0 && arr[idx - 1] !== num - 1 && (
-                          <span className="text-text-light px-2 py-2">…</span>
-                        )}
-                        <button
-                          onClick={() => { setPagina(num); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                          className={`
-                            w-10 h-10 rounded-button text-sm font-medium
-                            transition-all duration-300
-                            ${num === pagina
-                              ? 'bg-dark-light text-white shadow-sm-luxury'
-                              : 'text-text-secondary hover:bg-light hover:text-dark-light'
-                            }
-                          `}
-                        >
-                          {num}
-                        </button>
-                      </React.Fragment>
-                    ))}
-                </div>
-
-                <button
-                  onClick={() => { setPagina(p => Math.min(totalPaginas, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  disabled={pagina === totalPaginas}
-                  className="px-5 py-2.5 text-sm font-medium text-dark-light border border-gray-mid rounded-button hover:bg-dark-light hover:text-white disabled:opacity-40 transition-all"
-                >
-                  Próximo →
-                </button>
-              </div>
-            )}
-          </div>
+          ))}
         </div>
-
-        {/* BENEFÍCIOS */}
-        <section className="mt-20 md:mt-32 pt-16 border-t border-gray-mid">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
-            {[
-              { icon: <Package className="w-8 h-8 mx-auto mb-4 text-gold" strokeWidth={1.5} />, title: 'Qualidade Premium', desc: 'Tecidos selecionados dos melhores fornecedores, com acabamento impecável.' },
-              { icon: <Truck className="w-8 h-8 mx-auto mb-4 text-gold" strokeWidth={1.5} />, title: 'Entrega Rápida', desc: 'Enviamos para todo o Brasil com agilidade e total rastreamento.' },
-              { icon: <Headphones className="w-8 h-8 mx-auto mb-4 text-gold" strokeWidth={1.5} />, title: 'Atendimento Especial', desc: 'Suporte personalizado para ajudar na escolha do tecido ideal.' },
-            ].map(({ icon, title, desc }) => (
-              <div key={title} className="p-8 rounded-card border border-gray-mid hover:shadow-md-luxury transition-shadow duration-300">
-                {icon}
-                <h3 className="font-serif font-semibold text-xl md:text-2xl text-dark-light mb-3">
-                  {title}
-                </h3>
-                <p className="text-text-secondary text-sm leading-relaxed max-w-xs mx-auto">
-                  {desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
+      </section>
 
       {/* FILTRO MOBILE DRAWER */}
       {sidebarAberta && (
