@@ -146,7 +146,7 @@ export default function Header() {
                   className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury"
                   title={isAuthenticated ? `Olá, ${user?.nome}` : 'Sua conta'}
                 >
-                  <User className="w-5 h-5 text-parthenon-brown" strokeWidth={1.5} />
+                  <User className="w-5 h-5 text-parthenon-brown translate-y-px" strokeWidth={1.5} />
                 </button>
 
                 {userMenuOpen && (
