@@ -139,20 +139,17 @@ export default function Header() {
                 )}
               </button>
 
-              {/* Menu Usuário (Desktop) - Terra Bruciata */}
+              {/* Menu Usuário (Desktop) - Apenas ícone, estilo Hugo Boss */}
               <div className="relative hidden lg:block" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury flex items-center gap-2"
+                  className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury flex items-center gap-1.5"
                   title={isAuthenticated ? `Olá, ${user?.nome}` : 'Sua conta'}
                 >
                   <div className="w-6 h-6 rounded-full bg-parthenon-brown flex items-center justify-center shadow-sm-luxury">
                     <User className="w-3 h-3 text-white" strokeWidth={2.5} />
                   </div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-parthenon-brown hidden sm:block">
-                    {isAuthenticated ? 'Conta' : 'Login'}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-text-secondary" strokeWidth={2} />
+                  <ChevronDown className="w-3.5 h-3.5 text-parthenon-brown" strokeWidth={2} />
                 </button>
 
                 {userMenuOpen && (
