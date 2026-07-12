@@ -9,7 +9,7 @@ import CartDrawer from '@/components/CartDrawer';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import {
-  Search, ShoppingBag, Heart, LogOut, Package, Shield, Menu, X, ChevronDown, User, LogIn
+  Search, ShoppingBag, Heart, LogOut, Package, Shield, Menu, X, User, LogIn
 } from 'lucide-react';
 
 export default function Header() {
@@ -139,17 +139,16 @@ export default function Header() {
                 )}
               </button>
 
-              {/* Menu Usuário (Desktop) - Apenas ícone, estilo Hugo Boss */}
+              {/* Menu Usuário (Desktop) - Apenas ícone de usuário, estilo Hugo Boss */}
               <div className="relative hidden lg:block" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury flex items-center gap-1.5"
+                  className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury"
                   title={isAuthenticated ? `Olá, ${user?.nome}` : 'Sua conta'}
                 >
-                  <div className="w-6 h-6 rounded-full bg-parthenon-brown flex items-center justify-center shadow-sm-luxury">
+                  <div className="w-6 h-6 rounded-full bg-parthenon-brown flex items-center justify-center shadow-sm-luxury hover:bg-parthenon-brown-dark transition-colors">
                     <User className="w-3 h-3 text-white" strokeWidth={2.5} />
                   </div>
-                  <ChevronDown className="w-3.5 h-3.5 text-parthenon-brown" strokeWidth={2} />
                 </button>
 
                 {userMenuOpen && (
