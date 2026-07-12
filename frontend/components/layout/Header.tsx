@@ -107,7 +107,7 @@ export default function Header() {
               {/* Busca - Ícone elegante */}
               <button 
                 onClick={() => setSearchOverlayOpen(!searchOverlayOpen)}
-                className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury"
+                className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury flex items-center justify-center"
                 aria-label="Buscar"
                 title="Buscar tecidos"
               >
@@ -117,7 +117,7 @@ export default function Header() {
               {/* Favoritos - Link elegante */}
               <Link 
                 href="/favoritos" 
-                className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury"
+                className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury flex items-center justify-center"
                 aria-label="Favoritos"
                 title="Meus favoritos"
               >
@@ -127,7 +127,7 @@ export default function Header() {
               {/* Carrinho com Badge - Terra Bruciata */}
               <button
                 onClick={() => setCartOpen(true)}
-                className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury relative"
+                className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury relative flex items-center justify-center"
                 aria-label="Carrinho"
                 title="Meu carrinho"
               >
@@ -143,10 +143,10 @@ export default function Header() {
               <div className="relative hidden lg:block" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury"
+                  className="p-2.5 hover:bg-parthenon-beige rounded-button transition-all duration-300 hover:scale-105 hover:shadow-sm-luxury flex items-center justify-center"
                   title={isAuthenticated ? `Olá, ${user?.nome}` : 'Sua conta'}
                 >
-                  <User className="w-5 h-5 text-parthenon-brown translate-y-px" strokeWidth={1.5} />
+                  <User className="w-5 h-5 text-parthenon-brown" strokeWidth={1.5} />
                 </button>
 
                 {userMenuOpen && (
