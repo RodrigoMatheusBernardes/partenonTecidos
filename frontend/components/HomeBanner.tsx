@@ -52,6 +52,7 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
 
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-zinc-900 group">
+      
       {/* Slides de fundo */}
       <div className="absolute inset-0 w-full h-full">
         {slides.map((slide, index) => (
@@ -65,7 +66,8 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
               src={slide.src}
               alt={slide.alt}
               fill
-              className="object-cover object-center grayscale"
+              // ALTERAÇÃO 1: Brilho reduzido para 60% + grayscale
+              className="object-cover object-center brightness-[0.6] grayscale"
               priority={index === 0}
               sizes="100vw"
             />
@@ -73,25 +75,25 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
         ))}
       </div>
 
-      {/* 
-        ALTERAÇÃO 1: Overlay mais escuro 
-        De bg-black/20 para bg-black/40. Isso cria uma tela escura sólida atrás do texto.
-      */}
-      <div className="absolute inset-0 bg-black/40 z-20" />
+      {/* ALTERAÇÃO 2: Overlay sutil (reduzido de 40% para 20%) */}
+      <div className="absolute inset-0 bg-black/20 z-20" />
 
       {/* Texto centralizado */}
       <div className="relative z-30 flex items-center justify-center h-full px-6">
-        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)]">
+        {/* 
+          ALTERAÇÃO 3: Sombra técnica e precisa 
+          "drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]" cria uma borda escura e nítida ao redor do texto.
+        */}
+        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
           <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-normal font-sans text-white">
             Nova Coleção 2026
           </p>
-          
+
           {/* 
-            ALTERAÇÃO 2: Peso da fonte mais robusto 
-            De font-light para font-normal. Isso torna o texto branco muito mais "sólido" e impactante.
-            Mantive o tracking (espaçamento) pois isso é essencial para a elegância.
+            ALTERAÇÃO 4: Peso da fonte refinado
+            De font-normal para font-medium. Garante "corpo" sólido ao texto branco.
           */}
-          <h1 className="text-4xl md:text-7xl lg:text-8xl font-normal tracking-[0.1em] leading-tight font-serif text-white">
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-medium tracking-[0.1em] leading-tight font-serif text-white">
             Parthenon <br />
             <span className="font-bold tracking-tighter text-white">Tecidos</span>
           </h1>
@@ -99,12 +101,8 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
           <p className="text-sm md:text-base tracking-[0.2em] font-normal uppercase font-sans text-white">
             A elegância que tece histórias
           </p>
-          
-          {/* 
-            ALTERAÇÃO 3: Melhoria do CTA (Botão)
-            Mudamos de borda transparente para um botão sólido branco com texto escuro.
-            Isso cria um ponto focal de altíssimo contraste, guiando o olhar do usuário diretamente para a ação.
-          */}
+
+          {/* CTA Sólido (Mantido da versão anterior, pois já possui excelente contraste) */}
           <div className="pt-2">
             <Link
               href="/loja"
