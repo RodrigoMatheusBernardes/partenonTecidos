@@ -81,14 +81,14 @@ export default function Header() {
           <div className="flex items-center gap-6">
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="text-[#D4D4D4] hover:text-[#C5A880] transition-colors"
+              className="text-[#FFFFFF] hover:text-[#C5A880] transition-colors"
             >
               <Search className="w-5 h-5" strokeWidth={1.5} />
             </button>
 
             <Link
               href="/favoritos"
-              className="text-[#D4D4D4] hover:text-[#C5A880] transition-colors hidden sm:block"
+              className="text-[#FFFFFF] hover:text-[#C5A880] transition-colors hidden sm:block"
             >
               <Heart className="w-5 h-5" strokeWidth={1.5} />
             </Link>
@@ -96,14 +96,14 @@ export default function Header() {
             {isAuthenticated ? (
               <Link
                 href="/meu-perfil"
-                className="text-[#D4D4D4] hover:text-[#C5A880] transition-colors hidden sm:block"
+                className="text-[#FFFFFF] hover:text-[#C5A880] transition-colors hidden sm:block"
               >
                 <User className="w-5 h-5" strokeWidth={1.5} />
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="text-[#D4D4D4] hover:text-[#C5A880] transition-colors hidden sm:block"
+                className="text-[#FFFFFF] hover:text-[#C5A880] transition-colors hidden sm:block"
               >
                 <User className="w-5 h-5" strokeWidth={1.5} />
               </Link>
@@ -111,7 +111,7 @@ export default function Header() {
 
             <button
               onClick={() => setCartOpen(true)}
-              className="text-[#D4D4D4] hover:text-[#C5A880] transition-colors relative"
+              className="text-[#FFFFFF] hover:text-[#C5A880] transition-colors relative"
             >
               <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
               {totalItems > 0 && (
@@ -123,7 +123,7 @@ export default function Header() {
 
             <button
               onClick={() => setMobileOpen(true)}
-              className="md:hidden text-[#D4D4D4] hover:text-[#C5A880] transition-colors"
+              className="md:hidden text-[#FFFFFF] hover:text-[#C5A880] transition-colors"
             >
               <Menu className="w-6 h-6" strokeWidth={1.5} />
             </button>
