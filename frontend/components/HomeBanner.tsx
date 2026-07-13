@@ -53,7 +53,7 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-zinc-900 group">
       
-      {/* Slides de fundo (inalterados) */}
+      {/* Slides de fundo */}
       <div className="absolute inset-0 w-full h-full">
         {slides.map((slide, index) => (
           <div
@@ -76,22 +76,21 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
 
       <div className="absolute inset-0 bg-black/20 z-20" />
 
-      {/* Texto centralizado */}
       <div className="relative z-30 flex items-center justify-center h-full px-6">
-        
-        {/* Camada de sombra precisa e robusta */}
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
           
-          {/* Rótulo - ALTERADO: peso alterado para font-medium */}
+          {/* 
+            CORREÇÃO 1: 
+            "Nova Coleção 2026" – mudado de font-normal para font-medium
+          */}
           <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-medium font-sans text-white">
             Nova Coleção 2026
           </p>
 
           {/* 
-            Título Principal - ALTERADO:
-            - "Parthenon": mudado de font-light para font-normal para adquirir massa visual e ficar branco.
-            - "Tecidos": mantido em font-medium como âncora principal.
-            Ambos com text-white puro.
+            CORREÇÃO 2: 
+            "Parthenon" – mudado de font-light para font-normal.
+            "Tecidos" mantém font-medium para ancorar o título.
           */}
           <h1 className="text-4xl md:text-7xl lg:text-8xl font-normal tracking-[0.15em] leading-[1.1] font-serif text-white">
             Parthenon <br />
@@ -99,15 +98,14 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
           </h1>
           
           {/* 
-            Subtítulo - ALTERADO:
-            Mudança de text-[#EAEAEB] para text-white puro.
-            Mantido em font-normal para hierarquia elegante.
+            CORREÇÃO 3: 
+            "A elegância que tece histórias" – mudado de text-[#EAEAEB] para text-white
           */}
           <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-normal font-sans text-white">
             A elegância que tece histórias
           </p>
 
-          {/* Botão CTA (inalterado) */}
+          {/* CTA (inalterado) */}
           <div className="pt-2">
             <Link
               href="/loja"
@@ -119,7 +117,7 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
         </div>
       </div>
 
-      {/* Controles e indicadores (inalterados) */}
+      {/* Controles (inalterados) */}
       {total > 1 && (
         <>
           <button
