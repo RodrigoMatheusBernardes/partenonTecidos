@@ -53,7 +53,7 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-zinc-900 group">
       
-      {/* Slides de fundo */}
+      {/* Slides de fundo (inalterados) */}
       <div className="absolute inset-0 w-full h-full">
         {slides.map((slide, index) => (
           <div
@@ -66,13 +66,6 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
               src={slide.src}
               alt={slide.alt}
               fill
-              /* 
-                 ALTERAÇÃO DE DIREÇÃO DE ARTE DA IMAGEM:
-                 Removido o brightness-[0.6] que escurecia demais.
-                 Removido o grayscale puro (cinza frio).
-                 Substituído por sepia-[0.3] brightness-[1.05] contrast-[1.0].
-                 Isso traz ouro, calor, luz e profundidade, simulando um filtro de campanha de moda.
-              */
               className="object-cover object-center sepia-[0.3] brightness-[1.05] contrast-[1.0]"
               priority={index === 0}
               sizes="100vw"
@@ -81,42 +74,45 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
         ))}
       </div>
 
-      {/* Overlay suave que mantém a elegância */}
       <div className="absolute inset-0 bg-black/20 z-20" />
 
       {/* Texto centralizado */}
       <div className="relative z-30 flex items-center justify-center h-full px-6">
         {/* 
-           ALTERAÇÃO DA SOMBRA:
-           Focamos a sombra em um raio menor (8px) e opacidade alta (0.85).
-           Isso cria uma "borda" nítida de contraste em volta das letras, sem borrar o texto.
+          ALTERAÇÃO DA SOMBRA: 
+          Raio ajustado para 12px e opacidade aumentada para 0.9.
+          Isso cria um contorno escuro mais preciso e profundo, garantindo 
+          que o branco das letras se destaque com máxima definição.
         */}
-        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
+          
+          {/* Label (inalterado) */}
           <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-normal font-sans text-white">
             Nova Coleção 2026
           </p>
 
           {/* 
-             ALTERAÇÃO DA TIPOGRAFIA:
-             Reduzimos o peso para font-light (muito mais elegante).
-             Ampliamos o tracking para 0.15em, criando o "respiro" do luxo.
-             Aumentamos o line-height para 1.1 para dar verticalidade e sofisticação.
+            ALTERAÇÃO DA HIERARQUIA DO TÍTULO:
+            - "Parthenon" mantém font-light para leveza e elegância.
+            - "Tecidos" agora usa font-medium. Isso ancora visualmente o título, 
+              criando um belo contraste de pesos e evitando a sensação de "flutuação".
           */}
           <h1 className="text-4xl md:text-7xl lg:text-8xl font-light tracking-[0.15em] leading-[1.1] font-serif text-white">
             Parthenon <br />
-            <span className="font-normal tracking-[0.05em] text-white">Tecidos</span>
+            <span className="font-medium tracking-[0.05em] text-white">Tecidos</span>
           </h1>
           
-          <p className="text-sm md:text-base tracking-[0.2em] font-normal uppercase font-sans text-white">
+          {/* 
+            ALTERAÇÃO DO SUBTÍTULO:
+            Mudança de text-white para text-[#EAEAEB] (um cinza claro refinado).
+            Isso cria uma camada visual secundária, tornando o título o único 
+            protagonista branco puro, melhorando a hierarquia e a leitura.
+          */}
+          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-normal font-sans text-[#EAEAEB]">
             A elegância que tece histórias
           </p>
 
-          {/* 
-             ALTERAÇÃO DO BOTÃO (CTA):
-             De um bloco branco pesado, para uma borda fina em ouro e texto dourado.
-             No hover, ele se preenche com ouro da marca (C5A880) e o texto fica escuro (0B0C10).
-             Isso é extremamente refinado e elegante.
-          */}
+          {/* Botão CTA (inalterado) */}
           <div className="pt-2">
             <Link
               href="/loja"
@@ -128,7 +124,7 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
         </div>
       </div>
 
-      {/* Controles (aparecem ao passar o mouse) */}
+      {/* Controles e indicadores (inalterados) */}
       {total > 1 && (
         <>
           <button
@@ -146,7 +142,6 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
             <ChevronRight className="w-5 h-5 text-white" />
           </button>
 
-          {/* Indicadores */}
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 flex gap-2">
             {slides.map((_, index) => (
               <button
