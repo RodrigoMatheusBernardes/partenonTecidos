@@ -95,18 +95,19 @@ small {
    LINKS & INTERAÇÃO
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* ... (código anterior mantido) ... */
+
 a {
-  color: var(--color-text-primary);
+  color: inherit; /* Isso permite que as classes Tailwind sejam aplicadas corretamente aos links! */
   text-decoration: none;
-  transition: color 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              opacity 0.3s ease;
-  cursor: pointer;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+a:hover {
+  color: var(--color-royal); /* Se quiser manter o hover global, mas aqui o Header já tem seu próprio hover em ouro */
+  opacity: 0.9;
 }
 
-a:hover {
-  color: var(--color-gold);
-  opacity: 0.95;
-}
+/* ... (restante do código mantido) ... */
 
 a:focus {
   outline: 2px solid var(--color-gold);
