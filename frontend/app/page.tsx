@@ -127,7 +127,6 @@ export default function Home() {
     <>
       <HomeBanner />
 
-      {/* py-12 md:py-16 → py-10 md:py-14 */}
       <div className="main-container py-10 md:py-14">
         <TrendingBar />
 
@@ -162,13 +161,8 @@ export default function Home() {
                   );
                   setPagina(1);
                 }}
+                limparFiltros={limparFiltros}   // <-- adicionado
               />
-              <button
-                onClick={limparFiltros}
-                className="mt-4 w-full text-sm text-[#8a7a6a] hover:text-[#1a1a1a] transition-colors font-light"
-              >
-                Limpar filtros
-              </button>
             </div>
           </aside>
 
@@ -201,12 +195,7 @@ export default function Home() {
               <div className="text-center py-12 bg-[#f8f6f2] rounded-2xl">
                 <p className="text-[#8a7a6a] font-light">Nenhum produto encontrado.</p>
                 <button
-                  onClick={() => {
-                    setBusca('');
-                    setPrecoMin(0);
-                    setPrecoMax(precoMaxGlobal);
-                    setCategoriasSelecionadas([]);
-                  }}
+                  onClick={limparFiltros}
                   className="mt-2 text-sm text-[#1a1a1a] hover:underline font-light"
                 >
                   Limpar filtros
@@ -345,6 +334,7 @@ export default function Home() {
                 );
                 setPagina(1);
               }}
+              limparFiltros={limparFiltros}   // <-- adicionado
             />
             <button
               onClick={() => setSidebarAberta(false)}
