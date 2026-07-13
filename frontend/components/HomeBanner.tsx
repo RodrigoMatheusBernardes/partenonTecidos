@@ -78,37 +78,32 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
 
       {/* Texto centralizado */}
       <div className="relative z-30 flex items-center justify-center h-full px-6">
-        {/* 
-          ALTERAÇÃO DA SOMBRA: 
-          Raio ajustado para 12px e opacidade aumentada para 0.9.
-          Isso cria um contorno escuro mais preciso e profundo, garantindo 
-          que o branco das letras se destaque com máxima definição.
-        */}
+        
+        {/* Camada de sombra precisa e robusta */}
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
           
-          {/* Label (inalterado) */}
-          <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-normal font-sans text-white">
+          {/* Rótulo - ALTERADO: peso alterado para font-medium */}
+          <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-medium font-sans text-white">
             Nova Coleção 2026
           </p>
 
           {/* 
-            ALTERAÇÃO DA HIERARQUIA DO TÍTULO:
-            - "Parthenon" mantém font-light para leveza e elegância.
-            - "Tecidos" agora usa font-medium. Isso ancora visualmente o título, 
-              criando um belo contraste de pesos e evitando a sensação de "flutuação".
+            Título Principal - ALTERADO:
+            - "Parthenon": mudado de font-light para font-normal para adquirir massa visual e ficar branco.
+            - "Tecidos": mantido em font-medium como âncora principal.
+            Ambos com text-white puro.
           */}
-          <h1 className="text-4xl md:text-7xl lg:text-8xl font-light tracking-[0.15em] leading-[1.1] font-serif text-white">
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-normal tracking-[0.15em] leading-[1.1] font-serif text-white">
             Parthenon <br />
             <span className="font-medium tracking-[0.05em] text-white">Tecidos</span>
           </h1>
           
           {/* 
-            ALTERAÇÃO DO SUBTÍTULO:
-            Mudança de text-white para text-[#EAEAEB] (um cinza claro refinado).
-            Isso cria uma camada visual secundária, tornando o título o único 
-            protagonista branco puro, melhorando a hierarquia e a leitura.
+            Subtítulo - ALTERADO:
+            Mudança de text-[#EAEAEB] para text-white puro.
+            Mantido em font-normal para hierarquia elegante.
           */}
-          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-normal font-sans text-[#EAEAEB]">
+          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-normal font-sans text-white">
             A elegância que tece histórias
           </p>
 
