@@ -66,8 +66,14 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
               src={slide.src}
               alt={slide.alt}
               fill
-              // ALTERAÇÃO 1: Brilho reduzido para 60% + grayscale
-              className="object-cover object-center brightness-[0.6] grayscale"
+              /* 
+                 ALTERAÇÃO DE DIREÇÃO DE ARTE DA IMAGEM:
+                 Removido o brightness-[0.6] que escurecia demais.
+                 Removido o grayscale puro (cinza frio).
+                 Substituído por sepia-[0.3] brightness-[1.05] contrast-[1.0].
+                 Isso traz ouro, calor, luz e profundidade, simulando um filtro de campanha de moda.
+              */
+              className="object-cover object-center sepia-[0.3] brightness-[1.05] contrast-[1.0]"
               priority={index === 0}
               sizes="100vw"
             />
@@ -75,46 +81,52 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
         ))}
       </div>
 
-      {/* ALTERAÇÃO 2: Overlay sutil (reduzido de 40% para 20%) */}
-    // ... (código anterior)
-
-      {/* ALTERAÇÃO: Overlay aumentado para 30% */}
-      <div className="absolute inset-0 bg-black/30 z-20" />
+      {/* Overlay suave que mantém a elegância */}
+      <div className="absolute inset-0 bg-black/20 z-20" />
 
       {/* Texto centralizado */}
       <div className="relative z-30 flex items-center justify-center h-full px-6">
-        {/* ALTERAÇÃO: Sombras múltiplas no container para reforçar o contraste */}
-        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+        {/* 
+           ALTERAÇÃO DA SOMBRA:
+           Focamos a sombra em um raio menor (8px) e opacidade alta (0.85).
+           Isso cria uma "borda" nítida de contraste em volta das letras, sem borrar o texto.
+        */}
+        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
           <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-normal font-sans text-white">
             Nova Coleção 2026
           </p>
 
-          <h1 
-            className="text-4xl md:text-7xl lg:text-8xl font-medium tracking-[0.1em] leading-tight font-serif text-white"
-            // ALTERAÇÃO: text-shadow direto no h1 para garantir contorno sólido
-            style={{ textShadow: '0 2px 4px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.7)' }}
-          >
+          {/* 
+             ALTERAÇÃO DA TIPOGRAFIA:
+             Reduzimos o peso para font-light (muito mais elegante).
+             Ampliamos o tracking para 0.15em, criando o "respiro" do luxo.
+             Aumentamos o line-height para 1.1 para dar verticalidade e sofisticação.
+          */}
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-light tracking-[0.15em] leading-[1.1] font-serif text-white">
             Parthenon <br />
-            <span className="font-bold tracking-tighter text-white">Tecidos</span>
+            <span className="font-normal tracking-[0.05em] text-white">Tecidos</span>
           </h1>
           
           <p className="text-sm md:text-base tracking-[0.2em] font-normal uppercase font-sans text-white">
             A elegância que tece histórias
           </p>
 
-          {/* Botão CTA mantido */}
+          {/* 
+             ALTERAÇÃO DO BOTÃO (CTA):
+             De um bloco branco pesado, para uma borda fina em ouro e texto dourado.
+             No hover, ele se preenche com ouro da marca (C5A880) e o texto fica escuro (0B0C10).
+             Isso é extremamente refinado e elegante.
+          */}
           <div className="pt-2">
             <Link
               href="/loja"
-              className="inline-block bg-white text-[#0B0C10] px-10 py-4 text-xs tracking-[0.2em] uppercase font-medium hover:bg-[#C5A880] hover:text-white transition-all duration-300"
+              className="inline-block border border-[#C5A880] text-[#C5A880] px-10 py-4 text-xs tracking-[0.2em] uppercase font-light hover:bg-[#C5A880] hover:text-[#0B0C10] transition-all duration-500"
             >
               Conhecer a coleção
             </Link>
           </div>
         </div>
       </div>
-
-// ... (restante do código)
 
       {/* Controles (aparecem ao passar o mouse) */}
       {total > 1 && (
