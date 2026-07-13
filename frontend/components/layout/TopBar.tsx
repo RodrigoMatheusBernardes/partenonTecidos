@@ -17,8 +17,8 @@ export default function TopBar() {
   return (
     <div style={{ backgroundColor: '#0a1628' }} className="border-b border-white/10">
       <div className="max-w-7xl mx-auto px-6">
-        {/* py-2 → py-1, gap-4 → gap-3 */}
-        <div className="flex items-center justify-between text-xs py-1 tracking-[0.1em] uppercase font-light gap-3">
+        {/* ALTERAÇÃO: py-1 → py-0.5 para reduzir a altura em ~8–10% */}
+        <div className="flex items-center justify-between text-xs py-0.5 tracking-[0.1em] uppercase font-light gap-3">
           {/* Esquerda – Endereço */}
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1" style={{ color: 'white' }}>

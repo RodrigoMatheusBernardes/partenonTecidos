@@ -76,24 +76,24 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
       </div>
 
       {/* ALTERAÇÃO 2: Overlay sutil (reduzido de 40% para 20%) */}
-      <div className="absolute inset-0 bg-black/20 z-20" />
+    // ... (código anterior)
+
+      {/* ALTERAÇÃO: Overlay aumentado para 30% */}
+      <div className="absolute inset-0 bg-black/30 z-20" />
 
       {/* Texto centralizado */}
       <div className="relative z-30 flex items-center justify-center h-full px-6">
-        {/* 
-          ALTERAÇÃO 3: Sombra técnica e precisa 
-          "drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]" cria uma borda escura e nítida ao redor do texto.
-        */}
+        {/* ALTERAÇÃO: Sombras múltiplas no container para reforçar o contraste */}
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
           <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-normal font-sans text-white">
             Nova Coleção 2026
           </p>
 
-          {/* 
-            ALTERAÇÃO 4: Peso da fonte refinado
-            De font-normal para font-medium. Garante "corpo" sólido ao texto branco.
-          */}
-          <h1 className="text-4xl md:text-7xl lg:text-8xl font-medium tracking-[0.1em] leading-tight font-serif text-white">
+          <h1 
+            className="text-4xl md:text-7xl lg:text-8xl font-medium tracking-[0.1em] leading-tight font-serif text-white"
+            // ALTERAÇÃO: text-shadow direto no h1 para garantir contorno sólido
+            style={{ textShadow: '0 2px 4px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.7)' }}
+          >
             Parthenon <br />
             <span className="font-bold tracking-tighter text-white">Tecidos</span>
           </h1>
@@ -102,7 +102,7 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
             A elegância que tece histórias
           </p>
 
-          {/* CTA Sólido (Mantido da versão anterior, pois já possui excelente contraste) */}
+          {/* Botão CTA mantido */}
           <div className="pt-2">
             <Link
               href="/loja"
@@ -113,6 +113,8 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
           </div>
         </div>
       </div>
+
+// ... (restante do código)
 
       {/* Controles (aparecem ao passar o mouse) */}
       {total > 1 && (
