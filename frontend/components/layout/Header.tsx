@@ -41,37 +41,37 @@ export default function Header() {
           <nav className="hidden md:flex items-center gap-8">
             <Link
               href="/"
-              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#EAEAEB] hover:text-[#C5A880] transition-colors"
+              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#D4D4D4] hover:text-[#C5A880] transition-colors"
             >
               Home
             </Link>
             <Link
               href="/loja"
-              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#EAEAEB] hover:text-[#C5A880] transition-colors"
+              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#D4D4D4] hover:text-[#C5A880] transition-colors"
             >
               Coleção
             </Link>
             <Link
               href="/sobre"
-              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#EAEAEB] hover:text-[#C5A880] transition-colors"
+              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#D4D4D4] hover:text-[#C5A880] transition-colors"
             >
               Sobre
             </Link>
             <Link
               href="/contato"
-              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#EAEAEB] hover:text-[#C5A880] transition-colors"
+              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#D4D4D4] hover:text-[#C5A880] transition-colors"
             >
               Contato
             </Link>
             <Link
               href="/novidades"
-              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#EAEAEB] hover:text-[#C5A880] transition-colors"
+              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#D4D4D4] hover:text-[#C5A880] transition-colors"
             >
               Novidades
             </Link>
             <Link
               href="/promocoes"
-              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#EAEAEB] hover:text-[#C5A880] transition-colors"
+              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-[#D4D4D4] hover:text-[#C5A880] transition-colors"
             >
               Promoções
             </Link>
@@ -81,14 +81,14 @@ export default function Header() {
           <div className="flex items-center gap-6">
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="text-[#EAEAEB] hover:text-[#C5A880] transition-colors"
+              className="text-[#D4D4D4] hover:text-[#C5A880] transition-colors"
             >
               <Search className="w-5 h-5" strokeWidth={1.5} />
             </button>
 
             <Link
               href="/favoritos"
-              className="text-[#EAEAEB] hover:text-[#C5A880] transition-colors hidden sm:block"
+              className="text-[#D4D4D4] hover:text-[#C5A880] transition-colors hidden sm:block"
             >
               <Heart className="w-5 h-5" strokeWidth={1.5} />
             </Link>
@@ -96,14 +96,14 @@ export default function Header() {
             {isAuthenticated ? (
               <Link
                 href="/meu-perfil"
-                className="text-[#EAEAEB] hover:text-[#C5A880] transition-colors hidden sm:block"
+                className="text-[#D4D4D4] hover:text-[#C5A880] transition-colors hidden sm:block"
               >
                 <User className="w-5 h-5" strokeWidth={1.5} />
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="text-[#EAEAEB] hover:text-[#C5A880] transition-colors hidden sm:block"
+                className="text-[#D4D4D4] hover:text-[#C5A880] transition-colors hidden sm:block"
               >
                 <User className="w-5 h-5" strokeWidth={1.5} />
               </Link>
@@ -111,7 +111,7 @@ export default function Header() {
 
             <button
               onClick={() => setCartOpen(true)}
-              className="text-[#EAEAEB] hover:text-[#C5A880] transition-colors relative"
+              className="text-[#D4D4D4] hover:text-[#C5A880] transition-colors relative"
             >
               <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
               {totalItems > 0 && (
@@ -123,7 +123,7 @@ export default function Header() {
 
             <button
               onClick={() => setMobileOpen(true)}
-              className="md:hidden text-[#EAEAEB]"
+              className="md:hidden text-[#D4D4D4] hover:text-[#C5A880] transition-colors"
             >
               <Menu className="w-6 h-6" strokeWidth={1.5} />
             </button>
@@ -136,7 +136,7 @@ export default function Header() {
             <input
               type="text"
               placeholder="Buscar tecidos..."
-              className="w-full px-4 py-3 bg-[#1a1a1a] border border-white/20 rounded-none text-sm font-light text-[#EAEAEB] placeholder:text-[#8a7a6a] focus:outline-none focus:ring-1 focus:ring-[#C5A880] tracking-[0.1em]"
+              className="w-full px-4 py-3 bg-[#1a1a1a] border border-white/20 rounded-none text-sm font-light text-[#D4D4D4] placeholder:text-[#8a7a6a] focus:outline-none focus:ring-1 focus:ring-[#C5A880] tracking-[0.1em]"
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -159,28 +159,28 @@ export default function Header() {
       >
         <div className="flex justify-between items-center mb-10">
           <span className="font-serif text-xl text-[#EAEAEB] tracking-[0.1em]">Menu</span>
-          <button onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">
+          <button onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">
             <X className="w-5 h-5" strokeWidth={1.5} />
           </button>
         </div>
         <div className="flex flex-col gap-4 text-sm font-medium tracking-[0.1em] uppercase">
-          <Link href="/" onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">Home</Link>
-          <Link href="/loja" onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">Loja</Link>
-          <Link href="/sobre" onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">Sobre</Link>
-          <Link href="/contato" onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">Contato</Link>
-          <Link href="/novidades" onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">Novidades</Link>
-          <Link href="/promocoes" onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">Promoções</Link>
-          <Link href="/meus-pedidos" onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">Meus Pedidos</Link>
-          <Link href="/favoritos" onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">Favoritos</Link>
+          <Link href="/" onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">Home</Link>
+          <Link href="/loja" onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">Loja</Link>
+          <Link href="/sobre" onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">Sobre</Link>
+          <Link href="/contato" onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">Contato</Link>
+          <Link href="/novidades" onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">Novidades</Link>
+          <Link href="/promocoes" onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">Promoções</Link>
+          <Link href="/meus-pedidos" onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">Meus Pedidos</Link>
+          <Link href="/favoritos" onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">Favoritos</Link>
           {isAuthenticated ? (
             <>
-              {isAdmin && <Link href="/admin" onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">Admin</Link>}
+              {isAdmin && <Link href="/admin" onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">Admin</Link>}
               <button onClick={() => { logout(); setMobileOpen(false); }} className="text-left text-red-400 hover:text-red-500">Sair</button>
             </>
           ) : (
             <>
-              <Link href="/cadastro" onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">Criar conta</Link>
-              <Link href="/login" onClick={() => setMobileOpen(false)} className="text-[#EAEAEB] hover:text-[#C5A880]">Entrar</Link>
+              <Link href="/cadastro" onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">Criar conta</Link>
+              <Link href="/login" onClick={() => setMobileOpen(false)} className="text-[#D4D4D4] hover:text-[#C5A880]">Entrar</Link>
             </>
           )}
         </div>
