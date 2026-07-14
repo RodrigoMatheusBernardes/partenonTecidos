@@ -1,6 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
+import Button from '@/components/ui/Button'; // <-- NOVO IMPORT
 
 interface SearchBarProps {
   value?: string;
@@ -38,7 +39,7 @@ export default function SearchBar({
     <form
       onSubmit={handleSubmit}
       className={`
-        flex items-center gap-2
+        flex items-center gap-3
         bg-light rounded-full
         border border-gray-mid
         px-5 py-3
@@ -61,18 +62,16 @@ export default function SearchBar({
         "
         aria-label="Buscar produtos"
       />
-      <button
+      {/* Botão de busca substituído pelo novo componente Button */}
+      <Button
         type="submit"
-        className="
-          p-2 text-dark-light hover:text-gold
-          transition-colors duration-300
-          focus:outline-none focus:ring-2 focus:ring-gold
-          rounded-button
-        "
+        variant="ghost"
+        size="sm"
+        className="!p-2 !h-auto !w-auto text-dark-light hover:text-gold"
         aria-label="Pesquisar"
       >
         <Search className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2} />
-      </button>
+      </Button>
     </form>
   );
 }
