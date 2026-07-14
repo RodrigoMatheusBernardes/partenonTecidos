@@ -69,7 +69,6 @@ export default function FiltersSidebar({
         </div>
       </div>
 
-      {/* Preço */}
       <div>
         <h3 className="font-serif font-light text-sm text-[#1a1a1a] tracking-wide mb-4">Preço</h3>
         <div className="flex items-center gap-2 mb-4">
@@ -133,7 +132,6 @@ export default function FiltersSidebar({
         </div>
       </div>
 
-      {/* Categorias */}
       {categorias.length > 0 && (
         <div>
           <h3 className="font-serif font-light text-sm text-[#1a1a1a] tracking-wide mb-4">Categorias</h3>

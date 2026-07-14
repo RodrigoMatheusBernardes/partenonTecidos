@@ -91,7 +91,6 @@ export default function ProductCard({ produto }: { produto?: any }) {
           </div>
         </div>
 
-        {/* Área de conteúdo com padding refinado */}
         <div className="p-6 md:p-8 flex flex-col flex-1 gap-4">
           <h3 className="font-medium text-[#1a1a1a] line-clamp-2 text-base md:text-lg font-light leading-relaxed min-h-[4rem]">
             {nome}
@@ -117,7 +116,6 @@ export default function ProductCard({ produto }: { produto?: any }) {
             <p className="text-xs text-red-500 font-medium">⚠️ Últimas unidades!</p>
           )}
 
-          {/* Botão full-width corrigido, com transição suave e escala no clique */}
           <button
             onClick={handleAddToCart}
             disabled={estoque <= 0}
