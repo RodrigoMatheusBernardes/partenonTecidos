@@ -7,7 +7,7 @@ import { useCart } from '@/context/CartContext';
 import toast from 'react-hot-toast';
 import FavoritoButton from '@/components/FavoritoButton';
 
-const DEFAULT_IMAGE = 'data:image/svg+xml,...';
+const DEFAULT_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400"%3E%3Crect width="300" height="400" fill="%23f5f2ee"/%3E%3Ctext x="150" y="200" font-family="Inter, sans-serif" font-size="20" fill="%23999" text-anchor="middle"%3EProduto%3C/text%3E%3C/svg%3E';
 
 function fixImageUrl(url: string): string {
   if (!url) return url;
@@ -91,7 +91,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
           </div>
         </div>
 
-        {/* Área de conteúdo com padding mais generoso e espaçamento interno refinado */}
+        {/* Área de conteúdo com padding refinado */}
         <div className="p-6 md:p-8 flex flex-col flex-1 gap-4">
           <h3 className="font-medium text-[#1a1a1a] line-clamp-2 text-base md:text-lg font-light leading-relaxed min-h-[4rem]">
             {nome}
@@ -117,11 +117,12 @@ export default function ProductCard({ produto }: { produto?: any }) {
             <p className="text-xs text-red-500 font-medium">⚠️ Últimas unidades!</p>
           )}
 
+          {/* Botão full-width corrigido, com transição suave e escala no clique */}
           <button
             onClick={handleAddToCart}
             disabled={estoque <= 0}
             className={`
-              mt-auto w-full py-2.5 rounded-lg transition-all duration-200
+              mt-auto w-full py-3 rounded-lg transition-all duration-200
               flex items-center justify-center gap-2 text-sm font-light tracking-wide
               ${
                 estoque > 0

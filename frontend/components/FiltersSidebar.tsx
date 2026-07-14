@@ -2,10 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-interface Categoria {
-  _id: string;
-  nome: string;
-}
+interface Categoria { _id: string; nome: string; }
 
 interface FiltersSidebarProps {
   precoMin: number;
@@ -16,22 +13,13 @@ interface FiltersSidebarProps {
   onPrecoChange: (min: number, max: number) => void;
   onCategoriaChange: (categoriaId: string) => void;
   limparFiltros: () => void;
-  // Novas props para uso mobile
   isMobile?: boolean;
   onClose?: () => void;
 }
 
 export default function FiltersSidebar({
-  precoMin,
-  precoMax,
-  precoMaxGlobal,
-  categorias,
-  categoriasSelecionadas,
-  onPrecoChange,
-  onCategoriaChange,
-  limparFiltros,
-  isMobile = false,
-  onClose,
+  precoMin, precoMax, precoMaxGlobal, categorias, categoriasSelecionadas,
+  onPrecoChange, onCategoriaChange, limparFiltros, isMobile = false, onClose,
 }: FiltersSidebarProps) {
   const [minInput, setMinInput] = useState(precoMin.toString());
   const [maxInput, setMaxInput] = useState(precoMax.toString());
@@ -57,22 +45,15 @@ export default function FiltersSidebar({
     onPrecoChange(min, max);
   };
 
-  const handleFaixaChange = (min: number, max: number) => {
-    onPrecoChange(min, max);
-  };
-
   return (
     <aside className="w-full space-y-8">
-      {/* Cabeçalho com botão de fechar (apenas mobile) */}
       <div className="flex items-center justify-between">
-        <h2 className="font-serif font-light text-lg text-[#1a1a1a] tracking-wide">
-          Filtros
-        </h2>
+        <h2 className="font-serif font-light text-lg text-[#1a1a1a] tracking-wide">Filtros</h2>
         <div className="flex items-center gap-2">
           {(precoMin > 0 || precoMax < precoMaxGlobal || categoriasSelecionadas.length > 0) && (
             <button
               onClick={limparFiltros}
-              className="text-sm text-[#8a7a6a] hover:text-[#1a1a1a] transition-colors font-light"
+              className="text-xs text-[#8a7a6a] hover:text-[#1a1a1a] transition-colors font-light uppercase tracking-wider"
             >
               Limpar
             </button>
@@ -81,7 +62,6 @@ export default function FiltersSidebar({
             <button
               onClick={onClose}
               className="text-[#1a1a1a] hover:text-[#8a7a6a] transition-colors ml-2"
-              aria-label="Fechar filtros"
             >
               ✕
             </button>
@@ -91,22 +71,22 @@ export default function FiltersSidebar({
 
       {/* Preço */}
       <div>
-        <h3 className="font-serif font-light text-sm text-[#1a1a1a] tracking-wide mb-3">Preço</h3>
-        <div className="flex gap-2 mb-4">
+        <h3 className="font-serif font-light text-sm text-[#1a1a1a] tracking-wide mb-4">Preço</h3>
+        <div className="flex items-center gap-2 mb-4">
           <input
             type="number"
             value={minInput}
             onChange={(e) => setMinInput(e.target.value)}
-            placeholder="Min"
-            className="w-20 border border-[#e8e3dc] rounded-lg px-2 py-1.5 text-sm bg-white text-[#1a1a1a] font-light focus:outline-none focus:ring-1 focus:ring-[#C5A880]"
+            placeholder="Mín"
+            className="w-16 border border-[#e8e3dc] rounded-lg px-2 py-1.5 text-sm bg-white text-[#1a1a1a] font-light focus:outline-none focus:ring-1 focus:ring-[#C5A880]"
           />
-          <span className="self-center text-[#8a7a6a]">-</span>
+          <span className="text-[#8a7a6a] font-light">—</span>
           <input
             type="number"
             value={maxInput}
             onChange={(e) => setMaxInput(e.target.value)}
-            placeholder="Max"
-            className="w-20 border border-[#e8e3dc] rounded-lg px-2 py-1.5 text-sm bg-white text-[#1a1a1a] font-light focus:outline-none focus:ring-1 focus:ring-[#C5A880]"
+            placeholder="Máx"
+            className="w-16 border border-[#e8e3dc] rounded-lg px-2 py-1.5 text-sm bg-white text-[#1a1a1a] font-light focus:outline-none focus:ring-1 focus:ring-[#C5A880]"
           />
           <button
             onClick={handlePrecoManual}
@@ -116,21 +96,20 @@ export default function FiltersSidebar({
           </button>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {faixasPreco.map((faixa) => (
             <label
               key={faixa.label}
               className={`
-                flex items-center gap-3 text-sm cursor-pointer p-1 rounded
-                hover:bg-[#f5f2ee] transition-colors
-                ${precoMin === faixa.min && precoMax === faixa.max ? 'font-medium text-[#1a1a1a]' : 'text-[#8a7a6a] font-light'}
+                flex items-center gap-3 text-sm cursor-pointer py-1 rounded transition-colors
+                ${precoMin === faixa.min && precoMax === faixa.max ? 'font-medium text-[#1a1a1a]' : 'text-[#8a7a6a] font-light hover:text-[#1a1a1a]'}
               `}
             >
               <input
                 type="radio"
                 name="faixa-preco"
                 checked={precoMin === faixa.min && precoMax === faixa.max}
-                onChange={() => handleFaixaChange(faixa.min, faixa.max)}
+                onChange={() => onPrecoChange(faixa.min, faixa.max)}
                 className="w-4 h-4 accent-[#C5A880] focus:ring-[#C5A880]"
               />
               {faixa.label}
@@ -138,16 +117,15 @@ export default function FiltersSidebar({
           ))}
           <label
             className={`
-              flex items-center gap-3 text-sm cursor-pointer p-1 rounded
-              hover:bg-[#f5f2ee] transition-colors
-              ${precoMin === 0 && precoMax === precoMaxGlobal ? 'font-medium text-[#1a1a1a]' : 'text-[#8a7a6a] font-light'}
+              flex items-center gap-3 text-sm cursor-pointer py-1 rounded transition-colors
+              ${precoMin === 0 && precoMax === precoMaxGlobal ? 'font-medium text-[#1a1a1a]' : 'text-[#8a7a6a] font-light hover:text-[#1a1a1a]'}
             `}
           >
             <input
               type="radio"
               name="faixa-preco"
               checked={precoMin === 0 && precoMax === precoMaxGlobal}
-              onChange={() => handleFaixaChange(0, precoMaxGlobal)}
+              onChange={() => onPrecoChange(0, precoMaxGlobal)}
               className="w-4 h-4 accent-[#C5A880] focus:ring-[#C5A880]"
             />
             Todos os preços
@@ -158,12 +136,12 @@ export default function FiltersSidebar({
       {/* Categorias */}
       {categorias.length > 0 && (
         <div>
-          <h3 className="font-serif font-light text-sm text-[#1a1a1a] tracking-wide mb-3">Categorias</h3>
-          <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+          <h3 className="font-serif font-light text-sm text-[#1a1a1a] tracking-wide mb-4">Categorias</h3>
+          <div className="space-y-1.5 max-h-60 overflow-y-auto pr-2">
             {categorias.map((cat) => (
               <label
                 key={cat._id}
-                className="flex items-center gap-3 text-sm cursor-pointer p-1 rounded hover:bg-[#f5f2ee] transition-colors"
+                className="flex items-center gap-3 text-sm cursor-pointer py-1 rounded hover:bg-[#f5f2ee] transition-colors"
               >
                 <input
                   type="checkbox"
