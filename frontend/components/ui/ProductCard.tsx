@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import toast from 'react-hot-toast';
 import FavoritoButton from '@/components/FavoritoButton';
+import Button from '@/components/ui/Button'; // <-- NOVO IMPORT
 
 const DEFAULT_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400"%3E%3Crect width="300" height="400" fill="%23fcfcfc"/%3E%3Ctext x="150" y="200" font-family="Inter, sans-serif" font-size="20" fill="%23999" text-anchor="middle"%3EProduto%3C/text%3E%3C/svg%3E';
 
@@ -125,24 +126,27 @@ export default function ProductCard({ produto }: { produto?: any }) {
             <p className="text-xs text-red-500 font-medium">⚠️ Últimas unidades!</p>
           )}
 
-          {/* Premium CTA Button - gold outline to solid on hover */}
-          <button
+          {/* 
+            SUBSTITUIÇÃO PELO NOVO SISTEMA DE BOTÕES:
+            - Variante: secondary (borda ouro, fundo transparente, hover sólido ouro)
+            - Tamanho: lg (py-3.5, já compatível com a altura atual)
+            - Classe extra: text-sm para manter a tipografia refinada
+            - Estados disabled gerenciados automaticamente
+          */}
+          <Button
+            variant="secondary"
+            size="lg"
             onClick={handleAddToCart}
             disabled={estoque <= 0}
-            className={`
-              mt-auto w-full py-3.5 rounded-xl transition-all duration-300
-              flex items-center justify-center gap-2.5 text-sm font-medium
-              border border-[#C5A880] bg-transparent text-[#C5A880]
-              ${
-                estoque > 0
-                  ? 'hover:bg-[#C5A880] hover:text-[#0B0C10] active:scale-[0.98]'
-                  : 'opacity-50 border-gray-200 text-gray-400 cursor-not-allowed hover:bg-transparent'
-              }
-            `}
+            className={`mt-auto w-full text-sm ${
+              estoque > 0
+                ? ''
+                : '!border-gray-200 !text-gray-400'
+            }`}
           >
             <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
             {estoque > 0 ? 'Adicionar' : 'Esgotado'}
-          </button>
+          </Button>
         </div>
       </Link>
     </div>
