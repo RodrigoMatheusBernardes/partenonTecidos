@@ -24,7 +24,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
 
   if (!produto || typeof produto !== 'object') {
     return (
-      <div className="bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-6">
+      <div className="bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)] p-6">
         <div className="aspect-[3/4] bg-gray-100 rounded-t-xl flex items-center justify-center">
           <span className="text-gray-400 text-sm font-light">Sem imagem</span>
         </div>
@@ -55,8 +55,8 @@ export default function ProductCard({ produto }: { produto?: any }) {
     <div
       className="
         group bg-white rounded-xl overflow-hidden
-        shadow-[0_4px_20px_rgba(0,0,0,0.03)]
-        hover:shadow-[0_10px_40px_rgba(0,0,0,0.06)]
+        shadow-[0_4px_20px_rgba(0,0,0,0.04)]
+        hover:shadow-[0_12px_48px_rgba(0,0,0,0.08)]
         hover:-translate-y-[4px]
         transition-all duration-300 ease-in-out
         flex flex-col
@@ -71,8 +71,13 @@ export default function ProductCard({ produto }: { produto?: any }) {
             onError={() => setImgError(true)}
           />
 
+          {/* 
+            REFINED DISCOUNT BADGE:
+            - Replaced red pill with a dark & gold angular tag.
+            - Smaller, taller tracking, and uppercase for an editorial premium feel.
+          */}
           {descontoPercentual > 0 && (
-            <div className="absolute top-3 left-3 z-10 bg-red-500 text-white text-xs font-light px-3 py-1 rounded-full tracking-wide">
+            <div className="absolute top-3 left-3 z-10 bg-[#1a1a1a] text-[#C5A880] text-[10px] font-medium px-2 py-1 rounded-sm uppercase tracking-widest">
               -{descontoPercentual}%
             </div>
           )}
@@ -116,12 +121,18 @@ export default function ProductCard({ produto }: { produto?: any }) {
             <p className="text-xs text-red-500 font-medium">⚠️ Últimas unidades!</p>
           )}
 
+          {/* 
+            REFINED BUTTON:
+            - Height increased (py-3.5)
+            - Font weight increased to medium
+            - Icon and text spacing increased to gap-2.5
+          */}
           <button
             onClick={handleAddToCart}
             disabled={estoque <= 0}
             className={`
-              mt-auto w-full py-3 rounded-lg transition-all duration-200
-              flex items-center justify-center gap-2 text-sm font-light tracking-wide
+              mt-auto w-full py-3.5 rounded-lg transition-all duration-300
+              flex items-center justify-center gap-2.5 text-sm font-medium
               border border-[#1a1a1a] bg-white text-[#1a1a1a]
               ${
                 estoque > 0
