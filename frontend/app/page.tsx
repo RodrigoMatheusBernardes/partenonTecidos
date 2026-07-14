@@ -130,16 +130,14 @@ export default function Home() {
       <section className="w-full bg-[#F7F7F7] py-16 md:py-20">
         <div className="main-container">
           
-          {/* Produtos em Alta – Já possui seu próprio alinhamento interno perfeito */}
-          <TrendingBar />
-
           {/* 
-            CORREÇÃO DO ITEM 3.1:
-            A 'flex row' ganhou um 'mt-8' para preservar o espaçamento vertical 
-            que existia antes do título.
-            O título foi movido para DENTRO do 'flex-1'.
+            CORREÇÃO ESTRUTURAL:
+            O TrendingBar foi movido para DENTRO do flex-1,
+            junto com a grade "Nossa Coleção".
+            Agora ambos os títulos e suas grades compartilham
+            o mesmo container de layout.
           */}
-          <div className="flex flex-col md:flex-row gap-8 mt-8">
+          <div className="flex flex-col md:flex-row gap-8">
             <aside className="hidden md:block w-64 flex-shrink-0">
               <div className="bg-white rounded-2xl shadow-sm border border-[#e8e3dc] p-6">
                 <FiltersSidebar
@@ -167,7 +165,12 @@ export default function Home() {
             </aside>
 
             <div className="flex-1">
-              {/* Título movido para cá. Agora compartilha o mesmo container que a grade! */}
+              {/* TrendingBar movido para cá */}
+              <div className="mb-12">
+                <TrendingBar />
+              </div>
+
+              {/* Título Nossa Coleção */}
               <div className="text-center mb-8 md:mb-10">
                 <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
                   Nossa Coleção
