@@ -8,7 +8,6 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           
-          {/* Coluna 1 - Logo */}
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
             <h3 className="font-serif font-light text-2xl tracking-[0.1em] text-[#1a1a1a]">
               PARTHENON
@@ -21,7 +20,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Coluna 2 - Navegação */}
           <div>
             <h4 className="text-xs tracking-[0.1em] uppercase text-[#1a1a1a] font-medium mb-4">
               Navegação
@@ -45,7 +43,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Coluna 3 - Suporte */}
           <div>
             <h4 className="text-xs tracking-[0.1em] uppercase text-[#1a1a1a] font-medium mb-4">
               Suporte
@@ -69,7 +66,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Coluna 4 - Contato */}
           <div>
             <h4 className="text-xs tracking-[0.1em] uppercase text-[#1a1a1a] font-medium mb-4">
               Contato
@@ -83,7 +79,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Rodapé Inferior */}
       <div className="border-t border-[#e8e3dc]">
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-[#8a7a6a] font-light">
           <p>&copy; {new Date().getFullYear()} Parthenon Tecidos. Todos os direitos reservados.</p>
