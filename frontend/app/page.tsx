@@ -131,34 +131,38 @@ export default function Home() {
         <div className="main-container">
           
           <div className="flex flex-col md:flex-row gap-8">
+            {/* 
+              CORREÇÃO: 
+              O wrapper branco (div com bg-white) foi removido.
+              Agora o FiltersSidebar fica diretamente dentro do <aside>,
+              integrando-se ao fundo cinza #F7F7F7 da página.
+            */}
             <aside className="hidden md:block w-64 flex-shrink-0">
-              <div className="bg-white rounded-2xl shadow-sm border border-[#e8e3dc] p-6">
-                <FiltersSidebar
-                  precoMin={precoMin}
-                  precoMax={precoMax}
-                  precoMaxGlobal={precoMaxGlobal}
-                  categorias={categorias}
-                  categoriasSelecionadas={categoriasSelecionadas}
-                  onPrecoChange={(min, max) => {
-                    setPrecoMin(min);
-                    setPrecoMax(max);
-                    setPagina(1);
-                  }}
-                  onCategoriaChange={catId => {
-                    setCategoriasSelecionadas(prev =>
-                      prev.includes(catId)
-                        ? prev.filter(c => c !== catId)
-                        : [...prev, catId]
-                    );
-                    setPagina(1);
-                  }}
-                  limparFiltros={limparFiltros}
-                />
-              </div>
+              <FiltersSidebar
+                precoMin={precoMin}
+                precoMax={precoMax}
+                precoMaxGlobal={precoMaxGlobal}
+                categorias={categorias}
+                categoriasSelecionadas={categoriasSelecionadas}
+                onPrecoChange={(min, max) => {
+                  setPrecoMin(min);
+                  setPrecoMax(max);
+                  setPagina(1);
+                }}
+                onCategoriaChange={catId => {
+                  setCategoriasSelecionadas(prev =>
+                    prev.includes(catId)
+                      ? prev.filter(c => c !== catId)
+                      : [...prev, catId]
+                  );
+                  setPagina(1);
+                }}
+                limparFiltros={limparFiltros}
+              />
             </aside>
 
             <div className="flex-1">
-              {/* TrendingBar - Now automatically aligns perfectly with the grid below */}
+              {/* TrendingBar */}
               <div className="mb-16">
                 <TrendingBar />
               </div>
@@ -209,10 +213,6 @@ export default function Home() {
                 </div>
               ) : (
                 <>
-                  {/* 
-                    Professional Rhythm Fix:
-                    Grid updated to lg:grid-cols-4 to match the consistent flow of TrendingBar.
-                  */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                     {paginaAtual.map(produto => (
                       <ProductCard key={produto._id} produto={produto} />
@@ -313,7 +313,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Filtro mobile (mantido) */}
+      {/* Filtro mobile – Mantido igual (o drawer já tem fundo branco) */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
           onClick={() => setSidebarAberta(true)}
