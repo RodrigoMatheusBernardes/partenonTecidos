@@ -87,17 +87,23 @@ export default function TrendingBar() {
         <div className="relative">
           {produtos.length > itemsPerView && (
             <>
+              {/* 
+                CORREÇÃO DE ALINHAMENTO PROFISSIONAL:
+                As setas foram movidas de '-left-4' e '-right-4' para 'left-2' e 'right-2'.
+                Agora elas se alinham perfeitamente dentro da área de padding da página,
+                sem sobrepor os cards, criando um visual limpo e profissional.
+              */}
               <button
                 onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
                 disabled={currentIndex === 0}
-                className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 p-3 bg-white rounded-full shadow-md hover:shadow-lg disabled:opacity-40 transition-all"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-white rounded-full shadow-md hover:shadow-lg disabled:opacity-40 transition-all"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setCurrentIndex(Math.min(maxIndex, currentIndex + 1))}
                 disabled={currentIndex >= maxIndex}
-                className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 p-3 bg-white rounded-full shadow-md hover:shadow-lg disabled:opacity-40 transition-all"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-white rounded-full shadow-md hover:shadow-lg disabled:opacity-40 transition-all"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
