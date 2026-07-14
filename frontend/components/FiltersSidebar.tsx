@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Button from '@/components/ui/Button'; // <-- Importação correta
+import { X } from 'lucide-react';
 
 interface Categoria {
   _id: string;
@@ -64,23 +66,27 @@ export default function FiltersSidebar({
         <h2 className="font-serif font-light text-2xl text-[#1a1a1a] tracking-tight">Filtros</h2>
         <div className="flex items-center gap-3">
           {(precoMin > 0 || precoMax < precoMaxGlobal || categoriasSelecionadas.length > 0) && (
-            <button
+            // Botão "Limpar" substituído pelo novo componente
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={limparFiltros}
-              className="text-xs text-[#8a7a6a] hover:text-[#1a1a1a] transition-colors underline-offset-2 hover:underline"
+              className="underline-offset-2 hover:underline"
             >
               Limpar
-            </button>
+            </Button>
           )}
           {isMobile && onClose && (
-            <button
+            // Botão "Fechar" (mobile) substituído pelo novo componente
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={onClose}
-              className="text-[#1a1a1a] hover:text-[#C5A880] transition-colors ml-2"
               aria-label="Fechar filtros"
+              className="!p-1.5 !h-auto !w-auto text-[#1a1a1a] hover:text-[#C5A880]"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+              <X className="w-5 h-5" strokeWidth={1.5} />
+            </Button>
           )}
         </div>
       </div>
@@ -129,12 +135,14 @@ export default function FiltersSidebar({
             placeholder="Máx"
             className="w-14 border border-[#e8e3dc] rounded bg-transparent px-2 py-1.5 text-xs text-center text-[#4a4a4a] placeholder:text-[#d4cec4] focus:outline-none focus:border-[#C5A880] transition-colors"
           />
-          <button
+          {/* Botão "OK" substituído pelo novo componente */}
+          <Button
+            variant="primary"
+            size="sm"
             onClick={handlePrecoManual}
-            className="bg-[#1a1a1a] text-white text-[10px] font-medium px-4 py-1.5 rounded hover:bg-[#2d2d2d] transition-colors"
           >
             OK
-          </button>
+          </Button>
         </div>
 
         {/* Faixas pré-definidas */}
@@ -167,7 +175,7 @@ export default function FiltersSidebar({
         </div>
       </div>
 
-      {/* 4. Coleções (Estático para atender ao exemplo visual) */}
+      {/* 4. Coleções (Estático) */}
       <div className="pt-2">
         <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">Coleções</h3>
         <div className="flex flex-col gap-2.5">
