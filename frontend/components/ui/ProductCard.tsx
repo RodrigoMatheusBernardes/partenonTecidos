@@ -1,235 +1,130 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag, Sparkles, Package } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import toast from 'react-hot-toast';
 import FavoritoButton from '@/components/FavoritoButton';
 
-const DEFAULT_IMAGE = '/images/placeholder.jpg';
+const DEFAULT_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400"%3E%3Crect width="300" height="400" fill="%23f5f2ee"/%3E%3Ctext x="150" y="200" font-family="Inter, sans-serif" font-size="20" fill="%23999" text-anchor="middle"%3EProduto%3C/text%3E%3C/svg%3E';
 
-export default function ProductCard({ produto }: { produto: any }) {
+function fixImageUrl(url: string): string {
+  if (!url) return url;
+  let fixed = url.replace('http://localhost:5000', 'https://partenontecidos.onrender.com');
+  if (fixed.startsWith('http://')) {
+    fixed = fixed.replace('http://', 'https://');
+  }
+  return fixed;
+}
+
+export default function ProductCard({ produto }: { produto?: any }) {
   const { addItem } = useCart();
   const [imgError, setImgError] = useState(false);
 
-  // Dados seguros
-  const id = produto._id || '';
-  const nome = produto.nome || 'Tecido';
-  const preco = typeof produto.preco === 'number' ? produto.preco : 0;
-  const imagem = (produto.fotos?.[0] || produto.imagemUrl || DEFAULT_IMAGE);
-  const estoque = typeof produto.estoque === 'number' ? produto.estoque : 0;
-  const isNovo = produto.isNovo || false;
-  const avaliacao = produto.avaliacao || 0;
-  const preco_original = produto.preco_original || 0;
-  
-  // Calcular desconto %
-  const desconto = preco_original > preco 
-    ? Math.round(((preco_original - preco) / preco_original) * 100)
-    : 0;
+  if (!produto || typeof produto !== 'object') {
+    return (
+      <div className="bg-white rounded-xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)] p-5">
+        <div className="aspect-[3/4] bg-gray-100 rounded-xl flex items-center justify-center">
+          <span className="text-gray-400 text-sm font-light">Sem imagem</span>
+        </div>
+      </div>
+    );
+  }
 
-  const imageSrc = imgError
-    ? DEFAULT_IMAGE
-    : imagem.replace('http://localhost:5000', 'https://partenontecidos.onrender.com');
+  const id = produto._id || '';
+  const nome = produto.nome || 'Produto sem nome';
+  const preco = typeof produto.preco === 'number' ? produto.preco : 0;
+  const precoOriginal = typeof produto.preco_original === 'number' && produto.preco_original > preco ? produto.preco_original : null;
+  const imagemPrincipal = (produto.fotos && produto.fotos[0]) || produto.imagem || produto.imagemUrl || '';
+  const imagemValida = fixImageUrl(imagemPrincipal) || DEFAULT_IMAGE;
+  const estoque = typeof produto.estoque === 'number' ? produto.estoque : 0;
+  const descontoPercentual = precoOriginal && precoOriginal > preco ? Math.round(((precoOriginal - preco) / precoOriginal) * 100) : 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (estoque <= 0) {
-      toast.error('Produto esgotado!');
-      return;
-    }
+    if (estoque <= 0) return toast.error('Produto esgotado!');
     addItem({ id, nome, preco, quantidade: 1, maxEstoque: estoque });
-    toast.success(`${nome} adicionado ao carrinho!`);
+    toast.success('Adicionado!');
   };
 
+  const displayImage = imgError ? DEFAULT_IMAGE : imagemValida;
+
   return (
-    <Link href={`/produto/${id}`} className="group block h-full">
-      <div 
-        className="
-          relative flex flex-col h-full
-          bg-white rounded-card border border-gray-mid overflow-hidden
-          shadow-sm-luxury hover:shadow-lg-luxury
-          transition-all duration-400 ease-out
-          hover:-translate-y-2
-        "
-      >
-        {/* IMAGEM DO PRODUTO - 4:3 proportion */}
-        <div className="
-          relative w-full aspect-video
-          bg-gradient-to-br from-light via-light-mid to-gray-mid
-          overflow-hidden flex-shrink-0
-        ">
-          {/* Shimmer effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-          
-          <Image
-            src={imageSrc}
+    <div
+      className="
+        group bg-white rounded-xl overflow-hidden 
+        shadow-[0_2px_10px_rgba(0,0,0,0.03)] 
+        hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] 
+        hover:-translate-y-[3px] 
+        transition-all duration-300 flex flex-col
+      "
+    >
+      <Link href={`/produto/${id}`} className="block relative">
+        <div className="relative aspect-[3/4] overflow-hidden bg-[#f5f2ee]">
+          <img
+            src={displayImage}
             alt={nome}
-            fill
-            className="
-              object-cover w-full h-full rounded-t-card
-              transition-transform duration-700 ease-out
-              group-hover:scale-110
-            "
-            sizes="(max-width: 640px) calc(100vw - 32px),
-                   (max-width: 1024px) calc(50vw - 24px),
-                   calc(25vw - 20px)"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setImgError(true)}
-            priority={false}
           />
 
-          {/* Badge "NOVO" */}
-          {isNovo && (
-            <div className="
-              absolute top-3 left-3
-              flex items-center gap-1
-              bg-gold text-dark-light text-xs font-bold
-              uppercase tracking-[0.1em] px-3 py-1.5
-              rounded-full shadow-md-luxury
-            ">
-              <Sparkles className="w-3 h-3" strokeWidth={2.5} />
-              Novo
+          {descontoPercentual > 0 && (
+            <div className="absolute top-3 left-3 z-10 bg-red-500 text-white text-xs font-light px-3 py-1 rounded-full tracking-wide">
+              -{descontoPercentual}%
             </div>
           )}
 
-          {/* Badge DESCONTO % */}
-          {desconto > 0 && (
-            <div className="
-              absolute top-3 right-3
-              bg-error text-white text-xs font-bold
-              px-2.5 py-1 rounded-full shadow-md-luxury
-            ">
-              -{desconto}%
-            </div>
-          )}
-
-          {/* Overlay para Esgotado */}
           {estoque <= 0 && (
-            <div className="
-              absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent
-              backdrop-blur-sm flex items-center justify-center rounded-t-card
-            ">
-              <span className="
-                text-white font-serif font-bold text-base
-                uppercase tracking-widest text-center
-              ">
-                Esgotado
-              </span>
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
+              <span className="text-white font-light text-sm uppercase tracking-wider">Esgotado</span>
             </div>
           )}
 
-          {/* Botão Favorito - SEMPRE VISÍVEL */}
-          <div className="absolute top-3 right-3 z-20">
+          <div
+            className="absolute top-3 right-3 z-10"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+          >
             <FavoritoButton produtoId={id} />
           </div>
         </div>
 
-        {/* CONTEÚDO DO CARD */}
-        <div className="flex flex-col flex-grow px-4 py-3 gap-2">
-          
-          {/* Nome do Produto */}
-          <h3 className="
-            font-serif font-bold
-            text-dark-light text-sm
-            line-clamp-2 leading-tight
-            group-hover:text-gold
-            transition-colors duration-300
-          ">
+        <div className="p-5 md:p-6 flex flex-col flex-1 gap-3">
+          <h3 className="font-medium text-[#1a1a1a] line-clamp-2 text-sm md:text-base font-light leading-relaxed min-h-[3.5rem]">
             {nome}
           </h3>
 
-          {/* Avaliação - SEMPRE VISÍVEL */}
-          <div className="flex items-center gap-1">
-            <div className="flex gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <span
-                  key={i}
-                  className={`
-                    text-xs transition-colors duration-300
-                    ${i < Math.round(avaliacao) ? 'text-gold' : 'text-gray-mid'}
-                  `}
-                >
-                  ★
-                </span>
-              ))}
-            </div>
-            {avaliacao > 0 && (
-              <span className="text-xs text-text-secondary font-medium">
-                ({avaliacao.toFixed(1)})
-              </span>
-            )}
-          </div>
-
-          {/* PREÇO GRANDE - DESTAQUE */}
-          <div className="flex items-baseline gap-2 mt-1">
-            {/* Preço Atual - GRANDE E BOLD */}
-            <span className="
-              text-dark-light font-black
-              text-lg md:text-xl leading-none
-            ">
-              R$ {preco.toFixed(2).replace('.', ',')}
+          <div>
+            <span className="text-xl font-light text-[#1a1a1a]">
+              R$ {preco.toFixed(2)}
             </span>
-            
-            {/* Preço Original se houver desconto */}
-            {preco_original > preco && (
-              <span className="
-                text-text-light text-xs
-                line-through font-medium
-              ">
-                R$ {preco_original.toFixed(2).replace('.', ',')}
+            {precoOriginal && (
+              <span className="text-sm text-[#8a7a6a] line-through font-light ml-2">
+                R$ {precoOriginal.toFixed(2)}
               </span>
             )}
+            <p className="text-xs text-[#8a7a6a] font-light mt-0.5">
+              ou 3x de R$ {(preco / 3).toFixed(2)}
+            </p>
           </div>
 
-          {/* Frete Grátis / Estoque */}
-          <div className="space-y-1 text-xs">
-            <div className="flex items-center gap-1.5 text-success font-medium">
-              <span>✓</span>
-              <span>Frete Grátis</span>
-            </div>
-            
-            {estoque > 0 && (
-              <div className="flex items-center gap-1.5 text-text-secondary font-medium">
-                <Package className="w-3 h-3" strokeWidth={2} />
-                <span>{estoque}+ em estoque</span>
-              </div>
-            )}
-          </div>
-        </div>
+          {estoque > 0 && estoque <= 5 && (
+            <p className="text-xs text-red-500 font-medium">⚠️ Últimas unidades!</p>
+          )}
 
-        {/* BOTÃO COMPRA - GRANDE E PROEMINENTE */}
-        <div className="
-          px-4 py-3 mt-auto
-          border-t border-gray-mid
-          bg-gradient-to-r from-white/40 to-white/0
-          group-hover:bg-gradient-to-r group-hover:from-gold/5 group-hover:to-white/0
-          transition-all duration-300
-        ">
           <button
             onClick={handleAddToCart}
             disabled={estoque <= 0}
-            className={`
-              w-full
-              py-3
-              rounded-button border-2
-              font-bold text-xs uppercase tracking-wider
-              transition-all duration-400 ease-out
-              active:scale-95
-              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold
-              flex items-center justify-center gap-2
-              ${estoque <= 0
-                ? 'bg-gray-mid/50 text-text-secondary border-gray-mid cursor-not-allowed'
-                : 'bg-dark-light text-white border-dark-light hover:bg-gold hover:text-dark-light hover:border-gold hover:shadow-md-luxury'
-              }
-            `}
+            className={`mt-auto w-full py-3 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-light tracking-wide ${
+              estoque > 0 ? 'bg-[#1a1a1a] text-white hover:bg-[#2d2d2d]' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            }`}
           >
-            <ShoppingBag className="w-4 h-4" strokeWidth={2.5} />
-            <span>Adicionar</span>
+            <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
+            {estoque > 0 ? 'Adicionar' : 'Esgotado'}
           </button>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 }
