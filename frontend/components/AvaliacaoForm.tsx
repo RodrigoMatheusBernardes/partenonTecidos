@@ -1,14 +1,17 @@
+
 'use client';
 
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import StarRating from './StarRating';
-import { Button } from '@/components/ui/Button';
+import Button from '@/components/ui/Button'; // <-- CORRIGIDO (sem {})
 
 interface AvaliacaoFormProps {
   produtoId: string;
   onSuccess: () => void;
 }
+
+
 
 export default function AvaliacaoForm({ produtoId, onSuccess }: AvaliacaoFormProps) {
   const [nota, setNota] = useState(0);

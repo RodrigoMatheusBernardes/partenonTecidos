@@ -6,12 +6,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { X, Trash2, Plus, Minus } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import Button from '@/components/ui/Button'; // <-- CORRIGIDO (sem {})
 
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+// ... resto do código
 
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { items, removeItem, updateQuantity, totalItems, totalPrice } = useCart();
@@ -79,18 +81,17 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           ">
             {totalItems}
           </span>
-          <button
+
+          {/* Botão Fechar - Substituído pelo novo sistema */}
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onClose}
-            className="
-              p-2 hover:bg-white hover:text-gold
-              transition-all duration-300
-              rounded-button
-              focus:outline-none focus:ring-2 focus:ring-gold
-            "
             aria-label="Fechar carrinho"
+            className="!p-2 !h-auto !w-auto"
           >
             <X className="w-5 h-5" strokeWidth={2} />
-          </button>
+          </Button>
         </div>
 
         {/* ITEMS */}
@@ -164,55 +165,48 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       R$ {item.preco.toFixed(2)}
                     </p>
 
-                    {/* QUANTIDADE */}
+                    {/* QUANTIDADE - Botões substituídos pelo novo sistema */}
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="!w-8 !h-8 !p-0 border border-[#e8e3dc] hover:bg-[#f5f2ee] rounded-full"
                         onClick={() => handleUpdateQuantity(item.id, item.quantidade - 1, item.maxEstoque)}
                         disabled={item.quantidade <= 1}
-                        className="
-                          p-1 rounded-button
-                          border border-gray-mid
-                          hover:bg-white hover:border-dark-light
-                          disabled:opacity-50 disabled:cursor-not-allowed
-                          transition-all duration-300
-                        "
                       >
                         <Minus className="w-3 h-3" strokeWidth={2} />
-                      </button>
+                      </Button>
+
                       <span className="w-8 text-center font-medium text-sm">
                         {item.quantidade}
                       </span>
-                      <button
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="!w-8 !h-8 !p-0 border border-[#e8e3dc] hover:bg-[#f5f2ee] rounded-full"
                         onClick={() => handleUpdateQuantity(item.id, item.quantidade + 1, item.maxEstoque)}
                         disabled={item.quantidade >= item.maxEstoque}
-                        className="
-                          p-1 rounded-button
-                          border border-gray-mid
-                          hover:bg-white hover:border-dark-light
-                          disabled:opacity-50 disabled:cursor-not-allowed
-                          transition-all duration-300
-                        "
                       >
                         <Plus className="w-3 h-3" strokeWidth={2} />
-                      </button>
+                      </Button>
+
                       <span className="ml-auto text-right text-sm font-semibold text-dark-light">
                         R$ {(item.preco * item.quantidade).toFixed(2)}
                       </span>
                     </div>
                   </div>
 
-                  {/* REMOVER */}
-                  <button
+                  {/* REMOVER - Botão substituído pelo novo sistema */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="!p-2 !h-auto !w-auto text-red-500 hover:bg-red-50"
                     onClick={() => handleRemove(item.id, item.nome)}
-                    className="
-                      p-2 text-error hover:bg-red-50
-                      rounded-button transition-all duration-300
-                      focus:outline-none focus:ring-2 focus:ring-error
-                    "
                     aria-label={`Remover ${item.nome} do carrinho`}
                   >
                     <Trash2 className="w-4 h-4" strokeWidth={2} />
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
@@ -236,31 +230,28 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </span>
             </div>
 
-            {/* CTA BUTTONS */}
+            {/* CTA BUTTONS - Substituídos e simplificados */}
             <div className="space-y-3">
-              <Link href="/checkout" onClick={onClose} className="block">
-                <Button
-                  variant="primary"
-                  size="lg"
-                  className="w-full"
-                >
-                  Finalizar Compra
-                </Button>
-              </Link>
-
-              <button
+              {/* Finalizar Compra - Usando a prop 'href' nativa do componente */}
+              <Button
+                href="/checkout"
+                variant="primary"
+                size="lg"
+                className="w-full"
                 onClick={onClose}
-                className="
-                  w-full py-3 px-4 rounded-button
-                  text-dark-light font-medium
-                  border border-dark-light
-                  hover:bg-dark-light hover:text-white
-                  transition-all duration-300
-                  focus:outline-none focus:ring-2 focus:ring-gold
-                "
+              >
+                Finalizar Compra
+              </Button>
+
+              {/* Continuar Comprando - Usando variante secundária */}
+              <Button
+                variant="secondary"
+                size="lg"
+                className="w-full"
+                onClick={onClose}
               >
                 Continuar Comprando
-              </button>
+              </Button>
             </div>
           </div>
         )}
