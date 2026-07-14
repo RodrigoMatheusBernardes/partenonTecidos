@@ -130,20 +130,16 @@ export default function Home() {
       <section className="w-full bg-[#F7F7F7] py-16 md:py-20">
         <div className="main-container">
           
-          {/* Produtos em Alta – já centralizado internamente pelo TrendingBar */}
+          {/* Produtos em Alta – Já possui seu próprio alinhamento interno perfeito */}
           <TrendingBar />
 
-          {/* Nossa Coleção – título centralizado com text-center */}
-          <div className="text-center mb-8 md:mb-10 mt-8">
-            <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
-              Nossa Coleção
-            </h2>
-            <p className="text-[#8a7a6a] font-light text-sm mt-2 tracking-wide">
-              Explore nossos tecidos
-            </p>
-          </div>
-
-          <div className="flex flex-col md:flex-row gap-8">
+          {/* 
+            CORREÇÃO DO ITEM 3.1:
+            A 'flex row' ganhou um 'mt-8' para preservar o espaçamento vertical 
+            que existia antes do título.
+            O título foi movido para DENTRO do 'flex-1'.
+          */}
+          <div className="flex flex-col md:flex-row gap-8 mt-8">
             <aside className="hidden md:block w-64 flex-shrink-0">
               <div className="bg-white rounded-2xl shadow-sm border border-[#e8e3dc] p-6">
                 <FiltersSidebar
@@ -171,6 +167,16 @@ export default function Home() {
             </aside>
 
             <div className="flex-1">
+              {/* Título movido para cá. Agora compartilha o mesmo container que a grade! */}
+              <div className="text-center mb-8 md:mb-10">
+                <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
+                  Nossa Coleção
+                </h2>
+                <p className="text-[#8a7a6a] font-light text-sm mt-2 tracking-wide">
+                  Explore nossos tecidos
+                </p>
+              </div>
+
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                 <div className="w-full sm:max-w-md">
                   <SearchBar value={busca} onChange={setBusca} />
