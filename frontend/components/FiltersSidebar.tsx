@@ -16,6 +16,9 @@ interface FiltersSidebarProps {
   onPrecoChange: (min: number, max: number) => void;
   onCategoriaChange: (categoriaId: string) => void;
   limparFiltros: () => void;
+  // Novas props para uso mobile
+  isMobile?: boolean;
+  onClose?: () => void;
 }
 
 export default function FiltersSidebar({
@@ -27,6 +30,8 @@ export default function FiltersSidebar({
   onPrecoChange,
   onCategoriaChange,
   limparFiltros,
+  isMobile = false,
+  onClose,
 }: FiltersSidebarProps) {
   const [minInput, setMinInput] = useState(precoMin.toString());
   const [maxInput, setMaxInput] = useState(precoMax.toString());
@@ -58,16 +63,30 @@ export default function FiltersSidebar({
 
   return (
     <aside className="w-full space-y-8">
+      {/* Cabeçalho com botão de fechar (apenas mobile) */}
       <div className="flex items-center justify-between">
-        <h2 className="font-serif font-light text-lg text-[#1a1a1a] tracking-wide">Filtros</h2>
-        {(precoMin > 0 || precoMax < precoMaxGlobal || categoriasSelecionadas.length > 0) && (
-          <button
-            onClick={limparFiltros}
-            className="text-sm text-[#8a7a6a] hover:text-[#1a1a1a] transition-colors font-light"
-          >
-            Limpar
-          </button>
-        )}
+        <h2 className="font-serif font-light text-lg text-[#1a1a1a] tracking-wide">
+          Filtros
+        </h2>
+        <div className="flex items-center gap-2">
+          {(precoMin > 0 || precoMax < precoMaxGlobal || categoriasSelecionadas.length > 0) && (
+            <button
+              onClick={limparFiltros}
+              className="text-sm text-[#8a7a6a] hover:text-[#1a1a1a] transition-colors font-light"
+            >
+              Limpar
+            </button>
+          )}
+          {isMobile && onClose && (
+            <button
+              onClick={onClose}
+              className="text-[#1a1a1a] hover:text-[#8a7a6a] transition-colors ml-2"
+              aria-label="Fechar filtros"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Preço */}
