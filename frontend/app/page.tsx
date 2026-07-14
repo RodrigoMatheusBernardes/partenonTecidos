@@ -127,19 +127,14 @@ export default function Home() {
     <>
       <HomeBanner />
 
-      {/* 
-        ALTERAÇÃO: Contêiner que envolve as seções de produto.
-        - Adicionado fundo cinza claro (#F7F7F7) para profundidade.
-        - Aumentado o espaçamento vertical para respiro premium.
-      */}
       <section className="w-full bg-[#F7F7F7] py-16 md:py-20">
         <div className="main-container">
           
-          {/* Produtos em Alta */}
+          {/* Produtos em Alta – já centralizado internamente pelo TrendingBar */}
           <TrendingBar />
 
-          {/* Nossa Coleção */}
-          <div className="mb-8 md:mb-10 mt-8">
+          {/* Nossa Coleção – título centralizado com text-center */}
+          <div className="text-center mb-8 md:mb-10 mt-8">
             <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
               Nossa Coleção
             </h2>
@@ -212,10 +207,6 @@ export default function Home() {
                 </div>
               ) : (
                 <>
-                  {/* 
-                    ALTERAÇÃO: Aumento do gap entre os cards para 6 (md:8).
-                    Isso cria mais "respiro" entre os produtos.
-                  */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     {paginaAtual.map(produto => (
                       <ProductCard key={produto._id} produto={produto} />

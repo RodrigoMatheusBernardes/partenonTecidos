@@ -7,7 +7,7 @@ import { useCart } from '@/context/CartContext';
 import toast from 'react-hot-toast';
 import FavoritoButton from '@/components/FavoritoButton';
 
-const DEFAULT_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400"%3E%3Crect width="300" height="400" fill="%23f5f2ee"/%3E%3Ctext x="150" y="200" font-family="Inter, sans-serif" font-size="20" fill="%23999" text-anchor="middle"%3EProduto%3C/text%3E%3C/svg%3E';
+const DEFAULT_IMAGE = 'data:image/svg+xml,...';
 
 function fixImageUrl(url: string): string {
   if (!url) return url;
@@ -54,11 +54,12 @@ export default function ProductCard({ produto }: { produto?: any }) {
   return (
     <div
       className="
-        group bg-white rounded-xl overflow-hidden 
-        shadow-[0_2px_10px_rgba(0,0,0,0.03)] 
-        hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] 
-        hover:-translate-y-[3px] 
-        transition-all duration-300 flex flex-col
+        group bg-white rounded-xl overflow-hidden
+        shadow-[0_2px_10px_rgba(0,0,0,0.03)]
+        hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]
+        hover:-translate-y-[3px]
+        transition-all duration-300 ease-in-out
+        flex flex-col
       "
     >
       <Link href={`/produto/${id}`} className="block relative">
@@ -90,21 +91,24 @@ export default function ProductCard({ produto }: { produto?: any }) {
           </div>
         </div>
 
-        <div className="p-5 md:p-6 flex flex-col flex-1 gap-3">
-          <h3 className="font-medium text-[#1a1a1a] line-clamp-2 text-sm md:text-base font-light leading-relaxed min-h-[3.5rem]">
+        {/* Área de conteúdo com padding mais generoso e espaçamento interno refinado */}
+        <div className="p-6 md:p-8 flex flex-col flex-1 gap-4">
+          <h3 className="font-medium text-[#1a1a1a] line-clamp-2 text-base md:text-lg font-light leading-relaxed min-h-[4rem]">
             {nome}
           </h3>
 
-          <div>
-            <span className="text-xl font-light text-[#1a1a1a]">
-              R$ {preco.toFixed(2)}
-            </span>
-            {precoOriginal && (
-              <span className="text-sm text-[#8a7a6a] line-through font-light ml-2">
-                R$ {precoOriginal.toFixed(2)}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-light text-[#1a1a1a]">
+                R$ {preco.toFixed(2)}
               </span>
-            )}
-            <p className="text-xs text-[#8a7a6a] font-light mt-0.5">
+              {precoOriginal && (
+                <span className="text-sm text-[#8a7a6a] line-through font-light">
+                  R$ {precoOriginal.toFixed(2)}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-[#8a7a6a] font-light">
               ou 3x de R$ {(preco / 3).toFixed(2)}
             </p>
           </div>
@@ -116,9 +120,15 @@ export default function ProductCard({ produto }: { produto?: any }) {
           <button
             onClick={handleAddToCart}
             disabled={estoque <= 0}
-            className={`mt-auto w-full py-3 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-light tracking-wide ${
-              estoque > 0 ? 'bg-[#1a1a1a] text-white hover:bg-[#2d2d2d]' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            }`}
+            className={`
+              mt-auto w-full py-2.5 rounded-lg transition-all duration-200
+              flex items-center justify-center gap-2 text-sm font-light tracking-wide
+              ${
+                estoque > 0
+                  ? 'bg-[#1a1a1a] text-white hover:bg-[#2d2d2d] active:scale-[0.98]'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              }
+            `}
           >
             <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
             {estoque > 0 ? 'Adicionar' : 'Esgotado'}
