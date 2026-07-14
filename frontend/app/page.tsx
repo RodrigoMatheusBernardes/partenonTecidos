@@ -112,7 +112,7 @@ export default function Home() {
   if (carregando) {
     return (
       <div className="main-container py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <SkeletonProduct key={i} />
           ))}
@@ -157,15 +157,9 @@ export default function Home() {
               </div>
             </aside>
 
-            {/* Unified Content Column */}
             <div className="flex-1">
-              
-              {/* 
-                PRIORITY 1 FIX: 
-                TrendingBar moved INSIDE the flex-1 column. 
-                It now shares the exact same width and alignment constraints as the grid below it.
-              */}
-              <div className="mb-12">
+              {/* TrendingBar - Now automatically aligns perfectly with the grid below */}
+              <div className="mb-16">
                 <TrendingBar />
               </div>
 
@@ -215,7 +209,11 @@ export default function Home() {
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                  {/* 
+                    Professional Rhythm Fix:
+                    Grid updated to lg:grid-cols-4 to match the consistent flow of TrendingBar.
+                  */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                     {paginaAtual.map(produto => (
                       <ProductCard key={produto._id} produto={produto} />
                     ))}
@@ -234,6 +232,7 @@ export default function Home() {
                       >
                         ‹ Anterior
                       </button>
+
                       <div className="flex items-center gap-1">
                         {Array.from({ length: totalPaginas }, (_, i) => i + 1)
                           .filter(
@@ -264,6 +263,7 @@ export default function Home() {
                             </React.Fragment>
                           ))}
                       </div>
+
                       <button
                         onClick={() => {
                           setPagina(prev => Math.min(totalPaginas, prev + 1));
@@ -313,7 +313,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Filtro mobile */}
+      {/* Filtro mobile (mantido) */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
           onClick={() => setSidebarAberta(true)}
