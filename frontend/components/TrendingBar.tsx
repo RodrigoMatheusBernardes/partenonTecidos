@@ -14,7 +14,6 @@ interface ProdutoDestaque {
   fotos?: string[];
   imagemUrl?: string;
   estoque?: number;
-  // Outros campos que o ProductCard espera
 }
 
 export default function TrendingBar() {
@@ -23,19 +22,17 @@ export default function TrendingBar() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(4);
 
-  // Fetch dos produtos em destaque (mesma rota do original)
   useEffect(() => {
     const apiUrl = getApiUrl();
     axios.get(`${apiUrl}/api/produtos/destaques`)
       .then(res => {
-        const dados = Array.isArray(res.data) ? res.data.slice(0, 8) : []; // até 8 para carrossel
+        const dados = Array.isArray(res.data) ? res.data.slice(0, 8) : [];
         setProdutos(dados);
       })
       .catch(err => console.error('Erro ao carregar destaques:', err))
       .finally(() => setLoading(false));
   }, []);
 
-  // Responsividade – quantos itens por vez
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 640) setItemsPerView(1);
@@ -48,27 +45,24 @@ export default function TrendingBar() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Reset ao mudar a lista de produtos
   useEffect(() => {
     setCurrentIndex(0);
   }, [produtos.length]);
 
-  // Estados de carregamento
   if (loading) {
     return (
-      <section className="py-12 md:py-20 bg-light">
-        <div className="container-main">
-          <div className="text-center mb-8 md:mb-12">
-            <div className="h-8 bg-gradient-to-r from-gray-mid via-light-mid to-gray-mid rounded-button w-56 mx-auto animate-pulse" />
+      <section className="py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-serif font-light text-[#1a1a1a]">Produtos em Alta</h2>
+            <p className="text-[#8a7a6a] font-light text-sm mt-2">Os favoritos da nossa comunidade</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-white rounded-card shadow-sm-luxury overflow-hidden animate-pulse">
-                <div className="aspect-square bg-gray-mid" />
-                <div className="p-4 space-y-3">
-                  <div className="h-4 bg-gray-mid rounded-button w-3/4" />
-                  <div className="h-5 bg-gray-mid rounded-button w-1/2" />
-                </div>
+              <div key={i} className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="aspect-[3/4] bg-gray-200 animate-pulse rounded" />
+                <div className="mt-4 h-3 bg-gray-200 animate-pulse rounded w-3/4" />
+                <div className="mt-2 h-5 bg-gray-200 animate-pulse rounded w-1/2" />
               </div>
             ))}
           </div>
@@ -83,15 +77,11 @@ export default function TrendingBar() {
   const produtosVisiveis = produtos.slice(currentIndex, currentIndex + itemsPerView);
 
   return (
-    <section className="py-12 md:py-20 bg-light border-y border-gray-mid">
-      <div className="container-main">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="font-serif font-semibold text-2xl md:text-4xl text-dark-light">
-            Produtos em Alta
-          </h2>
-          <p className="text-text-secondary text-sm mt-3">
-            Os favoritos da nossa comunidade
-          </p>
+    <section className="py-12 md:py-16">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-serif font-light text-[#1a1a1a]">Produtos em Alta</h2>
+          <p className="text-[#8a7a6a] font-light text-sm mt-2">Os favoritos da nossa comunidade</p>
         </div>
 
         <div className="relative">
@@ -100,41 +90,21 @@ export default function TrendingBar() {
               <button
                 onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
                 disabled={currentIndex === 0}
-                aria-label="Ver produtos anteriores"
-                className="
-                  absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10
-                  w-11 h-11 bg-white rounded-full
-                  border border-gray-mid shadow-md-luxury
-                  flex items-center justify-center
-                  hover:bg-dark-light hover:text-white hover:border-dark-light
-                  disabled:opacity-40 disabled:cursor-not-allowed
-                  transition-all duration-300
-                  focus:outline-none focus:ring-2 focus:ring-gold
-                "
+                className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 p-3 bg-white rounded-full shadow-md hover:shadow-lg disabled:opacity-40 transition-all"
               >
-                <ChevronLeft className="w-4 h-4" strokeWidth={2} />
+                <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setCurrentIndex(Math.min(maxIndex, currentIndex + 1))}
                 disabled={currentIndex >= maxIndex}
-                aria-label="Ver próximos produtos"
-                className="
-                  absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10
-                  w-11 h-11 bg-white rounded-full
-                  border border-gray-mid shadow-md-luxury
-                  flex items-center justify-center
-                  hover:bg-dark-light hover:text-white hover:border-dark-light
-                  disabled:opacity-40 disabled:cursor-not-allowed
-                  transition-all duration-300
-                  focus:outline-none focus:ring-2 focus:ring-gold
-                "
+                className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 p-3 bg-white rounded-full shadow-md hover:shadow-lg disabled:opacity-40 transition-all"
               >
-                <ChevronRight className="w-4 h-4" strokeWidth={2} />
+                <ChevronRight className="w-5 h-5" />
               </button>
             </>
           )}
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             {produtosVisiveis.map((produto) => (
               <ProductCard key={produto._id} produto={produto} />
             ))}
@@ -142,18 +112,14 @@ export default function TrendingBar() {
         </div>
 
         {maxIndex > 0 && (
-          <div className="flex justify-center mt-8 gap-2" role="tablist">
+          <div className="flex justify-center mt-8 gap-2">
             {Array.from({ length: maxIndex + 1 }).map((_, i) => (
               <button
                 key={i}
-                role="tab"
-                aria-selected={i === currentIndex}
                 onClick={() => setCurrentIndex(i)}
-                className={`
-                  h-1 rounded-full transition-all duration-300
-                  ${i === currentIndex ? 'w-8 bg-dark-light' : 'w-4 bg-gray-mid hover:bg-text-light'}
-                `}
-                aria-label={`Página ${i + 1}`}
+                className={`h-1 rounded-full transition-all ${
+                  i === currentIndex ? 'w-8 bg-[#1a1a1a]' : 'w-4 bg-[#d4cec4]'
+                }`}
               />
             ))}
           </div>

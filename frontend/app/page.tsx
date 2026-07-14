@@ -127,182 +127,196 @@ export default function Home() {
     <>
       <HomeBanner />
 
-      <div className="main-container py-10 md:py-14">
-        <TrendingBar />
+      {/* 
+        ALTERAÇÃO: Contêiner que envolve as seções de produto.
+        - Adicionado fundo cinza claro (#F7F7F7) para profundidade.
+        - Aumentado o espaçamento vertical para respiro premium.
+      */}
+      <section className="w-full bg-[#F7F7F7] py-16 md:py-20">
+        <div className="main-container">
+          
+          {/* Produtos em Alta */}
+          <TrendingBar />
 
-        <div className="mb-10 md:mb-14 mt-8">
-          <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
-            Nossa Coleção
-          </h2>
-          <p className="text-[#8a7a6a] font-light text-sm mt-2 tracking-wide">
-            Explore nossos tecidos
-          </p>
-        </div>
+          {/* Nossa Coleção */}
+          <div className="mb-8 md:mb-10 mt-8">
+            <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
+              Nossa Coleção
+            </h2>
+            <p className="text-[#8a7a6a] font-light text-sm mt-2 tracking-wide">
+              Explore nossos tecidos
+            </p>
+          </div>
 
-        <div className="flex flex-col md:flex-row gap-8">
-          <aside className="hidden md:block w-64 flex-shrink-0">
-            <div className="bg-white rounded-2xl shadow-sm border border-[#e8e3dc] p-6">
-              <FiltersSidebar
-                precoMin={precoMin}
-                precoMax={precoMax}
-                precoMaxGlobal={precoMaxGlobal}
-                categorias={categorias}
-                categoriasSelecionadas={categoriasSelecionadas}
-                onPrecoChange={(min, max) => {
-                  setPrecoMin(min);
-                  setPrecoMax(max);
-                  setPagina(1);
-                }}
-                onCategoriaChange={catId => {
-                  setCategoriasSelecionadas(prev =>
-                    prev.includes(catId)
-                      ? prev.filter(c => c !== catId)
-                      : [...prev, catId]
-                  );
-                  setPagina(1);
-                }}
-                limparFiltros={limparFiltros}   // <-- adicionado
-              />
-            </div>
-          </aside>
-
-          <div className="flex-1">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-              <div className="w-full sm:max-w-md">
-                <SearchBar value={busca} onChange={setBusca} />
-              </div>
-              <div className="flex items-center gap-3">
-                <p className="text-sm text-[#8a7a6a] font-light whitespace-nowrap">
-                  {produtosFiltrados.length} produto(s)
-                </p>
-                <select
-                  value={ordenacao}
-                  onChange={e => {
-                    setOrdenacao(e.target.value);
+          <div className="flex flex-col md:flex-row gap-8">
+            <aside className="hidden md:block w-64 flex-shrink-0">
+              <div className="bg-white rounded-2xl shadow-sm border border-[#e8e3dc] p-6">
+                <FiltersSidebar
+                  precoMin={precoMin}
+                  precoMax={precoMax}
+                  precoMaxGlobal={precoMaxGlobal}
+                  categorias={categorias}
+                  categoriasSelecionadas={categoriasSelecionadas}
+                  onPrecoChange={(min, max) => {
+                    setPrecoMin(min);
+                    setPrecoMax(max);
                     setPagina(1);
                   }}
-                  className="border border-[#e8e3dc] rounded-lg px-3 py-2 text-sm bg-white text-[#1a1a1a] font-light focus:outline-none focus:ring-1 focus:ring-[#c9a96e]"
-                >
-                  <option value="">Mais relevantes</option>
-                  <option value="menor-preco">Menor Preço</option>
-                  <option value="maior-preco">Maior Preço</option>
-                  <option value="nome">Nome (A-Z)</option>
-                </select>
+                  onCategoriaChange={catId => {
+                    setCategoriasSelecionadas(prev =>
+                      prev.includes(catId)
+                        ? prev.filter(c => c !== catId)
+                        : [...prev, catId]
+                    );
+                    setPagina(1);
+                  }}
+                  limparFiltros={limparFiltros}
+                />
               </div>
-            </div>
+            </aside>
 
-            {produtosFiltrados.length === 0 ? (
-              <div className="text-center py-12 bg-[#f8f6f2] rounded-2xl">
-                <p className="text-[#8a7a6a] font-light">Nenhum produto encontrado.</p>
-                <button
-                  onClick={limparFiltros}
-                  className="mt-2 text-sm text-[#1a1a1a] hover:underline font-light"
-                >
-                  Limpar filtros
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                  {paginaAtual.map(produto => (
-                    <ProductCard key={produto._id} produto={produto} />
-                  ))}
+            <div className="flex-1">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div className="w-full sm:max-w-md">
+                  <SearchBar value={busca} onChange={setBusca} />
                 </div>
+                <div className="flex items-center gap-3">
+                  <p className="text-sm text-[#8a7a6a] font-light whitespace-nowrap">
+                    {produtosFiltrados.length} produto(s)
+                  </p>
+                  <select
+                    value={ordenacao}
+                    onChange={e => {
+                      setOrdenacao(e.target.value);
+                      setPagina(1);
+                    }}
+                    className="border border-[#e8e3dc] rounded-lg px-3 py-2 text-sm bg-white text-[#1a1a1a] font-light focus:outline-none focus:ring-1 focus:ring-[#c9a96e]"
+                  >
+                    <option value="">Mais relevantes</option>
+                    <option value="menor-preco">Menor Preço</option>
+                    <option value="maior-preco">Maior Preço</option>
+                    <option value="nome">Nome (A-Z)</option>
+                  </select>
+                </div>
+              </div>
 
-                {totalPaginas > 1 && (
-                  <div className="mt-12 flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => {
-                        setPagina(prev => Math.max(1, prev - 1));
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      disabled={pagina === 1}
-                      className="px-3 py-2 text-sm font-light text-gray-400 hover:text-gray-600 disabled:opacity-30 transition"
-                      aria-label="Anterior"
-                    >
-                      ‹ Anterior
-                    </button>
-
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: totalPaginas }, (_, i) => i + 1)
-                        .filter(
-                          num =>
-                            totalPaginas <= 5 ||
-                            num === 1 ||
-                            num === totalPaginas ||
-                            Math.abs(num - pagina) <= 1
-                        )
-                        .map((num, idx, arr) => (
-                          <React.Fragment key={num}>
-                            {idx > 0 && arr[idx - 1] !== num - 1 && (
-                              <span className="text-gray-400 px-2">…</span>
-                            )}
-                            <button
-                              onClick={() => {
-                                setPagina(num);
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                              }}
-                              className={`min-w-[2rem] h-8 px-2 rounded-md text-sm font-light transition ${
-                                num === pagina
-                                  ? 'bg-[#1a1a1a] text-white'
-                                  : 'text-gray-600 hover:bg-gray-100'
-                              }`}
-                            >
-                              {num}
-                            </button>
-                          </React.Fragment>
-                        ))}
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        setPagina(prev => Math.min(totalPaginas, prev + 1));
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      disabled={pagina === totalPaginas}
-                      className="px-3 py-2 text-sm font-light text-gray-400 hover:text-gray-600 disabled:opacity-30 transition"
-                      aria-label="Próximo"
-                    >
-                      Próximo ›
-                    </button>
+              {produtosFiltrados.length === 0 ? (
+                <div className="text-center py-12 bg-white/60 rounded-2xl">
+                  <p className="text-[#8a7a6a] font-light">Nenhum produto encontrado.</p>
+                  <button
+                    onClick={limparFiltros}
+                    className="mt-2 text-sm text-[#1a1a1a] hover:underline font-light"
+                  >
+                    Limpar filtros
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* 
+                    ALTERAÇÃO: Aumento do gap entre os cards para 6 (md:8).
+                    Isso cria mais "respiro" entre os produtos.
+                  */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    {paginaAtual.map(produto => (
+                      <ProductCard key={produto._id} produto={produto} />
+                    ))}
                   </div>
-                )}
-              </>
-            )}
+
+                  {totalPaginas > 1 && (
+                    <div className="mt-12 flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => {
+                          setPagina(prev => Math.max(1, prev - 1));
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        disabled={pagina === 1}
+                        className="px-3 py-2 text-sm font-light text-gray-400 hover:text-gray-600 disabled:opacity-30 transition"
+                        aria-label="Anterior"
+                      >
+                        ‹ Anterior
+                      </button>
+
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: totalPaginas }, (_, i) => i + 1)
+                          .filter(
+                            num =>
+                              totalPaginas <= 5 ||
+                              num === 1 ||
+                              num === totalPaginas ||
+                              Math.abs(num - pagina) <= 1
+                          )
+                          .map((num, idx, arr) => (
+                            <React.Fragment key={num}>
+                              {idx > 0 && arr[idx - 1] !== num - 1 && (
+                                <span className="text-gray-400 px-2">…</span>
+                              )}
+                              <button
+                                onClick={() => {
+                                  setPagina(num);
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                className={`min-w-[2rem] h-8 px-2 rounded-md text-sm font-light transition ${
+                                  num === pagina
+                                    ? 'bg-[#1a1a1a] text-white'
+                                    : 'text-gray-600 hover:bg-gray-100'
+                                }`}
+                              >
+                                {num}
+                              </button>
+                            </React.Fragment>
+                          ))}
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setPagina(prev => Math.min(totalPaginas, prev + 1));
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        disabled={pagina === totalPaginas}
+                        className="px-3 py-2 text-sm font-light text-gray-400 hover:text-gray-600 disabled:opacity-30 transition"
+                        aria-label="Próximo"
+                      >
+                        Próximo ›
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
+
+          <section className="mt-24 md:mt-32 py-16 md:py-24 border-t border-[#e8e3dc]">
+            <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
+              <div>
+                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+                  Qualidade Premium
+                </h3>
+                <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
+                  Tecidos selecionados dos melhores fornecedores
+                </p>
+              </div>
+              <div>
+                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+                  Entrega Rápida
+                </h3>
+                <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
+                  Enviamos para todo o Brasil com agilidade
+                </p>
+              </div>
+              <div>
+                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+                  Atendimento Especial
+                </h3>
+                <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
+                  Suporte personalizado para suas necessidades
+                </p>
+              </div>
+            </div>
+          </section>
         </div>
+      </section>
 
-        <section className="mt-24 md:mt-32 py-16 md:py-24 border-t border-[#e8e3dc]">
-          <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
-            <div>
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
-                Qualidade Premium
-              </h3>
-              <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
-                Tecidos selecionados dos melhores fornecedores
-              </p>
-            </div>
-            <div>
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
-                Entrega Rápida
-              </h3>
-              <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
-                Enviamos para todo o Brasil com agilidade
-              </p>
-            </div>
-            <div>
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
-                Atendimento Especial
-              </h3>
-              <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
-                Suporte personalizado para suas necessidades
-              </p>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {/* Filtro mobile */}
+      {/* Filtro mobile (mantido) */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
           onClick={() => setSidebarAberta(true)}
@@ -334,7 +348,7 @@ export default function Home() {
                 );
                 setPagina(1);
               }}
-              limparFiltros={limparFiltros}   // <-- adicionado
+              limparFiltros={limparFiltros}
             />
             <button
               onClick={() => setSidebarAberta(false)}
