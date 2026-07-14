@@ -24,8 +24,8 @@ export default function ProductCard({ produto }: { produto?: any }) {
 
   if (!produto || typeof produto !== 'object') {
     return (
-      <div className="bg-white rounded-xl overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.04)] p-6">
-        <div className="aspect-[3/4] bg-gray-100 rounded-t-xl flex items-center justify-center">
+      <div className="bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.05)] border border-[#f0f0f0] p-6">
+        <div className="aspect-[3/4] bg-gray-100 rounded-t-2xl flex items-center justify-center">
           <span className="text-gray-400 text-sm font-light">Sem imagem</span>
         </div>
       </div>
@@ -54,20 +54,18 @@ export default function ProductCard({ produto }: { produto?: any }) {
   return (
     <div
       className="
-        group bg-white rounded-xl overflow-hidden
-        shadow-[0_8px_24px_rgba(0,0,0,0.04)]
-        hover:shadow-[0_16px_48px_rgba(0,0,0,0.08)]
-        hover:-translate-y-[4px]
+        group bg-white rounded-2xl overflow-hidden
+        shadow-[0_8px_30px_rgba(0,0,0,0.05)]
+        border border-[#f0f0f0]
+        hover:shadow-[0_16px_60px_rgba(0,0,0,0.1)]
+        hover:-translate-y-[6px]
         transition-all duration-400 ease-out
         flex flex-col
       "
     >
       <Link href={`/produto/${id}`} className="block relative">
-        {/* 
-          IMAGE FRAMING:
-          Added a hairline border to give the image a matted, editorial look.
-        */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-[#fcfcfc] rounded-t-xl border border-[#e8e3dc] border-b-0">
+        {/* Image Area - no border, clean and dominant */}
+        <div className="relative aspect-[3/4] overflow-hidden bg-[#fcfcfc] rounded-t-2xl">
           <img
             src={displayImage}
             alt={nome}
@@ -75,22 +73,21 @@ export default function ProductCard({ produto }: { produto?: any }) {
             onError={() => setImgError(true)}
           />
 
-          {/* 
-            REFINED DISCOUNT BADGE:
-            Kept the dark/gold angular tag but reduced font size and added a subtle left margin.
-          */}
+          {/* Refined Discount Badge - dark angular tag with gold text */}
           {descontoPercentual > 0 && (
-            <div className="absolute top-3 left-3 z-10 bg-[#1a1a1a] text-[#C5A880] text-[10px] font-medium px-2 py-1 rounded-sm uppercase tracking-widest">
+            <div className="absolute top-3 left-3 z-10 bg-[#1a1a1a] text-[#C5A880] text-[10px] font-medium px-2 py-1 rounded-sm uppercase tracking-widest shadow-sm">
               -{descontoPercentual}%
             </div>
           )}
 
+          {/* Overlay for out-of-stock */}
           {estoque <= 0 && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
               <span className="text-white font-light text-sm uppercase tracking-wider">Esgotado</span>
             </div>
           )}
 
+          {/* Favorite button - positioned top-right */}
           <div
             className="absolute top-3 right-3 z-10"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
@@ -99,57 +96,47 @@ export default function ProductCard({ produto }: { produto?: any }) {
           </div>
         </div>
 
-        {/* 
-          CONTENT AREA REFINEMENTS:
-          - Increased gap between title and price to 'gap-3' for better hierarchy.
-          - Price now uses 'font-bold' and 'text-2xl' for prominence.
-          - Button now uses a branded Gold outline and hover state.
-        */}
+        {/* Content Area - generous padding and clear hierarchy */}
         <div className="p-6 md:p-8 flex flex-col flex-1 gap-5">
-          <div className="flex flex-col gap-3">
-            <h3 className="text-[#1a1a1a] font-medium text-lg leading-tight line-clamp-2">
-              {nome}
-            </h3>
+          {/* Product Name - now serif and elegant */}
+          <h3 className="font-serif font-light text-xl md:text-2xl leading-tight tracking-wide text-[#1a1a1a] line-clamp-2">
+            {nome}
+          </h3>
 
-            <div className="flex flex-col gap-1">
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-[#1a1a1a]">
-                  R$ {preco.toFixed(2)}
+          {/* Price Block - gold accent for price */}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold text-[#C5A880]">
+                R$ {preco.toFixed(2)}
+              </span>
+              {precoOriginal && (
+                <span className="text-sm text-[#8a7a6a] line-through font-light">
+                  R$ {precoOriginal.toFixed(2)}
                 </span>
-                {precoOriginal && (
-                  <span className="text-sm text-[#8a7a6a] line-through font-light">
-                    R$ {precoOriginal.toFixed(2)}
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-[#8a7a6a] font-light mt-0.5">
-                ou 3x de R$ {(preco / 3).toFixed(2)}
-              </p>
+              )}
             </div>
+            <p className="text-xs text-[#8a7a6a] font-light mt-1">
+              ou 3x de R$ {(preco / 3).toFixed(2)}
+            </p>
           </div>
 
+          {/* Low stock warning */}
           {estoque > 0 && estoque <= 5 && (
             <p className="text-xs text-red-500 font-medium">⚠️ Últimas unidades!</p>
           )}
 
-          {/* 
-            PREMIUM CTA BUTTON:
-            - Gold border and text (brand identity).
-            - Hover: solid gold background with dark text.
-            - Slightly narrower than full width (w-11/12) to balance with the image.
-            - Rounded-xl for a softer, more refined edge.
-          */}
+          {/* Premium CTA Button - gold outline to solid on hover */}
           <button
             onClick={handleAddToCart}
             disabled={estoque <= 0}
             className={`
-              mt-auto w-11/12 mx-auto py-3.5 rounded-xl transition-all duration-300
+              mt-auto w-full py-3.5 rounded-xl transition-all duration-300
               flex items-center justify-center gap-2.5 text-sm font-medium
-              border border-[#C5A880] bg-white text-[#C5A880]
+              border border-[#C5A880] bg-transparent text-[#C5A880]
               ${
                 estoque > 0
                   ? 'hover:bg-[#C5A880] hover:text-[#0B0C10] active:scale-[0.98]'
-                  : 'opacity-50 border-gray-200 text-gray-400 cursor-not-allowed hover:bg-white'
+                  : 'opacity-50 border-gray-200 text-gray-400 cursor-not-allowed hover:bg-transparent'
               }
             `}
           >
