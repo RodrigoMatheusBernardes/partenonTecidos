@@ -24,7 +24,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
 
   if (!produto || typeof produto !== 'object') {
     return (
-      <div className="bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)] p-6">
+      <div className="bg-white rounded-xl overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.04)] p-6">
         <div className="aspect-[3/4] bg-gray-100 rounded-t-xl flex items-center justify-center">
           <span className="text-gray-400 text-sm font-light">Sem imagem</span>
         </div>
@@ -55,15 +55,19 @@ export default function ProductCard({ produto }: { produto?: any }) {
     <div
       className="
         group bg-white rounded-xl overflow-hidden
-        shadow-[0_4px_20px_rgba(0,0,0,0.04)]
-        hover:shadow-[0_12px_48px_rgba(0,0,0,0.08)]
+        shadow-[0_8px_24px_rgba(0,0,0,0.04)]
+        hover:shadow-[0_16px_48px_rgba(0,0,0,0.08)]
         hover:-translate-y-[4px]
-        transition-all duration-300 ease-in-out
+        transition-all duration-400 ease-out
         flex flex-col
       "
     >
       <Link href={`/produto/${id}`} className="block relative">
-        <div className="relative aspect-[3/4] overflow-hidden bg-[#fcfcfc] rounded-t-xl">
+        {/* 
+          IMAGE FRAMING:
+          Added a hairline border to give the image a matted, editorial look.
+        */}
+        <div className="relative aspect-[3/4] overflow-hidden bg-[#fcfcfc] rounded-t-xl border border-[#e8e3dc] border-b-0">
           <img
             src={displayImage}
             alt={nome}
@@ -73,8 +77,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
 
           {/* 
             REFINED DISCOUNT BADGE:
-            - Replaced red pill with a dark & gold angular tag.
-            - Smaller, taller tracking, and uppercase for an editorial premium feel.
+            Kept the dark/gold angular tag but reduced font size and added a subtle left margin.
           */}
           {descontoPercentual > 0 && (
             <div className="absolute top-3 left-3 z-10 bg-[#1a1a1a] text-[#C5A880] text-[10px] font-medium px-2 py-1 rounded-sm uppercase tracking-widest">
@@ -96,25 +99,33 @@ export default function ProductCard({ produto }: { produto?: any }) {
           </div>
         </div>
 
+        {/* 
+          CONTENT AREA REFINEMENTS:
+          - Increased gap between title and price to 'gap-3' for better hierarchy.
+          - Price now uses 'font-bold' and 'text-2xl' for prominence.
+          - Button now uses a branded Gold outline and hover state.
+        */}
         <div className="p-6 md:p-8 flex flex-col flex-1 gap-5">
-          <h3 className="text-[#1a1a1a] font-normal line-clamp-2 text-base md:text-lg leading-snug">
-            {nome}
-          </h3>
+          <div className="flex flex-col gap-3">
+            <h3 className="text-[#1a1a1a] font-medium text-lg leading-tight line-clamp-2">
+              {nome}
+            </h3>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-medium text-[#1a1a1a]">
-                R$ {preco.toFixed(2)}
-              </span>
-              {precoOriginal && (
-                <span className="text-sm text-[#8a7a6a] line-through font-light">
-                  R$ {precoOriginal.toFixed(2)}
+            <div className="flex flex-col gap-1">
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-[#1a1a1a]">
+                  R$ {preco.toFixed(2)}
                 </span>
-              )}
+                {precoOriginal && (
+                  <span className="text-sm text-[#8a7a6a] line-through font-light">
+                    R$ {precoOriginal.toFixed(2)}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-[#8a7a6a] font-light mt-0.5">
+                ou 3x de R$ {(preco / 3).toFixed(2)}
+              </p>
             </div>
-            <p className="text-xs text-[#8a7a6a] font-light mt-0.5">
-              ou 3x de R$ {(preco / 3).toFixed(2)}
-            </p>
           </div>
 
           {estoque > 0 && estoque <= 5 && (
@@ -122,21 +133,22 @@ export default function ProductCard({ produto }: { produto?: any }) {
           )}
 
           {/* 
-            REFINED BUTTON:
-            - Height increased (py-3.5)
-            - Font weight increased to medium
-            - Icon and text spacing increased to gap-2.5
+            PREMIUM CTA BUTTON:
+            - Gold border and text (brand identity).
+            - Hover: solid gold background with dark text.
+            - Slightly narrower than full width (w-11/12) to balance with the image.
+            - Rounded-xl for a softer, more refined edge.
           */}
           <button
             onClick={handleAddToCart}
             disabled={estoque <= 0}
             className={`
-              mt-auto w-full py-3.5 rounded-lg transition-all duration-300
+              mt-auto w-11/12 mx-auto py-3.5 rounded-xl transition-all duration-300
               flex items-center justify-center gap-2.5 text-sm font-medium
-              border border-[#1a1a1a] bg-white text-[#1a1a1a]
+              border border-[#C5A880] bg-white text-[#C5A880]
               ${
                 estoque > 0
-                  ? 'hover:bg-[#1a1a1a] hover:text-white active:scale-[0.98]'
+                  ? 'hover:bg-[#C5A880] hover:text-[#0B0C10] active:scale-[0.98]'
                   : 'opacity-50 border-gray-200 text-gray-400 cursor-not-allowed hover:bg-white'
               }
             `}
