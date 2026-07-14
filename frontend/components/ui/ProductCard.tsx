@@ -7,7 +7,7 @@ import { useCart } from '@/context/CartContext';
 import toast from 'react-hot-toast';
 import FavoritoButton from '@/components/FavoritoButton';
 
-const DEFAULT_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400"%3E%3Crect width="300" height="400" fill="%23f5f2ee"/%3E%3Ctext x="150" y="200" font-family="Inter, sans-serif" font-size="20" fill="%23999" text-anchor="middle"%3EProduto%3C/text%3E%3C/svg%3E';
+const DEFAULT_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400"%3E%3Crect width="300" height="400" fill="%23fcfcfc"/%3E%3Ctext x="150" y="200" font-family="Inter, sans-serif" font-size="20" fill="%23999" text-anchor="middle"%3EProduto%3C/text%3E%3C/svg%3E';
 
 function fixImageUrl(url: string): string {
   if (!url) return url;
@@ -24,8 +24,8 @@ export default function ProductCard({ produto }: { produto?: any }) {
 
   if (!produto || typeof produto !== 'object') {
     return (
-      <div className="bg-white rounded-xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.03)] p-5">
-        <div className="aspect-[3/4] bg-gray-100 rounded-xl flex items-center justify-center">
+      <div className="bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-6">
+        <div className="aspect-[3/4] bg-gray-100 rounded-t-xl flex items-center justify-center">
           <span className="text-gray-400 text-sm font-light">Sem imagem</span>
         </div>
       </div>
@@ -55,15 +55,15 @@ export default function ProductCard({ produto }: { produto?: any }) {
     <div
       className="
         group bg-white rounded-xl overflow-hidden
-        shadow-[0_2px_10px_rgba(0,0,0,0.03)]
-        hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]
-        hover:-translate-y-[3px]
+        shadow-[0_4px_20px_rgba(0,0,0,0.03)]
+        hover:shadow-[0_10px_40px_rgba(0,0,0,0.06)]
+        hover:-translate-y-[4px]
         transition-all duration-300 ease-in-out
         flex flex-col
       "
     >
       <Link href={`/produto/${id}`} className="block relative">
-        <div className="relative aspect-[3/4] overflow-hidden bg-[#f5f2ee]">
+        <div className="relative aspect-[3/4] overflow-hidden bg-[#fcfcfc] rounded-t-xl">
           <img
             src={displayImage}
             alt={nome}
@@ -91,14 +91,14 @@ export default function ProductCard({ produto }: { produto?: any }) {
           </div>
         </div>
 
-        <div className="p-6 md:p-8 flex flex-col flex-1 gap-4">
-          <h3 className="font-medium text-[#1a1a1a] line-clamp-2 text-base md:text-lg font-light leading-relaxed min-h-[4rem]">
+        <div className="p-6 md:p-8 flex flex-col flex-1 gap-5">
+          <h3 className="text-[#1a1a1a] font-normal line-clamp-2 text-base md:text-lg leading-snug">
             {nome}
           </h3>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-light text-[#1a1a1a]">
+              <span className="text-2xl font-medium text-[#1a1a1a]">
                 R$ {preco.toFixed(2)}
               </span>
               {precoOriginal && (
@@ -107,7 +107,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
                 </span>
               )}
             </div>
-            <p className="text-xs text-[#8a7a6a] font-light">
+            <p className="text-xs text-[#8a7a6a] font-light mt-0.5">
               ou 3x de R$ {(preco / 3).toFixed(2)}
             </p>
           </div>
@@ -122,10 +122,11 @@ export default function ProductCard({ produto }: { produto?: any }) {
             className={`
               mt-auto w-full py-3 rounded-lg transition-all duration-200
               flex items-center justify-center gap-2 text-sm font-light tracking-wide
+              border border-[#1a1a1a] bg-white text-[#1a1a1a]
               ${
                 estoque > 0
-                  ? 'bg-[#1a1a1a] text-white hover:bg-[#2d2d2d] active:scale-[0.98]'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  ? 'hover:bg-[#1a1a1a] hover:text-white active:scale-[0.98]'
+                  : 'opacity-50 border-gray-200 text-gray-400 cursor-not-allowed hover:bg-white'
               }
             `}
           >
