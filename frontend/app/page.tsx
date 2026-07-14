@@ -130,13 +130,6 @@ export default function Home() {
       <section className="w-full bg-[#F7F7F7] py-16 md:py-20">
         <div className="main-container">
           
-          {/* 
-            CORREÇÃO ESTRUTURAL:
-            O TrendingBar foi movido para DENTRO do flex-1,
-            junto com a grade "Nossa Coleção".
-            Agora ambos os títulos e suas grades compartilham
-            o mesmo container de layout.
-          */}
           <div className="flex flex-col md:flex-row gap-8">
             <aside className="hidden md:block w-64 flex-shrink-0">
               <div className="bg-white rounded-2xl shadow-sm border border-[#e8e3dc] p-6">
@@ -164,13 +157,19 @@ export default function Home() {
               </div>
             </aside>
 
+            {/* Unified Content Column */}
             <div className="flex-1">
-              {/* TrendingBar movido para cá */}
+              
+              {/* 
+                PRIORITY 1 FIX: 
+                TrendingBar moved INSIDE the flex-1 column. 
+                It now shares the exact same width and alignment constraints as the grid below it.
+              */}
               <div className="mb-12">
                 <TrendingBar />
               </div>
 
-              {/* Título Nossa Coleção */}
+              {/* Nossa Coleção Title */}
               <div className="text-center mb-8 md:mb-10">
                 <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
                   Nossa Coleção
@@ -235,7 +234,6 @@ export default function Home() {
                       >
                         ‹ Anterior
                       </button>
-
                       <div className="flex items-center gap-1">
                         {Array.from({ length: totalPaginas }, (_, i) => i + 1)
                           .filter(
@@ -266,7 +264,6 @@ export default function Home() {
                             </React.Fragment>
                           ))}
                       </div>
-
                       <button
                         onClick={() => {
                           setPagina(prev => Math.min(totalPaginas, prev + 1));
@@ -316,7 +313,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Filtro mobile (mantido) */}
+      {/* Filtro mobile */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
           onClick={() => setSidebarAberta(true)}
