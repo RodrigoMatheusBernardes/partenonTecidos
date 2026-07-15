@@ -9,6 +9,7 @@ import { SkeletonProduct } from '@/components/Skeleton';
 import ProductCard from '@/components/ui/ProductCard';
 import HomeBanner from '@/components/HomeBanner';
 import TrendingBar from '@/components/TrendingBar';
+import Button from '@/components/ui/Button';
 
 interface Categoria { _id: string; nome: string; }
 interface Produto {
@@ -131,12 +132,6 @@ export default function Home() {
         <div className="main-container">
           
           <div className="flex flex-col md:flex-row gap-8">
-            {/* 
-              CORREÇÃO: 
-              O wrapper branco (div com bg-white) foi removido.
-              Agora o FiltersSidebar fica diretamente dentro do <aside>,
-              integrando-se ao fundo cinza #F7F7F7 da página.
-            */}
             <aside className="hidden md:block w-64 flex-shrink-0">
               <FiltersSidebar
                 precoMin={precoMin}
@@ -162,12 +157,10 @@ export default function Home() {
             </aside>
 
             <div className="flex-1">
-              {/* TrendingBar */}
               <div className="mb-16">
                 <TrendingBar />
               </div>
 
-              {/* Nossa Coleção Title */}
               <div className="text-center mb-8 md:mb-10">
                 <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
                   Nossa Coleção
@@ -232,7 +225,6 @@ export default function Home() {
                       >
                         ‹ Anterior
                       </button>
-
                       <div className="flex items-center gap-1">
                         {Array.from({ length: totalPaginas }, (_, i) => i + 1)
                           .filter(
@@ -263,7 +255,6 @@ export default function Home() {
                             </React.Fragment>
                           ))}
                       </div>
-
                       <button
                         onClick={() => {
                           setPagina(prev => Math.min(totalPaginas, prev + 1));
@@ -313,7 +304,55 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Filtro mobile – Mantido igual (o drawer já tem fundo branco) */}
+      {/* 
+        =========================================================
+        NOVO BANNER DE NEWSLETTER (Âncora Visual Premium)
+        Inserido fora da sessão cinza para criar um bloco de
+        transição visual, resolvendo a sensação de "estreiteza"
+        e preparando o terreno para o Footer.
+        =========================================================
+      */}
+      <section className="w-full bg-[#0B0C10] py-16 md:py-20">
+        <div className="main-container">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20 bg-[#1a1a1a] rounded-2xl overflow-hidden shadow-xl">
+            
+            {/* Lado Esquerdo: Imagem da Marca (Placeholder) */}
+            <div className="w-full lg:w-2/5 h-64 lg:h-auto bg-[#0B0C10] flex-shrink-0 flex items-center justify-center">
+              <span className="font-serif font-light text-[#C5A880] text-3xl tracking-[0.15em] opacity-40">
+                PARTHENON
+              </span>
+            </div>
+
+            {/* Lado Direito: Conteúdo do Newsletter */}
+            <div className="w-full lg:w-3/5 p-8 lg:p-12 text-center lg:text-left">
+              <h2 className="font-serif font-light text-3xl lg:text-4xl text-white mb-4 tracking-wide">
+                Receba nossas novidades
+              </h2>
+              <p className="text-white/60 font-light text-sm md:text-base leading-relaxed max-w-md mx-auto lg:mx-0 mb-8">
+                Cadastre-se para receber atualizações sobre novos lançamentos, coleções exclusivas e ofertas especiais da Parthenon Tecidos.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto lg:mx-0">
+                <input
+                  type="email"
+                  placeholder="Seu melhor e-mail"
+                  className="flex-1 bg-white/10 border border-white/20 rounded-xl px-5 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-[#C5A880] transition-all"
+                />
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="w-full sm:w-auto"
+                >
+                  Inscrever-se agora
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* ========================================================= */}
+
+      {/* Filtro mobile */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
           onClick={() => setSidebarAberta(true)}
