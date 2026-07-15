@@ -4,9 +4,9 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-[#e8e3dc] mt-16 md:mt-24">
-      <div className="max-w-7xl mx-auto px-6 py-16 md:py-20 lg:py-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 md:gap-16">
+    <footer className="bg-white border-t border-[#e8e3dc] mt-24">
+      <div className="max-w-7xl mx-auto px-6 pt-20 pb-16 md:pt-24 md:pb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16">
           
           {/* Coluna 1 - Logo */}
           <div className="col-span-1 sm:col-span-2 md:col-span-1">
@@ -87,7 +87,7 @@ export default function Footer() {
       </div>
 
       {/* Rodapé Inferior */}
-      <div className="border-t border-[#e8e3dc] mt-12 md:mt-16">
+      <div className="border-t border-[#e8e3dc]">
         <div className="max-w-7xl mx-auto px-6 py-6 md:py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#8a7a6a] font-light">
           <p className="text-center md:text-left">
             &copy; {new Date().getFullYear()} Parthenon Tecidos. Todos os direitos reservados.
