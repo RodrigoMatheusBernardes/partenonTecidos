@@ -6,8 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { X, Trash2, Plus, Minus } from 'lucide-react';
-import Button from '@/components/ui/Button'; // <-- CORRIGIDO (sem {})
-
+import Button from '@/components/ui/Button';
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;

@@ -7,8 +7,7 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { getApiUrl } from '@/lib/api';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
-
+import Button from '@/components/ui/Button';
 interface CupomAplicado {
   codigo: string;
   desconto: number;
