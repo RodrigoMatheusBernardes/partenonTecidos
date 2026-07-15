@@ -8,6 +8,8 @@ import { useAuth } from '@/context/AuthContext';
 import { getApiUrl } from '@/lib/api';
 import toast from 'react-hot-toast';
 import Button from '@/components/ui/Button';
+import { Loader2 } from 'lucide-react';
+
 interface CupomAplicado {
   codigo: string;
   desconto: number;
@@ -177,7 +179,7 @@ export default function CheckoutPage() {
           })),
           cupom: cupomAplicado?.codigo || undefined,
           frete: frete.valor || 0,
-          vendedor: codigoVendedor || undefined,   // <-- enviado para o backend
+          vendedor: codigoVendedor || undefined,
         }),
       });
       const data = await res.json();
@@ -234,7 +236,8 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
 
           {/* FORMULÁRIO */}
-          <form onSubmit={handleSubmit} className="lg:col-span-2 space-y-8">
+          {/* CORREÇÃO: Adicionado id="checkout-form" para que o botão externo possa referenciá-lo */}
+          <form id="checkout-form" onSubmit={handleSubmit} className="lg:col-span-2 space-y-8">
 
             {/* DADOS DE CONTATO */}
             <div className="bg-white rounded-card border border-gray-mid p-6 md:p-8 space-y-5">
@@ -330,14 +333,16 @@ export default function CheckoutPage() {
                     onChange={e => setCupomInput(e.target.value)}
                     className={`${inputCls} flex-1`}
                   />
-                  <button
-                    type="button"
+                  {/* CORREÇÃO: Botão OK substituído pelo Button component */}
+                  <Button
+                    variant="primary"
+                    size="sm"
                     onClick={aplicarCupom}
                     disabled={validandoCupom}
-                    className="px-4 py-3 bg-dark-light text-white rounded-button text-sm font-semibold hover:bg-gold hover:text-dark-light disabled:opacity-50 transition-all"
+                    className="px-4"
                   >
                     {validandoCupom ? '...' : 'OK'}
-                  </button>
+                  </Button>
                 </div>
                 {cupomAplicado && (
                   <p className="text-xs text-success font-medium">
@@ -349,8 +354,21 @@ export default function CheckoutPage() {
 
             {/* SUBMIT MOBILE */}
             <div className="lg:hidden">
-              <Button type="submit" variant="primary" size="lg" isLoading={saving} className="w-full">
-                Finalizar Compra
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                disabled={saving}
+                className="w-full"
+              >
+                {saving ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Finalizando...
+                  </span>
+                ) : (
+                  'Finalizar Compra'
+                )}
               </Button>
             </div>
           </form>
@@ -407,15 +425,17 @@ export default function CheckoutPage() {
                   form="checkout-form"
                   variant="primary"
                   size="lg"
-                  isLoading={saving}
+                  disabled={saving}
                   className="w-full"
-                  onClick={e => {
-                    e.preventDefault();
-                    const f = document.querySelector('form');
-                    f?.requestSubmit();
-                  }}
                 >
-                  Finalizar Compra
+                  {saving ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Finalizando...
+                    </span>
+                  ) : (
+                    'Finalizar Compra'
+                  )}
                 </Button>
               </div>
 
