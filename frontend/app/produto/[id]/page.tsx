@@ -12,7 +12,7 @@ import ProdutosRelacionados from '@/components/ProdutosRelacionados';
 import AvaliacoesList from '@/components/AvaliacoesList';
 import AvaliacaoForm from '@/components/AvaliacaoForm';
 import FavoritoButton from '@/components/FavoritoButton';
-import { Button } from '@/components/ui/Button';
+import Button from '@/components/ui/Button'; // <-- CORREÇÃO 1: Importação correta (sem {})
 
 interface Produto {
   _id: string;
@@ -246,14 +246,20 @@ export default function ProdutoPage() {
 
             {/* CTA */}
             <div className="space-y-3 pt-2">
+              {/* 
+                CORREÇÃO 2: 
+                A prop 'icon' foi removida.
+                O ícone e o texto foram passados como children do componente Button.
+                Isso garante que o ícone apareça corretamente.
+              */}
               <Button
                 variant="primary"
                 size="lg"
                 onClick={handleAddToCart}
                 disabled={estoque <= 0}
-                icon={<ShoppingBag className="w-5 h-5" strokeWidth={2} />}
                 className="w-full"
               >
+                <ShoppingBag className="w-5 h-5" strokeWidth={2} />
                 {added ? '✓ Adicionado ao carrinho!' : estoque <= 0 ? 'Produto Indisponível' : 'Adicionar ao Carrinho'}
               </Button>
 
