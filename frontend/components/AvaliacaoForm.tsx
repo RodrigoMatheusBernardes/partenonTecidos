@@ -48,18 +48,19 @@ export default function AvaliacaoForm({ produtoId, onSuccess }: AvaliacaoFormPro
     }
   };
 
-  const inputClass = "w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400";
+  const inputClass = "w-full border border-[#e8e3dc] rounded-lg px-4 py-3 text-sm font-light text-[#1a1a1a] placeholder:text-[#8a7a6a] focus:outline-none focus:ring-1 focus:ring-[#C5A880] transition-colors";
 
   return (
-    <div className="border-t pt-8 mt-8">
-      <h3 className="text-xl font-semibold mb-5">Deixe sua avaliação</h3>
-      <form onSubmit={handleSubmit} className="space-y-5">
+    <div className="border-t border-[#e8e3dc] pt-8 mt-8">
+      <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-6">Deixe sua avaliação</h3>
+      <form onSubmit={handleSubmit} className="space-y-5 max-w-lg">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Sua nota *</label>
-          <StarRating nota={nota} tamanho="large" onClick={setNota} />
+          <label className="block text-sm font-light text-[#1a1a1a] mb-2">Sua nota *</label>
+          {/* CORREÇÃO: tamanho="large" -> tamanho="lg" */}
+          <StarRating nota={nota} tamanho="lg" onClick={setNota} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Seu nome</label>
+          <label className="block text-sm font-light text-[#1a1a1a] mb-1">Seu nome</label>
           <input
             type="text"
             placeholder="Como gostaria de ser chamado?"
@@ -69,7 +70,7 @@ export default function AvaliacaoForm({ produtoId, onSuccess }: AvaliacaoFormPro
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Comentário (opcional)</label>
+          <label className="block text-sm font-light text-[#1a1a1a] mb-1">Comentário (opcional)</label>
           <textarea
             placeholder="Conte sua experiência com este produto"
             value={comentario}
@@ -78,7 +79,6 @@ export default function AvaliacaoForm({ produtoId, onSuccess }: AvaliacaoFormPro
             className={inputClass}
           />
         </div>
-        {/* CORREÇÃO: isLoading removido, disabled adicionado, e spinner condicional */}
         <Button
           type="submit"
           variant="primary"
