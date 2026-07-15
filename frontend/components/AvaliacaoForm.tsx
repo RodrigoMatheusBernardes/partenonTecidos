@@ -4,8 +4,7 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import StarRating from './StarRating';
-import Button from '@/components/ui/Button'; // <-- CORRIGIDO (sem {})
-
+import Button from '@/components/ui/Button';
 interface AvaliacaoFormProps {
   produtoId: string;
   onSuccess: () => void;
