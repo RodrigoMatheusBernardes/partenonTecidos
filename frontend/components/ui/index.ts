@@ -1,9 +1,13 @@
 // Design System Components - Central Export
 
-// CORREÇÃO: Reexporta os exports default como named exports
+// Reexporta os componentes com export default
 export { default as Button } from './Button';
-export { default as Input } from './Input';
-export { default as Badge } from './Badge';
-export { Card, CardHeader, CardContent, CardFooter } from './Card';
-export { default as Select } from './Select';
 export { default as ProductCard } from './ProductCard';
+
+// Reexporta os componentes com named export (sem 'default as')
+export { Input } from './Input';
+export { Badge } from './Badge';
+export { Select } from './Select';
+
+// Reexporta os componentes do Card (já eram named exports)
+export { Card, CardHeader, CardContent, CardFooter } from './Card';
