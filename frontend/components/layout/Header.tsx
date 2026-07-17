@@ -24,7 +24,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-[#0B1F33] border-b border-white/10 sticky top-0 z-50 text-white">
+    <header className="bg-gradient-to-b from-[#0A1420] to-[#050A14] border-b border-white/5 sticky top-0 z-50 text-white">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -79,7 +79,7 @@ export default function Header() {
             <button onClick={() => setCartOpen(true)} className="text-white hover:text-[#C5A880] transition-colors relative">
               <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
               {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#C5A880] text-[#0B1F33] text-[0.6rem] w-5 h-5 flex items-center justify-center rounded-full font-bold">
+                <span className="absolute -top-2 -right-2 bg-[#C5A880] text-[#050A14] text-[0.6rem] w-5 h-5 flex items-center justify-center rounded-full font-bold">
                   {totalItems}
                 </span>
               )}
@@ -92,11 +92,11 @@ export default function Header() {
 
         {/* Search Input */}
         {searchOpen && (
-          <div className="py-4 border-t border-white/10">
+          <div className="py-4 border-t border-white/5">
             <input
               type="text"
               placeholder="Buscar tecidos..."
-              className="w-full px-4 py-3 bg-[#0B1F33] border border-white/20 rounded-none text-sm font-light text-white placeholder:text-[#8a7a6a] focus:outline-none focus:ring-1 focus:ring-[#C5A880] tracking-[0.1em]"
+              className="w-full px-4 py-3 bg-[#050A14] border border-white/10 rounded-none text-sm font-light text-white placeholder:text-[#8a7a6a] focus:outline-none focus:ring-1 focus:ring-[#C5A880] tracking-[0.1em]"
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -110,10 +110,10 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="fixed inset-0 bg-black/80 z-40 md:hidden" onClick={() => setMobileOpen(false)} />
+        <div className="fixed inset-0 bg-black/90 z-40 md:hidden" onClick={() => setMobileOpen(false)} />
       )}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-[#0B1F33] border-r border-white/10 shadow-xl z-50 p-6 md:hidden transform transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-80 bg-[#050A14] border-r border-white/5 shadow-xl z-50 p-6 md:hidden transform transition-transform duration-300 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
