@@ -1,123 +1,131 @@
 'use client';
 
 import Link from 'next/link';
-import { MapPin, Mail, Phone } from 'lucide-react';
+import { MapPin, Mail, Phone, Facebook, Instagram } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0B1F33] mt-24 md:mt-32">
-      {/* NEWSLETTER */}
-      <div className="max-w-7xl mx-auto px-6 pt-28 pb-16 md:pt-36 md:pb-20">
-        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-white/10 shadow-lg">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
-            <div className="lg:max-w-md">
-              <h2 className="font-serif font-light text-2xl md:text-3xl text-white tracking-wide">
-                Receba nossas novidades
-              </h2>
-              <p className="text-white text-sm md:text-base leading-relaxed mt-3">
-                Cadastre-se para receber lançamentos, coleções exclusivas e ofertas especiais da Parthenon Tecidos.
-              </p>
-            </div>
-            <div className="w-full lg:w-auto flex flex-col sm:flex-row gap-4">
-              <input
-                type="email"
-                placeholder="Seu melhor e-mail"
-                className="flex-1 sm:w-72 bg-white/10 border border-white/20 rounded-full px-6 py-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#C5A880] transition-all"
-              />
-              <button className="bg-[#C5A880] text-[#0B1F33] px-8 py-4 rounded-full text-sm font-medium tracking-wide hover:bg-[#D4BC9B] transition-all duration-300 whitespace-nowrap">
-                Inscrever-se
-              </button>
-            </div>
+    <footer className="bg-white mt-24 md:mt-32">
+      
+      {/* ================================================================
+          SEÇÃO 1 – NEWSLETTER (com linhas divisórias no topo e embaixo)
+          ================================================================ */}
+      <div className="border-y border-[#e8e3dc] py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12">
+          <h2 className="font-serif font-light text-2xl md:text-3xl text-[#1a1a1a] tracking-wide whitespace-nowrap">
+            Novidades e Promoções
+          </h2>
+          <div className="w-full md:w-auto flex-1 max-w-lg relative">
+            <input
+              type="email"
+              placeholder="Seu endereço de e-mail"
+              className="w-full border border-[#dcd9d4] rounded-sm px-5 py-3.5 text-sm text-[#1a1a1a] placeholder:text-[#8a7a6a] bg-white focus:outline-none focus:border-[#1a1a1a] transition-colors"
+            />
+            <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a7a6a]" strokeWidth={1.5} />
           </div>
         </div>
       </div>
 
-      {/* COLUNAS DE NAVEGAÇÃO */}
-      <div className="max-w-7xl mx-auto px-6 mt-24 md:mt-28 border-t border-white/10 pt-10 md:pt-14 pb-24 md:pb-32">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-20 lg:gap-24">
+      {/* ================================================================
+          SEÇÃO 2 – COLUNAS DE NAVEGAÇÃO
+          ================================================================ */}
+      <div className="max-w-7xl mx-auto px-6 py-16 md:py-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 md:gap-16">
           
-          <div className="col-span-1 md:col-span-2 lg:col-span-1">
-            <h3 className="font-serif font-light text-2xl tracking-[0.1em] !text-white">
-              PARTHENON
-              <span className="block text-sm font-light text-[#C5A880] tracking-[0.05em] mt-1">
-                TECIDOS FINOS
-              </span>
-            </h3>
-            <p className="mt-6 text-sm !text-white leading-relaxed max-w-xs">
-              Elegância e sofisticação em cada metro. Tecidos selecionados para os melhores projetos.
-            </p>
-          </div>
-
+          {/* Coluna 1 – Institucional */}
           <div>
-            <h4 className="text-[10px] font-medium uppercase tracking-[0.15em] !text-white mb-8">Suporte</h4>
-            <ul className="space-y-4 text-sm !text-white">
-              <li><Link href="/sobre" className="hover:text-[#C5A880]">Sobre Nós</Link></li>
-              <li><Link href="/faq" className="hover:text-[#C5A880]">FAQ</Link></li>
-              <li><Link href="/politica-privacidade" className="hover:text-[#C5A880]">Privacidade</Link></li>
+            <h4 className="font-serif font-light text-lg text-[#1a1a1a] mb-6">
+              Institucional
+            </h4>
+            <ul className="space-y-3 text-sm text-[#4a4a4a] font-light">
+              <li><Link href="/sobre" className="hover:text-[#1a1a1a] transition-colors">Sobre Nós</Link></li>
+              <li><Link href="/termos" className="hover:text-[#1a1a1a] transition-colors">Termos de Uso</Link></li>
+              <li><Link href="/politica-privacidade" className="hover:text-[#1a1a1a] transition-colors">Política de Privacidade</Link></li>
+              <li><Link href="/trocas" className="hover:text-[#1a1a1a] transition-colors">Trocas e Devoluções</Link></li>
             </ul>
           </div>
 
+          {/* Coluna 2 – Informações */}
           <div>
-            <h4 className="text-[10px] font-medium uppercase tracking-[0.15em] !text-white mb-8">Institucional</h4>
-            <ul className="space-y-4 text-sm !text-white">
-              <li><Link href="/loja" className="hover:text-[#C5A880]">Loja</Link></li>
-              <li><Link href="/novidades" className="hover:text-[#C5A880]">Novidades</Link></li>
-              <li><Link href="/promocoes" className="hover:text-[#C5A880]">Promoções</Link></li>
+            <h4 className="font-serif font-light text-lg text-[#1a1a1a] mb-6">
+              Informações
+            </h4>
+            <ul className="space-y-3 text-sm text-[#4a4a4a] font-light">
+              <li><Link href="/como-comprar" className="hover:text-[#1a1a1a] transition-colors">Como Comprar</Link></li>
+              <li><Link href="/faq" className="hover:text-[#1a1a1a] transition-colors">Perguntas Frequentes</Link></li>
+              <li><Link href="/promocoes" className="hover:text-[#1a1a1a] transition-colors">Promoções</Link></li>
+              <li><Link href="/novidades" className="hover:text-[#1a1a1a] transition-colors">Novidades</Link></li>
             </ul>
           </div>
 
+          {/* Coluna 3 – Minha Conta */}
           <div>
-            <h4 className="text-[10px] font-medium uppercase tracking-[0.15em] !text-white mb-8">Atendimento</h4>
-            <ul className="space-y-4 text-sm !text-white">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-[#C5A880]" strokeWidth={1.5} />
+            <h4 className="font-serif font-light text-lg text-[#1a1a1a] mb-6">
+              Minha Conta
+            </h4>
+            <ul className="space-y-3 text-sm text-[#4a4a4a] font-light">
+              <li><Link href="/meus-pedidos" className="hover:text-[#1a1a1a] transition-colors">Meus Pedidos</Link></li>
+              <li><Link href="/favoritos" className="hover:text-[#1a1a1a] transition-colors">Favoritos</Link></li>
+              <li><Link href="/meu-perfil" className="hover:text-[#1a1a1a] transition-colors">Meus Dados</Link></li>
+            </ul>
+          </div>
+
+          {/* Coluna 4 – Contato + Redes Sociais */}
+          <div>
+            <h4 className="font-serif font-light text-lg text-[#1a1a1a] mb-6">
+              Contato
+            </h4>
+            <ul className="space-y-3 text-sm text-[#4a4a4a] font-light">
+              <li className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-[#8a7a6a] flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                 <span className="leading-relaxed">Av. Martins Bastos, 1234<br />Sarandi, Porto Alegre - RS</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-[#C5A880]" strokeWidth={1.5} />
-                <a href="mailto:contato@parthenon.com.br" className="hover:text-[#C5A880]">contato@parthenon.com.br</a>
+              <li className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-[#8a7a6a] flex-shrink-0" strokeWidth={1.5} />
+                <a href="mailto:contato@parthenon.com.br" className="hover:text-[#1a1a1a]">contato@parthenon.com.br</a>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-[#C5A880]" strokeWidth={1.5} />
-                <a href="tel:5511999999999" className="hover:text-[#C5A880]">(11) 99999-9999</a>
+              <li className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-[#8a7a6a] flex-shrink-0" strokeWidth={1.5} />
+                <a href="tel:5511999999999" className="hover:text-[#1a1a1a]">(11) 99999-9999</a>
               </li>
             </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* REDES SOCIAIS */}
-      <div className="border-t border-white/10 mt-24 md:mt-28">
-        <div className="max-w-7xl mx-auto px-6 py-16 md:py-20">
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <span className="text-xs font-light !text-white tracking-widest uppercase">Siga-nos</span>
-            <div className="flex items-center gap-4">
-              <a href="#" target="_blank" rel="noopener" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center !text-white hover:border-[#C5A880] hover:text-[#C5A880]">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-              </a>
-              <a href="#" target="_blank" rel="noopener" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center !text-white hover:border-[#C5A880] hover:text-[#C5A880]">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
-              </a>
-              <a href="#" target="_blank" rel="noopener" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center !text-white hover:border-[#C5A880] hover:text-[#C5A880]">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0-2.88 1.44 1.44 0 0 0 0 2.88z" /></svg>
-              </a>
-              <a href="#" target="_blank" rel="noopener" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center !text-white hover:border-[#C5A880] hover:text-[#C5A880]">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
-              </a>
+            
+            <div className="mt-8 pt-6 border-t border-[#e8e3dc]">
+              <span className="text-xs font-medium uppercase tracking-widest text-[#8a7a6a] block mb-4">
+                Redes Sociais
+              </span>
+              <div className="flex items-center gap-4">
+                <a href="#" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:opacity-80 transition-opacity">
+                  <Facebook className="w-4 h-4" strokeWidth={2} />
+                </a>
+                <a href="#" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-[#E1306C] text-white flex items-center justify-center hover:opacity-80 transition-opacity">
+                  <Instagram className="w-4 h-4" strokeWidth={2} />
+                </a>
+                <a href="#" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:opacity-80 transition-opacity">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.02 22c-.847 0-1.67-.114-2.452-.332l-4.62 1.635 1.572-4.627A9.93 9.93 0 0 1 2 12.02C2 6.496 6.476 2 12.02 2S22 6.496 22 12.02 17.524 22 12.02 22z"/></svg>
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* COPYRIGHT */}
-      <div className="border-t border-white/10 mt-24 md:mt-28 bg-[#050A14]">
-        <div className="max-w-7xl mx-auto px-6 py-10 md:py-12 flex flex-col md:flex-row items-center justify-between gap-6 text-xs !text-white">
+      {/* ================================================================
+          SEÇÃO 3 – COPYRIGHT
+          ================================================================ */}
+      <div className="border-t border-[#e8e3dc] py-8 md:py-10 bg-[#f9f9f9]">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#8a7a6a] font-light">
           <p className="text-center md:text-left">
             &copy; {new Date().getFullYear()} Parthenon Tecidos. Todos os direitos reservados.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/politica-privacidade" className="hover:text-[#C5A880]">Política de Privacidade</Link>
-            <Link href="/termos" className="hover:text-[#C5A880]">Termos de Uso</Link>
+            <Link href="/politica-privacidade" className="hover:text-[#1a1a1a] transition-colors">
+              Política de Privacidade
+            </Link>
+            <span className="text-[#e8e3dc]">|</span>
+            <Link href="/termos" className="hover:text-[#1a1a1a] transition-colors">
+              Termos de Uso
+            </Link>
           </div>
         </div>
       </div>
