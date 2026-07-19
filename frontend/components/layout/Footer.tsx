@@ -9,16 +9,17 @@ export default function Footer() {
       
       {/* ================================================================
           CAMADA 1 – NEWSLETTER 
-          (Com muito espaço abaixo para respirar)
+          (Texto 100% branco, botão refinado, espaçamento generoso)
           ================================================================ */}
       <div className="max-w-7xl mx-auto px-6 pt-24 pb-20 md:pt-32 md:pb-28">
         <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 md:p-12 lg:p-16 border border-white/10 shadow-2xl">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
             <div className="lg:max-w-md">
-              <h2 className="font-serif font-light text-2xl md:text-3xl text-white tracking-wide">
+              {/* CORREÇÃO: Título e texto em branco puro para legibilidade máxima */}
+              <h2 className="font-serif font-light text-3xl md:text-4xl text-white tracking-wide">
                 Receba nossas novidades
               </h2>
-              <p className="text-white/60 font-light text-sm md:text-base leading-relaxed mt-3">
+              <p className="text-white/70 font-light text-sm md:text-base leading-relaxed mt-3">
                 Cadastre-se para receber lançamentos, coleções exclusivas e ofertas especiais da Parthenon Tecidos.
               </p>
             </div>
@@ -26,7 +27,7 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="Seu melhor e-mail"
-                className="flex-1 sm:w-72 bg-white/10 border border-white/20 rounded-full px-6 py-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#C5A880] transition-all"
+                className="flex-1 sm:w-80 bg-white/10 border border-white/20 rounded-full px-6 py-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#C5A880] transition-all"
               />
               <button className="bg-[#C5A880] text-[#0A1420] px-8 py-4 rounded-full text-sm font-medium tracking-wide hover:bg-[#D4BC9B] transition-all duration-300 whitespace-nowrap">
                 Inscrever-se
@@ -38,9 +39,10 @@ export default function Footer() {
 
       {/* ================================================================
           CAMADA 2 – COLUNAS DE NAVEGAÇÃO
-          (Iniciada com um grande espaçamento visual após a Newsletter)
+          (Espaçamento massivo após a Newsletter, textos em branco/50)
           ================================================================ */}
-      <div className="max-w-7xl mx-auto px-6 mt-20 md:mt-32 pb-20 md:pb-28">
+      {/* AUMENTAMOS O mt-32 para garantir o respiro visual */}
+      <div className="max-w-7xl mx-auto px-6 mt-24 md:mt-36 pb-20 md:pb-28">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-20 lg:gap-24">
           
           {/* Coluna 1 – Parthenon */}
@@ -88,15 +90,15 @@ export default function Footer() {
             <ul className="space-y-4 text-sm font-light text-white/50">
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-[#C5A880] flex-shrink-0 mt-0.5" strokeWidth={1.5} />
-                <span className="leading-relaxed">Av. Martins Bastos, 1234<br />Sarandi, Porto Alegre - RS</span>
+                <span className="leading-relaxed text-white/50">Av. Martins Bastos, 1234<br />Sarandi, Porto Alegre - RS</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-[#C5A880] flex-shrink-0" strokeWidth={1.5} />
-                <a href="mailto:contato@parthenon.com.br" className="hover:text-[#C5A880] transition-colors">contato@parthenon.com.br</a>
+                <a href="mailto:contato@parthenon.com.br" className="hover:text-[#C5A880] transition-colors text-white/50">contato@parthenon.com.br</a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-[#C5A880] flex-shrink-0" strokeWidth={1.5} />
-                <a href="tel:5511999999999" className="hover:text-[#C5A880] transition-colors">(11) 99999-9999</a>
+                <a href="tel:5511999999999" className="hover:text-[#C5A880] transition-colors text-white/50">(11) 99999-9999</a>
               </li>
             </ul>
           </div>
@@ -105,9 +107,9 @@ export default function Footer() {
 
       {/* ================================================================
           CAMADA 3 – REDES SOCIAIS
-          (Com um grande espaço de transição, destacada por uma borda)
+          (Borda sutil, py-20 para grande respiro vertical)
           ================================================================ */}
-      <div className="border-t border-white/5 mt-20 md:mt-32">
+      <div className="border-t border-white/5 mt-24 md:mt-36">
         <div className="max-w-7xl mx-auto px-6 py-16 md:py-20">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <span className="text-xs font-light text-white/40 tracking-widest uppercase">Siga-nos</span>
@@ -135,7 +137,7 @@ export default function Footer() {
 
       {/* ================================================================
           CAMADA 4 – COPYRIGHT
-          (Base sólida e destacada, separada por um último vão generoso)
+          (Base sólida, com py-14 para não parecer "achatada")
           ================================================================ */}
       <div className="border-t border-white/5 mt-16 md:mt-24 bg-[#050A14]">
         <div className="max-w-7xl mx-auto px-6 py-12 md:py-14 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-white/40 font-light">
@@ -143,10 +145,10 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Parthenon Tecidos. Todos os direitos reservados.
           </p>
           <div className="flex items-center gap-8">
-            <Link href="/politica-privacidade" className="hover:text-[#C5A880] transition-colors duration-300">
+            <Link href="/politica-privacidade" className="hover:text-[#C5A880] transition-colors duration-300 text-white/40">
               Política de Privacidade
             </Link>
-            <Link href="/termos" className="hover:text-[#C5A880] transition-colors duration-300">
+            <Link href="/termos" className="hover:text-[#C5A880] transition-colors duration-300 text-white/40">
               Termos de Uso
             </Link>
           </div>

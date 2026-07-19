@@ -127,7 +127,7 @@ export default function Home() {
     <>
       <HomeBanner />
 
-      <section className="w-full bg-[#F7F7F7] py-16 md:py-20">
+      <section className="w-full bg-[#F7F7F7] py-20 md:py-24">
         <div className="main-container">
           
           <div className="flex flex-col md:flex-row gap-8">
@@ -160,7 +160,7 @@ export default function Home() {
                 <TrendingBar />
               </div>
 
-              <div className="text-center mb-8 md:mb-10">
+              <div className="text-center mb-12 md:mb-16">
                 <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
                   Nossa Coleção
                 </h2>
@@ -272,29 +272,32 @@ export default function Home() {
             </div>
           </div>
 
+          {/* ================================================================
+              SEÇÃO DE QUALIDADES – REFINADA COM CONTRASTE E ALINHAMENTO
+              ================================================================ */}
           <section className="mt-24 md:mt-32 py-16 md:py-24 border-t border-[#e8e3dc]">
             <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
-              <div>
+              <div className="flex flex-col items-center">
                 <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
                   Qualidade Premium
                 </h3>
-                <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
+                <p className="text-[#5c4d3e] font-light text-sm leading-relaxed max-w-sm mx-auto">
                   Tecidos selecionados dos melhores fornecedores
                 </p>
               </div>
-              <div>
+              <div className="flex flex-col items-center">
                 <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
                   Entrega Rápida
                 </h3>
-                <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
+                <p className="text-[#5c4d3e] font-light text-sm leading-relaxed max-w-sm mx-auto">
                   Enviamos para todo o Brasil com agilidade
                 </p>
               </div>
-              <div>
+              <div className="flex flex-col items-center">
                 <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
                   Atendimento Especial
                 </h3>
-                <p className="text-[#8a7a6a] font-light text-sm leading-relaxed max-w-xs mx-auto">
+                <p className="text-[#5c4d3e] font-light text-sm leading-relaxed max-w-sm mx-auto">
                   Suporte personalizado para suas necessidades
                 </p>
               </div>
