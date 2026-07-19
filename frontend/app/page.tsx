@@ -128,9 +128,10 @@ export default function Home() {
       <HomeBanner />
 
       {/* ================================================================
-          MAIN CONTENT SECTION – with margin-top to detach from Hero
+          MAJOR SECTION 1 – MAIN CONTENT (Grid + Trending + Collections)
+          Gap from Hero: mt-24 md:mt-32 (Unified Rhythm)
           ================================================================ */}
-      <section className="w-full bg-[#F7F7F7] mt-16 md:mt-20 py-20 md:py-24">
+      <section className="w-full bg-[#F7F7F7] mt-24 md:mt-32 py-20 md:py-24">
         <div className="main-container">
           
           <div className="flex flex-col md:flex-row gap-8">
@@ -274,38 +275,42 @@ export default function Home() {
               )}
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* ================================================================
-              SEÇÃO DE QUALIDADES – com grande espaçamento superior e inferior
-              ================================================================ */}
-          <section className="mt-32 md:mt-40 pb-32 md:pb-40 border-t border-[#e8e3dc]">
-            <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
-              <div className="flex flex-col items-center">
-                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
-                  Qualidade Premium
-                </h3>
-                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
-                  Tecidos selecionados dos melhores fornecedores
-                </p>
-              </div>
-              <div className="flex flex-col items-center">
-                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
-                  Entrega Rápida
-                </h3>
-                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
-                  Enviamos para todo o Brasil com agilidade
-                </p>
-              </div>
-              <div className="flex flex-col items-center">
-                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
-                  Atendimento Especial
-                </h3>
-                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
-                  Suporte personalizado para suas necessidades
-                </p>
-              </div>
+      {/* ================================================================
+          MAJOR SECTION 2 – QUALITIES
+          Gap from Main Content: mt-24 md:mt-32
+          Gap to Footer: pb-24 md:pb-32 (Matched to Footer mt-24 md:mt-32 for perfect continuity)
+          ================================================================ */}
+      <section className="mt-24 md:mt-32 pb-24 md:pb-32 border-t border-[#e8e3dc]">
+        <div className="main-container">
+          <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
+            <div className="flex flex-col items-center">
+              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+                Qualidade Premium
+              </h3>
+              <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
+                Tecidos selecionados dos melhores fornecedores
+              </p>
             </div>
-          </section>
+            <div className="flex flex-col items-center">
+              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+                Entrega Rápida
+              </h3>
+              <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
+                Enviamos para todo o Brasil com agilidade
+              </p>
+            </div>
+            <div className="flex flex-col items-center">
+              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+                Atendimento Especial
+              </h3>
+              <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
+                Suporte personalizado para suas necessidades
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
