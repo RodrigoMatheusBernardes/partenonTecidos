@@ -9,6 +9,7 @@ import { SkeletonProduct } from '@/components/Skeleton';
 import ProductCard from '@/components/ui/ProductCard';
 import HomeBanner from '@/components/HomeBanner';
 import TrendingBar from '@/components/TrendingBar';
+import Button from '@/components/ui/Button';
 
 interface Categoria { _id: string; nome: string; }
 interface Produto {
@@ -160,14 +161,10 @@ export default function Home() {
                 <TrendingBar />
               </div>
 
-              {/* ============================================================
-                  TÍTULO "NOSSA COLEÇÃO" COM CONTRASTE REFINADO
-                  ============================================================ */}
               <div className="text-center mb-12 md:mb-16">
                 <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
                   Nossa Coleção
                 </h2>
-                {/* CORREÇÃO DE CONTRASTE: substituído o tom bege frágil por um cinza médio/escuro e peso médio */}
                 <p className="text-[#4a4a4a] font-medium text-sm mt-2 tracking-wide">
                   Explore nossos tecidos
                 </p>
@@ -276,16 +273,18 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ================================================================
-              SEÇÃO DE QUALIDADES – APLICADO ALTO CONTRASTE E PESO SÓLIDO
-              ================================================================ */}
-          <section className="mt-24 md:mt-32 py-16 md:py-24 border-t border-[#e8e3dc]">
+          {/* 
+            ================================================================
+            SEÇÃO DE QUALIDADES (REFINADA COM CONTRASTE E ALINHAMENTO)
+            Aumentei o mt e pb para dar mais espaço antes do Footer.
+            ================================================================
+          */}
+          <section className="mt-28 md:mt-36 py-16 md:py-24 border-t border-[#e8e3dc]">
             <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
               <div className="flex flex-col items-center">
                 <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
                   Qualidade Premium
                 </h3>
-                {/* CORREÇÃO DE CONTRASTE: Texto alterado para cinza grafite escuro e peso normal para leitura imediata */}
                 <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
                   Tecidos selecionados dos melhores fornecedores
                 </p>
@@ -362,4 +361,34 @@ export default function Home() {
       )}
     </>
   );
-}
+}          {/* ================================================================
+              SEÇÃO DE QUALIDADES – COM GRANDE ESPAÇO INFERIOR PARA O FOOTER
+              ================================================================ */}
+          <section className="mt-32 md:mt-40 pb-32 md:pb-40 border-t border-[#e8e3dc]">
+            <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
+              <div className="flex flex-col items-center">
+                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+                  Qualidade Premium
+                </h3>
+                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
+                  Tecidos selecionados dos melhores fornecedores
+                </p>
+              </div>
+              <div className="flex flex-col items-center">
+                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+                  Entrega Rápida
+                </h3>
+                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
+                  Enviamos para todo o Brasil com agilidade
+                </p>
+              </div>
+              <div className="flex flex-col items-center">
+                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+                  Atendimento Especial
+                </h3>
+                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
+                  Suporte personalizado para suas necessidades
+                </p>
+              </div>
+            </div>
+          </section>

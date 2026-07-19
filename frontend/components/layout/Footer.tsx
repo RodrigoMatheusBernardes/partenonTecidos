@@ -5,9 +5,8 @@ import { MapPin, Mail, Phone } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0B1F33] mt-32">
-      
-      {/* NEWSLETTER – com padding extra no topo */}
+    <footer className="bg-[#0B1F33] mt-24 md:mt-32">
+      {/* NEWSLETTER */}
       <div className="max-w-7xl mx-auto px-6 pt-28 pb-16 md:pt-36 md:pb-20">
         <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-white/10 shadow-lg">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
@@ -33,7 +32,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* COLUNAS – com grande margem superior e barra de separação */}
+      {/* COLUNAS DE NAVEGAÇÃO */}
       <div className="max-w-7xl mx-auto px-6 mt-24 md:mt-28 border-t border-white/10 pt-10 md:pt-14 pb-24 md:pb-32">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-20 lg:gap-24">
           
@@ -87,7 +86,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* REDES SOCIAIS – com grande espaçamento antes */}
+      {/* REDES SOCIAIS */}
       <div className="border-t border-white/10 mt-24 md:mt-28">
         <div className="max-w-7xl mx-auto px-6 py-16 md:py-20">
           <div className="flex flex-wrap items-center justify-between gap-6">
@@ -110,7 +109,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* COPYRIGHT – com grande espaçamento antes */}
+      {/* COPYRIGHT */}
       <div className="border-t border-white/10 mt-24 md:mt-28 bg-[#050A14]">
         <div className="max-w-7xl mx-auto px-6 py-10 md:py-12 flex flex-col md:flex-row items-center justify-between gap-6 text-xs !text-white">
           <p className="text-center md:text-left">
