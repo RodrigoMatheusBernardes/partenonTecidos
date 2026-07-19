@@ -23,6 +23,13 @@ export default function Header() {
     }
   };
 
+  // WhatsApp number and message
+  const whatsappNumber = '5511999999999';
+  const whatsappMessage = encodeURIComponent(
+    'Olá! Gostaria de mais informações sobre os tecidos da Parthenon.'
+  );
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+
   return (
     <header className="bg-gradient-to-b from-[#0A1420] to-[#050A14] border-b border-white/5 sticky top-0 z-50 text-white">
       <div className="max-w-7xl mx-auto px-6">
@@ -48,9 +55,15 @@ export default function Header() {
             <Link href="/sobre" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">
               Sobre
             </Link>
-            <Link href="/contato" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">
+            {/* Contato → WhatsApp */}
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors"
+            >
               Contato
-            </Link>
+            </a>
             <Link href="/novidades" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">
               Novidades
             </Link>
@@ -127,7 +140,16 @@ export default function Header() {
           <Link href="/" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Home</Link>
           <Link href="/loja" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Loja</Link>
           <Link href="/sobre" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Sobre</Link>
-          <Link href="/contato" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Contato</Link>
+          {/* Contato → WhatsApp (Mobile) */}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setMobileOpen(false)}
+            className="text-white hover:text-[#C5A880]"
+          >
+            Contato
+          </a>
           <Link href="/novidades" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Novidades</Link>
           <Link href="/promocoes" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Promoções</Link>
           <Link href="/meus-pedidos" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Meus Pedidos</Link>
