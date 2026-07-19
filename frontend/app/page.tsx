@@ -128,10 +128,10 @@ export default function Home() {
       <HomeBanner />
 
       {/* ================================================================
-          MAJOR SECTION 1 – MAIN CONTENT (Grid + Trending + Collections)
-          Gap from Hero: mt-24 md:mt-32 (Unified Rhythm)
+          SEÇÃO DE PRODUTOS
+          PADDING UNIFICADO: py-24 md:py-32
           ================================================================ */}
-      <section className="w-full bg-[#F7F7F7] mt-24 md:mt-32 py-20 md:py-24">
+      <section className="w-full bg-[#F7F7F7] mt-24 md:mt-32 py-24 md:py-32">
         <div className="main-container">
           
           <div className="flex flex-col md:flex-row gap-8">
@@ -279,11 +279,10 @@ export default function Home() {
       </section>
 
       {/* ================================================================
-          MAJOR SECTION 2 – QUALITIES
-          Gap from Main Content: mt-24 md:mt-32
-          Gap to Footer: pb-24 md:pb-32 (Matched to Footer mt-24 md:mt-32 for perfect continuity)
+          SEÇÃO DE QUALIDADES
+          PADDING UNIFICADO: py-24 md:py-32 (antes era pb-24 apenas)
           ================================================================ */}
-      <section className="mt-24 md:mt-32 pb-24 md:pb-32 border-t border-[#e8e3dc]">
+      <section className="mt-24 md:mt-32 py-24 md:py-32 border-t border-[#e8e3dc]">
         <div className="main-container">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
             <div className="flex flex-col items-center">
