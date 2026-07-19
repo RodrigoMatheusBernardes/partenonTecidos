@@ -5,8 +5,8 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <footer className="bg-white border-t border-[#e8e3dc] mt-24">
-      <div className="max-w-7xl mx-auto px-6 pt-20 pb-16 md:pt-24 md:pb-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16">
+      <div className="max-w-7xl mx-auto px-6 pt-28 pb-24 md:pt-32 md:pb-28">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 lg:gap-20">
           
           {/* Coluna 1 - Logo */}
           <div className="col-span-1 sm:col-span-2 md:col-span-1">
@@ -23,10 +23,10 @@ export default function Footer() {
 
           {/* Coluna 2 - Navegação */}
           <div>
-            <h4 className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#1a1a1a] mb-6">
+            <h4 className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#1a1a1a] mb-8">
               Navegação
             </h4>
-            <ul className="space-y-3 text-sm font-light text-[#8a7a6a]">
+            <ul className="space-y-4 text-sm font-light text-[#8a7a6a]">
               <li>
                 <Link href="/loja" className="hover:text-[#1a1a1a] transition-colors duration-300">
                   Loja
@@ -47,10 +47,10 @@ export default function Footer() {
 
           {/* Coluna 3 - Suporte */}
           <div>
-            <h4 className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#1a1a1a] mb-6">
+            <h4 className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#1a1a1a] mb-8">
               Suporte
             </h4>
-            <ul className="space-y-3 text-sm font-light text-[#8a7a6a]">
+            <ul className="space-y-4 text-sm font-light text-[#8a7a6a]">
               <li>
                 <Link href="/sobre" className="hover:text-[#1a1a1a] transition-colors duration-300">
                   Sobre Nós
@@ -71,10 +71,10 @@ export default function Footer() {
 
           {/* Coluna 4 - Contato */}
           <div>
-            <h4 className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#1a1a1a] mb-6">
+            <h4 className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#1a1a1a] mb-8">
               Contato
             </h4>
-            <ul className="space-y-3 text-sm font-light text-[#8a7a6a]">
+            <ul className="space-y-4 text-sm font-light text-[#8a7a6a]">
               <li className="leading-relaxed text-pretty">
                 Av. Martins Bastos, 1234<br />
                 Sarandi, Porto Alegre - RS
@@ -87,8 +87,8 @@ export default function Footer() {
       </div>
 
       {/* Rodapé Inferior */}
-      <div className="border-t border-[#e8e3dc]">
-        <div className="max-w-7xl mx-auto px-6 py-6 md:py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#8a7a6a] font-light">
+      <div className="border-t border-[#e8e3dc] mt-12 md:mt-16">
+        <div className="max-w-7xl mx-auto px-6 py-8 md:py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#8a7a6a] font-light">
           <p className="text-center md:text-left">
             &copy; {new Date().getFullYear()} Parthenon Tecidos. Todos os direitos reservados.
           </p>
