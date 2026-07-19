@@ -160,11 +160,15 @@ export default function Home() {
                 <TrendingBar />
               </div>
 
+              {/* ============================================================
+                  TÍTULO "NOSSA COLEÇÃO" COM CONTRASTE REFINADO
+                  ============================================================ */}
               <div className="text-center mb-12 md:mb-16">
                 <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
                   Nossa Coleção
                 </h2>
-                <p className="text-[#8a7a6a] font-light text-sm mt-2 tracking-wide">
+                {/* CORREÇÃO DE CONTRASTE: substituído o tom bege frágil por um cinza médio/escuro e peso médio */}
+                <p className="text-[#4a4a4a] font-medium text-sm mt-2 tracking-wide">
                   Explore nossos tecidos
                 </p>
               </div>
@@ -273,7 +277,7 @@ export default function Home() {
           </div>
 
           {/* ================================================================
-              SEÇÃO DE QUALIDADES – REFINADA COM CONTRASTE E ALINHAMENTO
+              SEÇÃO DE QUALIDADES – APLICADO ALTO CONTRASTE E PESO SÓLIDO
               ================================================================ */}
           <section className="mt-24 md:mt-32 py-16 md:py-24 border-t border-[#e8e3dc]">
             <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
@@ -281,7 +285,8 @@ export default function Home() {
                 <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
                   Qualidade Premium
                 </h3>
-                <p className="text-[#5c4d3e] font-light text-sm leading-relaxed max-w-sm mx-auto">
+                {/* CORREÇÃO DE CONTRASTE: Texto alterado para cinza grafite escuro e peso normal para leitura imediata */}
+                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
                   Tecidos selecionados dos melhores fornecedores
                 </p>
               </div>
@@ -289,7 +294,7 @@ export default function Home() {
                 <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
                   Entrega Rápida
                 </h3>
-                <p className="text-[#5c4d3e] font-light text-sm leading-relaxed max-w-sm mx-auto">
+                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
                   Enviamos para todo o Brasil com agilidade
                 </p>
               </div>
@@ -297,7 +302,7 @@ export default function Home() {
                 <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
                   Atendimento Especial
                 </h3>
-                <p className="text-[#5c4d3e] font-light text-sm leading-relaxed max-w-sm mx-auto">
+                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
                   Suporte personalizado para suas necessidades
                 </p>
               </div>
