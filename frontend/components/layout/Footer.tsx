@@ -7,10 +7,11 @@ export default function Footer() {
   return (
     <footer className="bg-gradient-to-b from-[#0A1420] to-[#050A14] mt-24 border-t border-white/5">
       
-      {/* ============================================================
-          CAMADA 1 – NEWSLETTER
-          ============================================================ */}
-      <div className="max-w-7xl mx-auto px-6 pt-24 pb-12 md:pt-32 md:pb-20">
+      {/* ================================================================
+          CAMADA 1 – NEWSLETTER 
+          (Com muito espaço abaixo para respirar)
+          ================================================================ */}
+      <div className="max-w-7xl mx-auto px-6 pt-24 pb-20 md:pt-32 md:pb-28">
         <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 md:p-12 lg:p-16 border border-white/10 shadow-2xl">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
             <div className="lg:max-w-md">
@@ -35,10 +36,11 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ============================================================
+      {/* ================================================================
           CAMADA 2 – COLUNAS DE NAVEGAÇÃO
-          ============================================================ */}
-      <div className="max-w-7xl mx-auto px-6 pb-20 md:pb-28">
+          (Iniciada com um grande espaçamento visual após a Newsletter)
+          ================================================================ */}
+      <div className="max-w-7xl mx-auto px-6 mt-20 md:mt-32 pb-20 md:pb-28">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-20 lg:gap-24">
           
           {/* Coluna 1 – Parthenon */}
@@ -101,28 +103,26 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ============================================================
-          CAMADA 3 – REDES SOCIAIS (com SVGs inline)
-          ============================================================ */}
-      <div className="border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-10 md:py-14">
+      {/* ================================================================
+          CAMADA 3 – REDES SOCIAIS
+          (Com um grande espaço de transição, destacada por uma borda)
+          ================================================================ */}
+      <div className="border-t border-white/5 mt-20 md:mt-32">
+        <div className="max-w-7xl mx-auto px-6 py-16 md:py-20">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <span className="text-xs font-light text-white/40 tracking-widest uppercase">Siga-nos</span>
             <div className="flex items-center gap-6">
-              {/* Instagram SVG */}
               <a href="#" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-[#C5A880] transition-colors duration-300">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9zM21.75 7.5a9 9 0 00-18 0" />
                   <circle cx="12" cy="12" r="1.5" fill="currentColor" />
                 </svg>
               </a>
-              {/* Facebook SVG */}
               <a href="#" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-[#C5A880] transition-colors duration-300">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M18.5 7.5h-2.5v-2.5c0-1.4 1-2.5 2.5-2.5h3v4h-3v3.5h3l-1 4h-2v7h-4v-7h-2v-4h2v-3.5z" />
                 </svg>
               </a>
-              {/* YouTube SVG */}
               <a href="#" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-[#C5A880] transition-colors duration-300">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M23.5 6.5c-.2-.7-.8-1.2-1.5-1.3-2.8-.4-5.6-.4-8.5-.4-2.8 0-5.6 0-8.5.4-.7.1-1.3.7-1.5 1.3-.4 2.2-.4 4.5-.4 6.5s0 4.3.4 6.5c.2.7.8 1.2 1.5 1.3 2.9.4 5.7.4 8.5.4 2.9 0 5.7 0 8.5-.4.7-.1 1.3-.7 1.5-1.3.4-2.2.4-4.5.4-6.5s0-4.3-.4-6.5zM10 15.5v-7l5.5 3.5-5.5 3.5z" />
@@ -133,11 +133,12 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ============================================================
+      {/* ================================================================
           CAMADA 4 – COPYRIGHT
-          ============================================================ */}
-      <div className="border-t border-white/5 bg-[#050A14]">
-        <div className="max-w-7xl mx-auto px-6 py-8 md:py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-white/40 font-light">
+          (Base sólida e destacada, separada por um último vão generoso)
+          ================================================================ */}
+      <div className="border-t border-white/5 mt-16 md:mt-24 bg-[#050A14]">
+        <div className="max-w-7xl mx-auto px-6 py-12 md:py-14 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-white/40 font-light">
           <p className="text-center md:text-left">
             &copy; {new Date().getFullYear()} Parthenon Tecidos. Todos os direitos reservados.
           </p>
