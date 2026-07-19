@@ -9,7 +9,6 @@ import { SkeletonProduct } from '@/components/Skeleton';
 import ProductCard from '@/components/ui/ProductCard';
 import HomeBanner from '@/components/HomeBanner';
 import TrendingBar from '@/components/TrendingBar';
-import Button from '@/components/ui/Button';
 
 interface Categoria { _id: string; nome: string; }
 interface Produto {
@@ -128,7 +127,10 @@ export default function Home() {
     <>
       <HomeBanner />
 
-      <section className="w-full bg-[#F7F7F7] py-20 md:py-24">
+      {/* ================================================================
+          MAIN CONTENT SECTION – with margin-top to detach from Hero
+          ================================================================ */}
+      <section className="w-full bg-[#F7F7F7] mt-16 md:mt-20 py-20 md:py-24">
         <div className="main-container">
           
           <div className="flex flex-col md:flex-row gap-8">
@@ -273,13 +275,10 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 
-            ================================================================
-            SEÇÃO DE QUALIDADES (REFINADA COM CONTRASTE E ALINHAMENTO)
-            Aumentei o mt e pb para dar mais espaço antes do Footer.
-            ================================================================
-          */}
-          <section className="mt-28 md:mt-36 py-16 md:py-24 border-t border-[#e8e3dc]">
+          {/* ================================================================
+              SEÇÃO DE QUALIDADES – com grande espaçamento superior e inferior
+              ================================================================ */}
+          <section className="mt-32 md:mt-40 pb-32 md:pb-40 border-t border-[#e8e3dc]">
             <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
               <div className="flex flex-col items-center">
                 <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
@@ -361,34 +360,4 @@ export default function Home() {
       )}
     </>
   );
-}          {/* ================================================================
-              SEÇÃO DE QUALIDADES – COM GRANDE ESPAÇO INFERIOR PARA O FOOTER
-              ================================================================ */}
-          <section className="mt-32 md:mt-40 pb-32 md:pb-40 border-t border-[#e8e3dc]">
-            <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
-              <div className="flex flex-col items-center">
-                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
-                  Qualidade Premium
-                </h3>
-                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
-                  Tecidos selecionados dos melhores fornecedores
-                </p>
-              </div>
-              <div className="flex flex-col items-center">
-                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
-                  Entrega Rápida
-                </h3>
-                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
-                  Enviamos para todo o Brasil com agilidade
-                </p>
-              </div>
-              <div className="flex flex-col items-center">
-                <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
-                  Atendimento Especial
-                </h3>
-                <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
-                  Suporte personalizado para suas necessidades
-                </p>
-              </div>
-            </div>
-          </section>
+}
