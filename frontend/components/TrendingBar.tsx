@@ -84,19 +84,36 @@ export default function TrendingBar() {
       <div className="relative">
         {produtos.length > itemsPerView && (
           <>
+            {/* Seta Esquerda - Refinada */}
             <button
               onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
               disabled={currentIndex === 0}
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-white rounded-full shadow-md hover:shadow-lg disabled:opacity-40 transition-all"
+              className="
+                absolute left-2 top-1/2 -translate-y-1/2 z-10
+                p-3 bg-white/90 backdrop-blur-sm
+                border border-[#e8e3dc] rounded-full shadow-sm
+                hover:border-[#C5A880] hover:shadow-md hover:scale-105
+                disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc]
+                transition-all duration-300
+              "
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5 text-[#1a1a1a]" />
             </button>
+
+            {/* Seta Direita - Refinada */}
             <button
               onClick={() => setCurrentIndex(Math.min(maxIndex, currentIndex + 1))}
               disabled={currentIndex >= maxIndex}
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-white rounded-full shadow-md hover:shadow-lg disabled:opacity-40 transition-all"
+              className="
+                absolute right-2 top-1/2 -translate-y-1/2 z-10
+                p-3 bg-white/90 backdrop-blur-sm
+                border border-[#e8e3dc] rounded-full shadow-sm
+                hover:border-[#C5A880] hover:shadow-md hover:scale-105
+                disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc]
+                transition-all duration-300
+              "
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-5 h-5 text-[#1a1a1a]" />
             </button>
           </>
         )}
