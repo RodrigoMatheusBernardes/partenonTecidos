@@ -96,7 +96,8 @@ export default function LojaPage() {
 
       {/* HERO DA LOJA */}
       <div className="bg-light border-b border-gray-mid py-12 md:py-16">
-        <div className="container-main text-center">
+        {/* ALTERAÇÃO: container-main substituído por main-container */}
+        <div className="main-container text-center">
           <h1 className="font-serif font-semibold text-4xl md:text-5xl text-dark-light tracking-wide mb-3">
             Nossa Coleção
           </h1>
@@ -106,7 +107,8 @@ export default function LojaPage() {
         </div>
       </div>
 
-      <div className="container-main py-8 md:py-12">
+      {/* ALTERAÇÃO: container-main substituído por main-container */}
+      <div className="main-container py-8 md:py-12">
         <div className="flex gap-8 lg:gap-12">
 
           {/* FILTRO DESKTOP */}
