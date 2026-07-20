@@ -40,7 +40,6 @@ export default function FavoritosPage() {
   }, [isAuthenticated, user]);
 
   const removerFavorito = async (produtoId: string) => {
-    // Garantia extra para o TypeScript
     if (!user) {
       toast.error('Faça login para gerenciar favoritos.');
       return;
@@ -51,7 +50,6 @@ export default function FavoritosPage() {
         cliente_id: user.id,
         produto_id: produtoId,
       });
-      // Remove o item da lista local
       setFavoritos(prev => prev.filter(fav => fav.produto_id._id !== produtoId));
     } catch (err) {
       console.error(err);
@@ -68,7 +66,7 @@ export default function FavoritosPage() {
   const favoritosValidos = favoritos.filter(fav => fav.produto_id && fav.produto_id.nome);
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8">
+    <main className="main-container py-8">
       <h1 className="text-3xl font-bold mb-8">Meus Favoritos</h1>
       {favoritosValidos.length === 0 ? (
         <p className="text-gray-500">Nenhum favorito ainda.</p>
@@ -76,7 +74,6 @@ export default function FavoritosPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {favoritosValidos.map((fav) => {
             const prod = fav.produto_id;
-            // Monta um objeto compatível com ProductCard
             const produtoCompativel = {
               _id: prod._id,
               nome: prod.nome,
