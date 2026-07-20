@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Check, X } from 'lucide-react';
 
 interface Categoria {
   _id: string;
@@ -59,7 +60,7 @@ export default function FiltersSidebar({
   return (
     <aside className="w-full flex flex-col gap-8">
       
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex items-center justify-between pb-4 border-b border-[#e8e3dc]">
         <h2 className="font-serif font-light text-xl text-[#1a1a1a] tracking-wide">Filtros</h2>
         <div className="flex items-center gap-3">
@@ -76,19 +77,15 @@ export default function FiltersSidebar({
               onClick={onClose}
               className="text-[#1a1a1a] hover:text-[#C5A880] transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="w-5 h-5" strokeWidth={1.5} />
             </button>
           )}
         </div>
       </div>
 
-      {/* Preço Section */}
+      {/* PREÇO SECTION */}
       <div>
-        <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">
-          Preço
-        </h3>
+        <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">Preço</h3>
         <div className="flex items-center gap-2 mb-4">
           <input
             type="number"
@@ -113,55 +110,58 @@ export default function FiltersSidebar({
           </button>
         </div>
 
-        <div className="flex flex-col gap-2">
+        {/* CUSTOM RADIOS */}
+        <div className="flex flex-col gap-2.5">
           {faixasPreco.map((faixa) => (
-            <label
-              key={faixa.label}
-              className="flex items-center gap-2 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]"
-            >
+            <label key={faixa.label} className="flex items-center gap-2.5 text-sm text-[#4a4a4a] cursor-pointer group">
               <input
                 type="radio"
                 name="faixa-preco"
                 checked={precoMin === faixa.min && precoMax === faixa.max}
                 onChange={() => onPrecoChange(faixa.min, faixa.max)}
-                className="w-4 h-4 accent-[#C5A880] focus:ring-[#C5A880]"
+                className="hidden peer"
               />
+              <span className="relative w-4 h-4 border border-[#d4cec4] rounded-full bg-white flex items-center justify-center peer-checked:border-[#C5A880] group-hover:border-[#C5A880] transition-colors duration-200 flex-shrink-0">
+                <span className="w-2 h-2 rounded-full bg-[#C5A880] opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></span>
+              </span>
               <span className="text-sm font-light group-hover:font-normal transition-all">{faixa.label}</span>
             </label>
           ))}
-          <label className="flex items-center gap-2 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]">
+          <label className="flex items-center gap-2.5 text-sm text-[#4a4a4a] cursor-pointer group">
             <input
               type="radio"
               name="faixa-preco"
               checked={precoMin === 0 && precoMax === precoMaxGlobal}
               onChange={() => onPrecoChange(0, precoMaxGlobal)}
-              className="w-4 h-4 accent-[#C5A880] focus:ring-[#C5A880]"
+              className="hidden peer"
             />
+            <span className="relative w-4 h-4 border border-[#d4cec4] rounded-full bg-white flex items-center justify-center peer-checked:border-[#C5A880] group-hover:border-[#C5A880] transition-colors duration-200 flex-shrink-0">
+              <span className="w-2 h-2 rounded-full bg-[#C5A880] opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></span>
+            </span>
             <span className="text-sm font-light group-hover:font-normal transition-all">Todos os preços</span>
           </label>
         </div>
       </div>
 
+      {/* DIVISÓRIA */}
       <div className="border-b border-[#e8e3dc] my-1" />
 
-      {/* Categorias Section */}
+      {/* CATEGORIAS SECTION */}
       {categorias.length > 0 && (
         <div>
-          <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">
-            Categorias
-          </h3>
-          <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-2">
+          <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">Categorias</h3>
+          <div className="flex flex-col gap-2.5 max-h-60 overflow-y-auto pr-2">
             {categorias.map((cat) => (
-              <label
-                key={cat._id}
-                className="flex items-center gap-2 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]"
-              >
+              <label key={cat._id} className="flex items-center gap-2.5 text-sm text-[#4a4a4a] cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={categoriasSelecionadas.includes(cat._id)}
                   onChange={() => onCategoriaChange(cat._id)}
-                  className="w-4 h-4 accent-[#C5A880] focus:ring-[#C5A880] rounded"
+                  className="hidden peer"
                 />
+                <span className="w-4 h-4 border border-[#d4cec4] rounded-sm bg-white flex items-center justify-center peer-checked:border-[#C5A880] peer-checked:bg-[#C5A880] group-hover:border-[#C5A880] transition-colors duration-200 flex-shrink-0">
+                  <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
+                </span>
                 <span className="text-sm font-light group-hover:font-normal transition-all">{cat.nome}</span>
               </label>
             ))}
