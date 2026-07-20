@@ -8,10 +8,11 @@ export default function Footer() {
     <footer className="bg-[#0B1F33] mt-24 md:mt-32 border-t border-white/5">
       
       {/* ================================================================
-          SEÇÃO 1 – NEWSLETTER (com bordas superior/inferior e ampla)
+          SEÇÃO 1 – NEWSLETTER
           ================================================================ */}
       <div className="border-y border-white/10 py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16">
+        {/* ALTERAÇÃO: max-w-7xl mx-auto px-6 substituído por main-container */}
+        <div className="main-container flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16">
           <h2 className="font-serif font-light text-2xl md:text-3xl !text-white tracking-wide whitespace-nowrap">
             Novidades e Promoções
           </h2>
@@ -27,9 +28,10 @@ export default function Footer() {
       </div>
 
       {/* ================================================================
-          SEÇÃO 2 – COLUNAS DE NAVEGAÇÃO (com grande separação vertical e horizontal)
+          SEÇÃO 2 – COLUNAS DE NAVEGAÇÃO
           ================================================================ */}
-      <div className="max-w-7xl mx-auto px-6 mt-16 md:mt-20 pb-24 md:pb-32">
+      {/* ALTERAÇÃO: max-w-7xl mx-auto px-6 substituído por main-container */}
+      <div className="main-container mt-16 md:mt-20 pb-24 md:pb-32">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 md:gap-20 lg:gap-24">
           
           {/* Coluna 1 – Institucional */}
@@ -156,10 +158,11 @@ export default function Footer() {
       </div>
 
       {/* ================================================================
-          SEÇÃO 3 – COPYRIGHT (com grande margem superior)
+          SEÇÃO 3 – COPYRIGHT
           ================================================================ */}
       <div className="border-t border-white/10 mt-16 md:mt-20 py-8 md:py-10 bg-[#050A14]">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs !text-white/60 font-light">
+        {/* ALTERAÇÃO: max-w-7xl mx-auto px-6 substituído por main-container */}
+        <div className="main-container flex flex-col md:flex-row items-center justify-between gap-4 text-xs !text-white/60 font-light">
           <p className="text-center md:text-left">
             &copy; {new Date().getFullYear()} Parthenon Tecidos. Todos os direitos reservados.
           </p>
