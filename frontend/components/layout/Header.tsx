@@ -23,7 +23,6 @@ export default function Header() {
     }
   };
 
-  // WhatsApp number and message
   const whatsappNumber = '5511999999999';
   const whatsappMessage = encodeURIComponent(
     'Olá! Gostaria de mais informações sobre os tecidos da Parthenon.'
@@ -31,8 +30,7 @@ export default function Header() {
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
   return (
-    <header className="bg-gradient-to-b from-[#0A1420] to-[#050A14] border-b border-white/5 sticky top-0 z-50 text-white">
-      {/* ALTERAÇÃO: Substituído max-w-7xl mx-auto px-6 por .main-container */}
+    <header className="bg-[#0B1F33] border-b border-white/5 sticky top-0 z-50 text-white">
       <div className="main-container">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -47,30 +45,12 @@ export default function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">
-              Home
-            </Link>
-            <Link href="/loja" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">
-              Coleção
-            </Link>
-            <Link href="/sobre" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">
-              Sobre
-            </Link>
-            {/* Contato → WhatsApp */}
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors"
-            >
-              Contato
-            </a>
-            <Link href="/novidades" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">
-              Novidades
-            </Link>
-            <Link href="/promocoes" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">
-              Promoções
-            </Link>
+            <Link href="/" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">Home</Link>
+            <Link href="/loja" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">Coleção</Link>
+            <Link href="/sobre" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">Sobre</Link>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">Contato</a>
+            <Link href="/novidades" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">Novidades</Link>
+            <Link href="/promocoes" className="font-sans font-medium text-sm tracking-[0.1em] uppercase text-white hover:text-[#C5A880] transition-colors">Promoções</Link>
           </nav>
 
           {/* Icons */}
@@ -126,11 +106,7 @@ export default function Header() {
       {mobileOpen && (
         <div className="fixed inset-0 bg-black/90 z-40 md:hidden" onClick={() => setMobileOpen(false)} />
       )}
-      <div
-        className={`fixed top-0 left-0 h-full w-80 bg-[#050A14] border-r border-white/5 shadow-xl z-50 p-6 md:hidden transform transition-transform duration-300 ${
-          mobileOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
+      <div className={`fixed top-0 left-0 h-full w-80 bg-[#0B1F33] border-r border-white/5 shadow-xl z-50 p-6 md:hidden transform transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex justify-between items-center mb-10">
           <span className="font-serif text-xl text-white tracking-[0.1em]">Menu</span>
           <button onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">
@@ -141,16 +117,7 @@ export default function Header() {
           <Link href="/" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Home</Link>
           <Link href="/loja" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Loja</Link>
           <Link href="/sobre" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Sobre</Link>
-          {/* Contato → WhatsApp (Mobile) */}
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setMobileOpen(false)}
-            className="text-white hover:text-[#C5A880]"
-          >
-            Contato
-          </a>
+          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Contato</a>
           <Link href="/novidades" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Novidades</Link>
           <Link href="/promocoes" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Promoções</Link>
           <Link href="/meus-pedidos" onClick={() => setMobileOpen(false)} className="text-white hover:text-[#C5A880]">Meus Pedidos</Link>
