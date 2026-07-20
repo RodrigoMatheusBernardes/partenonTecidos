@@ -95,21 +95,12 @@ small {
    LINKS & INTERAÇÃO – CORRIGIDO
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* 
-   Regra geral: herda a cor do elemento pai (permite que Tailwind se sobreponha)
-   Removido o hover global problemático que usava var(--color-royal) inexistente.
-*/
 a {
   color: inherit;
   text-decoration: none;
   transition: color 0.2s ease, opacity 0.2s ease;
 }
 
-/* 
-   Garantia específica para links dentro do Header:
-   - Herdam a cor do pai (text-white)
-   - Hover em ouro (fallback seguro, mas o Tailwind nos componentes sobrescreverá se presente)
-*/
 header a {
   color: inherit;
 }
@@ -118,7 +109,6 @@ header a:hover {
   color: var(--color-gold);
 }
 
-/* Foco acessível – agora usando a cor gold definida */
 a:focus {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
@@ -204,14 +194,18 @@ textarea {
   padding-bottom: clamp(2rem, 5vw, 5rem);
 }
 
-/* Container Principal */
-.container-main {
+/* 
+   ─── CONTAINER ÚNICO GLOBAL ─── 
+   Substitui o antigo .container-main e qualquer outro max-w-7xl.
+   Todos os layouts principais do site usarão esta classe.
+*/
+.main-container {
   width: 100%;
-  max-width: 1440px;
+  max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: clamp(1rem, 4vw, 2rem);
-  padding-right: clamp(1rem, 4vw, 2rem);
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 /* Grid Responsivo */
@@ -253,7 +247,6 @@ textarea {
    ACESSIBILIDADE
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Skip to Main Content */
 .skip-to-main {
   position: absolute;
   top: -40px;
@@ -270,7 +263,6 @@ textarea {
   top: 0;
 }
 
-/* Reduza Movimento para Acessibilidade */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
