@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Button from '@/components/ui/Button'; // <-- Importação correta
-import { X } from 'lucide-react';
 
 interface Categoria {
   _id: string;
@@ -59,67 +57,39 @@ export default function FiltersSidebar({
   };
 
   return (
-    <div className="flex flex-col w-full gap-6">
+    <aside className="w-full flex flex-col gap-8">
       
-      {/* 1. Título e Botão Limpar */}
+      {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b border-[#e8e3dc]">
-        <h2 className="font-serif font-light text-2xl text-[#1a1a1a] tracking-tight">Filtros</h2>
+        <h2 className="font-serif font-light text-xl text-[#1a1a1a] tracking-wide">Filtros</h2>
         <div className="flex items-center gap-3">
           {(precoMin > 0 || precoMax < precoMaxGlobal || categoriasSelecionadas.length > 0) && (
-            // Botão "Limpar" substituído pelo novo componente
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={limparFiltros}
-              className="underline-offset-2 hover:underline"
+              className="text-xs text-[#8a7a6a] hover:text-[#1a1a1a] transition-colors"
             >
               Limpar
-            </Button>
+            </button>
           )}
           {isMobile && onClose && (
-            // Botão "Fechar" (mobile) substituído pelo novo componente
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={onClose}
-              aria-label="Fechar filtros"
-              className="!p-1.5 !h-auto !w-auto text-[#1a1a1a] hover:text-[#C5A880]"
+              className="text-[#1a1a1a] hover:text-[#C5A880] transition-colors"
             >
-              <X className="w-5 h-5" strokeWidth={1.5} />
-            </Button>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           )}
         </div>
       </div>
 
-      {/* 2. Categorias */}
-      {categorias.length > 0 && (
-        <div className="pt-2 pb-4 border-b border-[#e8e3dc]">
-          <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">Categorias</h3>
-          <div className="flex flex-col gap-2.5 max-h-60 overflow-y-auto pr-2">
-            {categorias.map((cat) => (
-              <label 
-                key={cat._id} 
-                className="flex items-center gap-3 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]"
-              >
-                <input
-                  type="checkbox"
-                  checked={categoriasSelecionadas.includes(cat._id)}
-                  onChange={() => onCategoriaChange(cat._id)}
-                  className="w-4 h-4 rounded border-gray-300 accent-[#C5A880] focus:ring-[#C5A880] focus:ring-offset-1"
-                />
-                <span className="text-sm font-light group-hover:font-normal transition-all">{cat.nome}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 3. Preço */}
-      <div className="pt-2 pb-4 border-b border-[#e8e3dc]">
-        <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">Preço</h3>
-        
-        {/* Inputs de faixa manual */}
-        <div className="flex items-center justify-between gap-2 mb-5">
+      {/* Preço Section */}
+      <div>
+        <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">
+          Preço
+        </h3>
+        <div className="flex items-center gap-2 mb-4">
           <input
             type="number"
             value={minInput}
@@ -135,22 +105,19 @@ export default function FiltersSidebar({
             placeholder="Máx"
             className="w-14 border border-[#e8e3dc] rounded bg-transparent px-2 py-1.5 text-xs text-center text-[#4a4a4a] placeholder:text-[#d4cec4] focus:outline-none focus:border-[#C5A880] transition-colors"
           />
-          {/* Botão "OK" substituído pelo novo componente */}
-          <Button
-            variant="primary"
-            size="sm"
+          <button
             onClick={handlePrecoManual}
+            className="bg-[#1a1a1a] text-white text-[10px] font-medium px-4 py-1.5 rounded hover:bg-[#2d2d2d] transition-colors"
           >
             OK
-          </Button>
+          </button>
         </div>
 
-        {/* Faixas pré-definidas */}
         <div className="flex flex-col gap-2">
           {faixasPreco.map((faixa) => (
-            <label 
-              key={faixa.label} 
-              className="flex items-center gap-3 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]"
+            <label
+              key={faixa.label}
+              className="flex items-center gap-2 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]"
             >
               <input
                 type="radio"
@@ -162,7 +129,7 @@ export default function FiltersSidebar({
               <span className="text-sm font-light group-hover:font-normal transition-all">{faixa.label}</span>
             </label>
           ))}
-          <label className="flex items-center gap-3 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]">
+          <label className="flex items-center gap-2 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]">
             <input
               type="radio"
               name="faixa-preco"
@@ -175,21 +142,32 @@ export default function FiltersSidebar({
         </div>
       </div>
 
-      {/* 4. Coleções (Estático) */}
-      <div className="pt-2">
-        <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">Coleções</h3>
-        <div className="flex flex-col gap-2.5">
-          <label className="flex items-center gap-3 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]">
-            <input type="checkbox" className="w-4 h-4 rounded border-gray-300 accent-[#C5A880] focus:ring-[#C5A880]" />
-            <span className="text-sm font-light group-hover:font-normal transition-all">Premium</span>
-          </label>
-          <label className="flex items-center gap-3 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]">
-            <input type="checkbox" className="w-4 h-4 rounded border-gray-300 accent-[#C5A880] focus:ring-[#C5A880]" />
-            <span className="text-sm font-light group-hover:font-normal transition-all">Promoções</span>
-          </label>
-        </div>
-      </div>
+      <div className="border-b border-[#e8e3dc] my-1" />
 
-    </div>
+      {/* Categorias Section */}
+      {categorias.length > 0 && (
+        <div>
+          <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">
+            Categorias
+          </h3>
+          <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-2">
+            {categorias.map((cat) => (
+              <label
+                key={cat._id}
+                className="flex items-center gap-2 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]"
+              >
+                <input
+                  type="checkbox"
+                  checked={categoriasSelecionadas.includes(cat._id)}
+                  onChange={() => onCategoriaChange(cat._id)}
+                  className="w-4 h-4 accent-[#C5A880] focus:ring-[#C5A880] rounded"
+                />
+                <span className="text-sm font-light group-hover:font-normal transition-all">{cat.nome}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+    </aside>
   );
 }
