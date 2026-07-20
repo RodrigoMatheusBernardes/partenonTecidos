@@ -32,7 +32,8 @@ export default function Header() {
 
   return (
     <header className="bg-gradient-to-b from-[#0A1420] to-[#050A14] border-b border-white/5 sticky top-0 z-50 text-white">
-      <div className="max-w-7xl mx-auto px-6">
+      {/* ALTERAÇÃO: Substituído max-w-7xl mx-auto px-6 por .main-container */}
+      <div className="main-container">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-1 flex-shrink-0">
