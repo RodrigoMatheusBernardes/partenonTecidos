@@ -113,19 +113,17 @@ export default function LojaPage() {
 
           {/* FILTRO DESKTOP */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="sticky top-8 bg-white rounded-card shadow-sm-luxury border border-gray-mid p-6">
-              <FiltersSidebar
-                precoMin={precoMin}
-                precoMax={precoMax}
-                precoMaxGlobal={precoMaxGlobal}
-                categorias={categorias}
-                categoriasSelecionadas={categoriasSelecionadas}
-                onPrecoChange={handlePrecoChange}
-                onCategoriaChange={handleCategoriaChange}
-                limparFiltros={limparFiltros}
-              />
-            </div>
-          </aside>
+  <FiltersSidebar
+    precoMin={precoMin}
+    precoMax={precoMax}
+    precoMaxGlobal={precoMaxGlobal}
+    categorias={categorias}
+    categoriasSelecionadas={categoriasSelecionadas}
+    onPrecoChange={handlePrecoChange}
+    onCategoriaChange={handleCategoriaChange}
+    limparFiltros={limparFiltros}
+  />
+</aside>
 
           {/* CONTEÚDO */}
           <div className="flex-1 min-w-0">

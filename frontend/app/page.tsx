@@ -136,28 +136,28 @@ export default function Home() {
           
           <div className="flex flex-col md:flex-row gap-8">
             <aside className="hidden md:block w-64 flex-shrink-0">
-              <FiltersSidebar
-                precoMin={precoMin}
-                precoMax={precoMax}
-                precoMaxGlobal={precoMaxGlobal}
-                categorias={categorias}
-                categoriasSelecionadas={categoriasSelecionadas}
-                onPrecoChange={(min, max) => {
-                  setPrecoMin(min);
-                  setPrecoMax(max);
-                  setPagina(1);
-                }}
-                onCategoriaChange={catId => {
-                  setCategoriasSelecionadas(prev =>
-                    prev.includes(catId)
-                      ? prev.filter(c => c !== catId)
-                      : [...prev, catId]
-                  );
-                  setPagina(1);
-                }}
-                limparFiltros={limparFiltros}
-              />
-            </aside>
+  <FiltersSidebar
+    precoMin={precoMin}
+    precoMax={precoMax}
+    precoMaxGlobal={precoMaxGlobal}
+    categorias={categorias}
+    categoriasSelecionadas={categoriasSelecionadas}
+    onPrecoChange={(min, max) => {
+      setPrecoMin(min);
+      setPrecoMax(max);
+      setPagina(1);
+    }}
+    onCategoriaChange={catId => {
+      setCategoriasSelecionadas(prev =>
+        prev.includes(catId)
+          ? prev.filter(c => c !== catId)
+          : [...prev, catId]
+      );
+      setPagina(1);
+    }}
+    limparFiltros={limparFiltros}
+  />
+</aside>
 
             <div className="flex-1">
               <div className="mb-16">
