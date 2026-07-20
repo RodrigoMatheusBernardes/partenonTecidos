@@ -12,7 +12,7 @@ import ProdutosRelacionados from '@/components/ProdutosRelacionados';
 import AvaliacoesList from '@/components/AvaliacoesList';
 import AvaliacaoForm from '@/components/AvaliacaoForm';
 import FavoritoButton from '@/components/FavoritoButton';
-import Button from '@/components/ui/Button'; // <-- CORREÇÃO 1: Importação correta (sem {})
+import Button from '@/components/ui/Button';
 
 interface Produto {
   _id: string;
@@ -93,7 +93,8 @@ export default function ProdutoPage() {
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="container-main py-6 md:py-12">
+      {/* ALTERAÇÃO: container-main substituído por main-container */}
+      <div className="main-container py-6 md:py-12">
 
         {/* BREADCRUMB */}
         <nav className="flex items-center gap-2 text-sm text-text-light mb-6 md:mb-10" aria-label="Breadcrumb">
@@ -129,7 +130,6 @@ export default function ProdutoPage() {
                   <span className="text-white font-semibold text-xl uppercase tracking-widest">Esgotado</span>
                 </div>
               )}
-              {/* Favorito */}
               <div className="absolute top-4 right-4">
                 <FavoritoButton produtoId={produto._id} size="lg" />
               </div>
@@ -166,19 +166,16 @@ export default function ProdutoPage() {
           {/* INFORMAÇÕES */}
           <div className="flex flex-col gap-6">
 
-            {/* CATEGORIA */}
             {produto.categoria?.nome && (
               <span className="text-xs font-semibold uppercase tracking-widest text-gold">
                 {produto.categoria.nome}
               </span>
             )}
 
-            {/* NOME */}
             <h1 className="font-serif font-semibold text-3xl md:text-4xl text-dark-light leading-tight">
               {produto.nome}
             </h1>
 
-            {/* PREÇO */}
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-serif font-semibold text-dark-light">
                 R$ {produto.preco.toFixed(2)}
@@ -191,7 +188,6 @@ export default function ProdutoPage() {
               <span className="text-text-light text-sm">/metro</span>
             </div>
 
-            {/* STATUS */}
             <div className="flex items-center gap-2">
               {estoque > 0 ? (
                 <span className="inline-flex items-center gap-2 text-sm font-medium text-success bg-green-50 px-3 py-1.5 rounded-full">
@@ -206,15 +202,12 @@ export default function ProdutoPage() {
               )}
             </div>
 
-            {/* DIVISOR */}
             <div className="border-t border-gray-mid" />
 
-            {/* DESCRIÇÃO */}
             {produto.descricao && (
               <p className="text-text-secondary leading-relaxed">{produto.descricao}</p>
             )}
 
-            {/* ATRIBUTOS */}
             {produto.atributos && Object.values(produto.atributos).some(v => v) && (
               <div className="grid grid-cols-2 gap-3 p-4 bg-light rounded-card border border-gray-mid text-sm">
                 {produto.atributos.composicao && (
@@ -244,14 +237,7 @@ export default function ProdutoPage() {
               </div>
             )}
 
-            {/* CTA */}
             <div className="space-y-3 pt-2">
-              {/* 
-                CORREÇÃO 2: 
-                A prop 'icon' foi removida.
-                O ícone e o texto foram passados como children do componente Button.
-                Isso garante que o ícone apareça corretamente.
-              */}
               <Button
                 variant="primary"
                 size="lg"
@@ -263,7 +249,6 @@ export default function ProdutoPage() {
                 {added ? '✓ Adicionado ao carrinho!' : estoque <= 0 ? 'Produto Indisponível' : 'Adicionar ao Carrinho'}
               </Button>
 
-              {/* SEGURANÇA */}
               <div className="flex items-center justify-center gap-2 text-xs text-text-light font-medium">
                 <Shield className="w-4 h-4" strokeWidth={2} />
                 Compra 100% segura
@@ -272,7 +257,6 @@ export default function ProdutoPage() {
           </div>
         </div>
 
-        {/* AVALIAÇÕES */}
         <section className="mt-12 md:mt-20 pt-12 border-t border-gray-mid">
           <h2 className="font-serif font-semibold text-2xl md:text-3xl text-dark-light mb-8">
             Avaliações
@@ -281,7 +265,6 @@ export default function ProdutoPage() {
           <AvaliacaoForm produtoId={id} onSuccess={() => setRefreshAvaliacoes(c => c + 1)} />
         </section>
 
-        {/* RELACIONADOS */}
         <ProdutosRelacionados produtoAtualId={id} />
       </div>
     </main>
