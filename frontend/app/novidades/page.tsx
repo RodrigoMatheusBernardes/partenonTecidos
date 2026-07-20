@@ -36,7 +36,8 @@ export default function NovidadesPage() {
 
   if (carregando) {
     return (
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="main-container py-8">
+        {/* ALTERAÇÃO: max-w-7xl mx-auto px-4 substituído por main-container */}
         <h1 className="text-3xl font-bold mb-8">Novidades</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
@@ -48,7 +49,8 @@ export default function NovidadesPage() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8">
+    <main className="main-container py-8">
+      {/* ALTERAÇÃO: max-w-7xl mx-auto px-4 substituído por main-container */}
       <h1 className="text-3xl font-bold mb-8">Novidades</h1>
       {produtos.length === 0 ? (
         <p className="text-gray-500">Nenhum produto encontrado.</p>
