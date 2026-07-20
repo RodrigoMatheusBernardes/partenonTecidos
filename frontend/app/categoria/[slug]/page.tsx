@@ -77,7 +77,8 @@ export default function CategoriaPage() {
     <main>
       {/* Cabeçalho da categoria */}
       <div className="bg-[#0a1628] text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-6">
+        {/* ALTERAÇÃO: Substituído max-w-7xl mx-auto px-6 por main-container */}
+        <div className="main-container">
           <div className="flex items-center gap-2 text-sm text-white/60 mb-4">
             <Link href="/" className="hover:text-white transition-colors flex items-center gap-1">
               <Home className="w-4 h-4" />
@@ -98,7 +99,8 @@ export default function CategoriaPage() {
       </div>
 
       {/* Grid de produtos */}
-      <div className="max-w-7xl mx-auto px-6 py-12 md:py-16">
+      {/* ALTERAÇÃO: Substituído max-w-7xl mx-auto px-6 por main-container */}
+      <div className="main-container py-12 md:py-16">
         {produtos.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
             <div className="text-6xl mb-4">📭</div>
