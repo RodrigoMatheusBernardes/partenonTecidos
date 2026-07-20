@@ -218,7 +218,8 @@ export default function CheckoutPage() {
 
   return (
     <main className="min-h-screen bg-white pb-20">
-      <div className="container-main py-8 md:py-14">
+      {/* ALTERAÇÃO: Substituído container-main por main-container */}
+      <div className="main-container py-8 md:py-14">
 
         {/* HEADER */}
         <div className="mb-8 md:mb-12">
@@ -236,7 +237,6 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
 
           {/* FORMULÁRIO */}
-          {/* CORREÇÃO: Adicionado id="checkout-form" para que o botão externo possa referenciá-lo */}
           <form id="checkout-form" onSubmit={handleSubmit} className="lg:col-span-2 space-y-8">
 
             {/* DADOS DE CONTATO */}
@@ -333,7 +333,6 @@ export default function CheckoutPage() {
                     onChange={e => setCupomInput(e.target.value)}
                     className={`${inputCls} flex-1`}
                   />
-                  {/* CORREÇÃO: Botão OK substituído pelo Button component */}
                   <Button
                     variant="primary"
                     size="sm"
