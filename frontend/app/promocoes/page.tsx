@@ -24,7 +24,6 @@ export default function PromocoesPage() {
     const apiUrl = getApiUrl();
     axios.get(`${apiUrl}/api/produtos/vitrine`)
       .then(res => {
-        // Filtra produtos com preco_original > preco (promoção ativa)
         const promos = res.data.filter((p: any) => p.preco_original && p.preco_original > p.preco);
         setProdutos(promos);
       })
@@ -34,7 +33,8 @@ export default function PromocoesPage() {
 
   if (carregando) {
     return (
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="main-container py-8">
+        {/* ALTERAÇÃO: max-w-7xl mx-auto px-4 substituído por main-container */}
         <h1 className="text-3xl font-bold mb-8">Tecidos em Promoção</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
@@ -46,7 +46,8 @@ export default function PromocoesPage() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8">
+    <main className="main-container py-8">
+      {/* ALTERAÇÃO: max-w-7xl mx-auto px-4 substituído por main-container */}
       <h1 className="text-3xl font-bold mb-8">Tecidos em Promoção</h1>
       {produtos.length === 0 ? (
         <p className="text-gray-500">Nenhum produto em promoção no momento.</p>
