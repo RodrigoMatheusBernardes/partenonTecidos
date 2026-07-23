@@ -82,6 +82,7 @@ export default function LojaPage() {
     setBusca(''); setPrecoMin(0); setPrecoMax(precoMaxGlobal);
     setCategoriasSelecionadas([]); setOrdenacao(''); setPagina(1);
   };
+
   const handlePrecoChange = (min: number, max: number) => { setPrecoMin(min); setPrecoMax(max); setPagina(1); };
   const handleCategoriaChange = (catId: string) => {
     setCategoriasSelecionadas(prev => prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]);
@@ -93,8 +94,8 @@ export default function LojaPage() {
   return (
     <main className="min-h-screen bg-white pb-24">
       
-      {/* HERO DA LOJA (SEMPRE visível) */}
-      <div className="bg-light border-b border-gray-mid py-12 md:py-16">
+      {/* HERO DA LOJA */}
+      <div className="bg-light border-b border-gray-mid py-16 md:py-20">
         <div className="main-container text-center">
           <h1 className="font-serif font-semibold text-4xl md:text-5xl text-dark-light tracking-wide mb-3">
             Nossa Coleção
@@ -105,7 +106,7 @@ export default function LojaPage() {
         </div>
       </div>
 
-      <div className="main-container py-8 md:py-12">
+      <div className="main-container py-24 md:py-32">
         <div className="flex gap-8 lg:gap-12">
           
           <aside className="hidden lg:block w-64 flex-shrink-0">
@@ -126,7 +127,7 @@ export default function LojaPage() {
           <div className="flex-1 min-w-0">
 
             {/* BARRA DE CONTROLES */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12">
               <div className="w-full sm:max-w-xs">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
               </div>
@@ -173,8 +174,8 @@ export default function LojaPage() {
               </div>
             )}
 
-            {/* GRID DE PRODUTOS COM SPINNER CORRIGIDO */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
+            {/* GRID DE PRODUTOS */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
               {carregando ? (
                 <div className="col-span-full flex justify-center items-center min-h-[50vh] py-12">
                   <div className="w-12 h-12 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
@@ -186,7 +187,7 @@ export default function LojaPage() {
 
             {/* PAGINAÇÃO */}
             {!carregando && totalPaginas > 1 && (
-              <div className="mt-12 flex flex-wrap items-center justify-center gap-2">
+              <div className="mt-16 flex flex-wrap items-center justify-center gap-2">
                 <button
                   onClick={() => { setPagina(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                   disabled={pagina === 1}
