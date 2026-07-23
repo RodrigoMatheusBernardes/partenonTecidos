@@ -6,7 +6,6 @@ import { getApiUrl } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import FiltersSidebar from '@/components/FiltersSidebar';
 import SearchBar from '@/components/SearchBar';
-import { SkeletonProduct } from '@/components/Skeleton';
 import { SlidersHorizontal } from 'lucide-react';
 
 interface Produto {
@@ -93,10 +92,7 @@ export default function LojaPage() {
 
   return (
     <main className="min-h-screen bg-white pb-24">
-
-      {/* HERO DA LOJA */}
       <div className="bg-light border-b border-gray-mid py-12 md:py-16">
-        {/* ALTERAÇÃO: container-main substituído por main-container */}
         <div className="main-container text-center">
           <h1 className="font-serif font-semibold text-4xl md:text-5xl text-dark-light tracking-wide mb-3">
             Nossa Coleção
@@ -107,28 +103,24 @@ export default function LojaPage() {
         </div>
       </div>
 
-      {/* ALTERAÇÃO: container-main substituído por main-container */}
       <div className="main-container py-8 md:py-12">
         <div className="flex gap-8 lg:gap-12">
-
-          {/* FILTRO DESKTOP */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
-  <FiltersSidebar
-    precoMin={precoMin}
-    precoMax={precoMax}
-    precoMaxGlobal={precoMaxGlobal}
-    categorias={categorias}
-    categoriasSelecionadas={categoriasSelecionadas}
-    onPrecoChange={handlePrecoChange}
-    onCategoriaChange={handleCategoriaChange}
-    limparFiltros={limparFiltros}
-  />
-</aside>
+            <div className="sticky top-8 bg-white rounded-card shadow-sm-luxury border border-gray-mid p-6">
+              <FiltersSidebar
+                precoMin={precoMin}
+                precoMax={precoMax}
+                precoMaxGlobal={precoMaxGlobal}
+                categorias={categorias}
+                categoriasSelecionadas={categoriasSelecionadas}
+                onPrecoChange={handlePrecoChange}
+                onCategoriaChange={handleCategoriaChange}
+                limparFiltros={limparFiltros}
+              />
+            </div>
+          </aside>
 
-          {/* CONTEÚDO */}
           <div className="flex-1 min-w-0">
-
-            {/* BARRA DE CONTROLES */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
               <div className="w-full sm:max-w-xs">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
@@ -164,7 +156,6 @@ export default function LojaPage() {
               </div>
             </div>
 
-            {/* ESTADO VAZIO */}
             {!carregando && produtosFiltrados.length === 0 && (
               <div className="text-center py-20 bg-light rounded-card">
                 <p className="text-text-secondary font-medium text-lg mb-4">
@@ -176,15 +167,16 @@ export default function LojaPage() {
               </div>
             )}
 
-            {/* GRID */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
-              {carregando
-                ? Array.from({ length: 16 }).map((_, i) => <SkeletonProduct key={i} />)
-                : paginaAtual.map(p => <ProductCard key={p._id} produto={p} />)
-              }
+              {carregando ? (
+                <div className="col-span-full flex justify-center items-center py-20">
+                  <div className="w-10 h-10 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
+                </div>
+              ) : (
+                paginaAtual.map(p => <ProductCard key={p._id} produto={p} />)
+              )}
             </div>
 
-            {/* PAGINAÇÃO */}
             {!carregando && totalPaginas > 1 && (
               <div className="mt-12 flex flex-wrap items-center justify-center gap-2">
                 <button
@@ -221,7 +213,6 @@ export default function LojaPage() {
         </div>
       </div>
 
-      {/* FILTRO MOBILE DRAWER */}
       {sidebarAberta && (
         <>
           <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setSidebarAberta(false)} />

@@ -56,14 +56,8 @@ export default function TrendingBar() {
           <h2 className="text-3xl font-serif font-light text-[#1a1a1a]">Produtos em Alta</h2>
           <p className="text-[#8a7a6a] font-light text-sm mt-2">Os favoritos da nossa comunidade</p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-white p-4 rounded-lg shadow-sm">
-              <div className="aspect-[3/4] bg-gray-200 animate-pulse rounded" />
-              <div className="mt-4 h-3 bg-gray-200 animate-pulse rounded w-3/4" />
-              <div className="mt-2 h-5 bg-gray-200 animate-pulse rounded w-1/2" />
-            </div>
-          ))}
+        <div className="flex justify-center py-12">
+          <div className="w-10 h-10 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -84,34 +78,17 @@ export default function TrendingBar() {
       <div className="relative">
         {produtos.length > itemsPerView && (
           <>
-            {/* Seta Esquerda - Refinada */}
             <button
               onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
               disabled={currentIndex === 0}
-              className="
-                absolute left-2 top-1/2 -translate-y-1/2 z-10
-                p-3 bg-white/90 backdrop-blur-sm
-                border border-[#e8e3dc] rounded-full shadow-sm
-                hover:border-[#C5A880] hover:shadow-md hover:scale-105
-                disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc]
-                transition-all duration-300
-              "
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-white/90 backdrop-blur-sm border border-[#e8e3dc] rounded-full shadow-sm hover:border-[#C5A880] hover:shadow-md hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc] transition-all duration-300"
             >
               <ChevronLeft className="w-5 h-5 text-[#1a1a1a]" />
             </button>
-
-            {/* Seta Direita - Refinada */}
             <button
               onClick={() => setCurrentIndex(Math.min(maxIndex, currentIndex + 1))}
               disabled={currentIndex >= maxIndex}
-              className="
-                absolute right-2 top-1/2 -translate-y-1/2 z-10
-                p-3 bg-white/90 backdrop-blur-sm
-                border border-[#e8e3dc] rounded-full shadow-sm
-                hover:border-[#C5A880] hover:shadow-md hover:scale-105
-                disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc]
-                transition-all duration-300
-              "
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-white/90 backdrop-blur-sm border border-[#e8e3dc] rounded-full shadow-sm hover:border-[#C5A880] hover:shadow-md hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc] transition-all duration-300"
             >
               <ChevronRight className="w-5 h-5 text-[#1a1a1a]" />
             </button>
