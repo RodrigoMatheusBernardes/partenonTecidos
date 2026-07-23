@@ -118,15 +118,15 @@ export default function Home() {
 
       {/* 2. Agora verificamos o estado de carregamento */}
       {carregando ? (
-        // Estado de carregamento: apenas o spinner centralizado, com altura mínima para ocupar o espaço da grade
-        <div className="w-full bg-[#F7F7F7] py-24 md:py-32">
+        // Estado de carregamento: margem superior unificada com as seções carregadas
+        <div className="w-full bg-[#F7F7F7] mt-32 md:mt-40 py-24 md:py-32">
           <div className="main-container flex justify-center items-center min-h-[400px]">
             <div className="w-12 h-12 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
           </div>
         </div>
       ) : (
-        // 3. Conteúdo normal (exibido apenas quando os dados carregarem)
-        <section className="w-full bg-[#F7F7F7] mt-24 md:mt-32 py-24 md:py-32">
+        // 3. Conteúdo normal
+        <section className="w-full bg-[#F7F7F7] mt-32 md:mt-40 py-24 md:py-32">
           <div className="main-container">
             <div className="flex flex-col md:flex-row gap-8">
               <aside className="hidden md:block w-64 flex-shrink-0">
@@ -273,8 +273,8 @@ export default function Home() {
         </section>
       )}
 
-      {/* SEÇÃO DE QUALIDADES (fora do carregamento) */}
-      <section className="mt-24 md:mt-32 py-24 md:py-32 border-t border-[#e8e3dc]">
+      {/* SEÇÃO DE QUALIDADES (margem superior aumentada) */}
+      <section className="mt-32 md:mt-40 py-24 md:py-32 border-t border-[#e8e3dc]">
         <div className="main-container">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
             <div className="flex flex-col items-center">
