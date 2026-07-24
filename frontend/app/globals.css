@@ -234,10 +234,9 @@ textarea {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   UTILITÁRIOS – METALLIC NAVY (CSS PURO, 100% COMPATÍVEL)
+   UTILITÁRIOS – METALLIC NAVY (CSS PURO)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Texto metálico azul escuro (para preços, títulos e palavras-chave) */
 .text-metallic-navy {
   background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
   -webkit-background-clip: text;
@@ -246,12 +245,10 @@ textarea {
   display: inline-block;
 }
 
-/* Fundo metálico azul escuro (para botões e badges) */
 .bg-metallic-navy {
   background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
 }
 
-/* Fundo metálico azul escuro com hover para interação (botões) */
 .bg-metallic-navy-hover {
   background: linear-gradient(135deg, #162A4A 0%, #243F6B 100%);
 }
