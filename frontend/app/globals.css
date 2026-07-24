@@ -192,25 +192,23 @@ textarea {
 }
 
 /* ============================================================
-   UTILITÁRIOS METALLIC NAVY – SINTAXE OFICIAL TAILWIND v4
+   UTILITÁRIOS METALLIC NAVY – SINTAXE CORRETA (RAIZ)
    ============================================================ */
 
-@layer utilities {
-  @utility text-metallic-navy {
-    background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: inline-block;
-  }
+@utility text-metallic-navy {
+  background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
 
-  @utility bg-metallic-navy {
-    background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
-  }
+@utility bg-metallic-navy {
+  background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
+}
 
-  @utility bg-metallic-navy-hover {
-    background: linear-gradient(135deg, #162A4A 0%, #243F6B 100%);
-  }
+@utility bg-metallic-navy-hover {
+  background: linear-gradient(135deg, #162A4A 0%, #243F6B 100%);
 }
 
 .skip-to-main {
