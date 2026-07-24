@@ -1,40 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   DESIGN SYSTEM – VARIÁVEIS GLOBAIS
-   ═══════════════════════════════════════════════════════════════════════════ */
-
 @theme {
-  /* TIPOGRAFIA */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-product: 'Cormorant Garamond', Georgia, serif;
 
-  /* CORES PRIMÁRIAS */
   --color-text-primary: #1a1a1a;
   --color-text-secondary: #5c5c5c;
   --color-text-light: #8a8a8a;
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f5f4f0;
 
-  /* ACENTOS (mantidos para compatibilidade) */
   --color-gold: #c2a56c;
   --color-gold-light: #e5d9c4;
-  
-  /* BORDERS & DIVIDERS */
   --color-border: #dcd9d4;
   --color-border-light: #ede9e3;
 
-  /* FUNCIONAL */
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
 }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   RESET & BASES
-   ═══════════════════════════════════════════════════════════════════════════ */
 
 * {
   margin: 0;
@@ -57,10 +43,6 @@ body {
   color: var(--color-text-primary);
   letter-spacing: 0.02em;
 }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   TIPOGRAFIA – Hierarquia Responsiva com clamp()
-   ═══════════════════════════════════════════════════════════════════════════ */
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
@@ -91,10 +73,6 @@ small {
   color: var(--color-text-light);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   LINKS & INTERAÇÃO – CORRIGIDO
-   ═══════════════════════════════════════════════════════════════════════════ */
-
 a {
   color: inherit;
   text-decoration: none;
@@ -115,19 +93,11 @@ a:focus {
   border-radius: 2px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   IMAGENS
-   ═══════════════════════════════════════════════════════════════════════════ */
-
 img {
   max-width: 100%;
   height: auto;
   display: block;
 }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   SCROLLBAR ESTILIZADO
-   ═══════════════════════════════════════════════════════════════════════════ */
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -148,10 +118,6 @@ img {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-light);
 }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   FORMS – Inputs, Selects, Textareas
-   ═══════════════════════════════════════════════════════════════════════════ */
 
 input,
 textarea,
@@ -184,11 +150,7 @@ textarea {
   min-height: 120px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   UTILITÁRIOS
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Container Único Global */
+/* CONTAINERS */
 .main-container {
   width: 100%;
   max-width: 1280px;
@@ -198,7 +160,6 @@ textarea {
   padding-right: 1.5rem;
 }
 
-/* Grid Responsivo */
 .grid-responsive {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -211,14 +172,12 @@ textarea {
   }
 }
 
-/* Flex Center */
 .flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Texto com Clipe (Truncado) */
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -233,30 +192,27 @@ textarea {
   overflow: hidden;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   UTILITÁRIOS – METALLIC NAVY (CSS PURO)
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ============================================================
+   UTILITÁRIOS METALLIC NAVY (COM !important)
+   ============================================================ */
 
 .text-metallic-navy {
-  background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
   display: inline-block;
 }
 
 .bg-metallic-navy {
-  background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
+  background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%) !important;
 }
 
 .bg-metallic-navy-hover {
-  background: linear-gradient(135deg, #162A4A 0%, #243F6B 100%);
+  background: linear-gradient(135deg, #162A4A 0%, #243F6B 100%) !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   ACESSIBILIDADE
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ACESSIBILIDADE */
 .skip-to-main {
   position: absolute;
   top: -40px;
@@ -283,7 +239,6 @@ textarea {
   }
 }
 
-/* Animações suaves */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -292,7 +247,6 @@ textarea {
   animation: fadeInUp 0.6s ease-out;
 }
 
-/* Classes de fonte */
 .font-serif { font-family: var(--font-serif); }
 .font-product { font-family: var(--font-product); }
 .font-sans { font-family: var(--font-sans); }
