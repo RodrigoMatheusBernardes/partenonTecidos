@@ -65,13 +65,12 @@ textarea { resize: vertical; min-height: 120px; }
 
 /* ============================================================
    UTILITÁRIOS METALLIC NAVY – SINTAXE CORRETA DO TAILWIND v4
-   ============================================================ */
-/* ============================================================
-   UTILITÁRIOS METALLIC NAVY – VERSÃO MAIS VIBRANTE
+  /* ============================================================
+   UTILITÁRIOS METALLIC NAVY – EFEITO DE ALTO BRILHO (MÁXIMO DESTAQUE)
    ============================================================ */
 
 @utility text-metallic-navy {
-  background: linear-gradient(135deg, #1A3A5C 0%, #3A7B9C 100%);
+  background: linear-gradient(145deg, #0A1A2F 10%, #1E4A8C 40%, #8ECAE6 65%, #1E4A8C 85%, #0A1A2F 95%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -79,11 +78,11 @@ textarea { resize: vertical; min-height: 120px; }
 }
 
 @utility bg-metallic-navy {
-  background: linear-gradient(135deg, #1A3A5C 0%, #3A7B9C 100%);
+  background: linear-gradient(145deg, #0A1A2F 10%, #1E4A8C 40%, #8ECAE6 65%, #1E4A8C 85%, #0A1A2F 95%);
 }
 
 @utility bg-metallic-navy-hover {
-  background: linear-gradient(135deg, #224A6E 0%, #4A8BAE 100%);
+  background: linear-gradient(145deg, #1E4A8C 10%, #2E6AB8 40%, #9EDAF0 65%, #2E6AB8 85%, #1E4A8C 95%);
 }
 
 .skip-to-main { position: absolute; top: -40px; left: 0; background: var(--color-text-primary); color: white; padding: 8px 16px; text-decoration: none; border-radius: 0 0 4px 0; z-index: 1000; }
