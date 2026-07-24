@@ -66,18 +66,24 @@ textarea { resize: vertical; min-height: 120px; }
 /* ============================================================
    UTILITÁRIOS METALLIC NAVY – SINTAXE CORRETA DO TAILWIND v4
    ============================================================ */
+/* ============================================================
+   UTILITÁRIOS METALLIC NAVY – VERSÃO MAIS VIBRANTE
+   ============================================================ */
+
 @utility text-metallic-navy {
-  background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
+  background: linear-gradient(135deg, #1A3A5C 0%, #3A7B9C 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   display: inline-block;
 }
+
 @utility bg-metallic-navy {
-  background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
+  background: linear-gradient(135deg, #1A3A5C 0%, #3A7B9C 100%);
 }
+
 @utility bg-metallic-navy-hover {
-  background: linear-gradient(135deg, #162A4A 0%, #243F6B 100%);
+  background: linear-gradient(135deg, #224A6E 0%, #4A8BAE 100%);
 }
 
 .skip-to-main { position: absolute; top: -40px; left: 0; background: var(--color-text-primary); color: white; padding: 8px 16px; text-decoration: none; border-radius: 0 0 4px 0; z-index: 1000; }
