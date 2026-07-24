@@ -18,7 +18,7 @@
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f5f4f0;
 
-  /* ACENTOS */
+  /* ACENTOS (mantidos para compatibilidade) */
   --color-gold: #c2a56c;
   --color-gold-light: #e5d9c4;
   
@@ -106,11 +106,11 @@ header a {
 }
 
 header a:hover {
-  color: var(--color-gold);
+  color: #0B1F33;
 }
 
 a:focus {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid #0B1F33;
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -188,17 +188,7 @@ textarea {
    UTILITÁRIOS
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Espaçamento de Seções */
-.section-padding {
-  padding-top: clamp(2rem, 5vw, 5rem);
-  padding-bottom: clamp(2rem, 5vw, 5rem);
-}
-
-/* 
-   ─── CONTAINER ÚNICO GLOBAL ─── 
-   Substitui o antigo .container-main e qualquer outro max-w-7xl.
-   Todos os layouts principais do site usarão esta classe.
-*/
+/* Container Único Global */
 .main-container {
   width: 100%;
   max-width: 1280px;
@@ -244,6 +234,29 @@ textarea {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   UTILITÁRIOS – METALLIC NAVY (CSS PURO, 100% COMPATÍVEL)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Texto metálico azul escuro (para preços, títulos e palavras-chave) */
+.text-metallic-navy {
+  background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+/* Fundo metálico azul escuro (para botões e badges) */
+.bg-metallic-navy {
+  background: linear-gradient(135deg, #0B1F33 0%, #1E3A5F 100%);
+}
+
+/* Fundo metálico azul escuro com hover para interação (botões) */
+.bg-metallic-navy-hover {
+  background: linear-gradient(135deg, #162A4A 0%, #243F6B 100%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    ACESSIBILIDADE
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -271,57 +284,6 @@ textarea {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* Animação Shimmer para Skeletons */
-.animate-shimmer {
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.2) 20%,
-    rgba(255, 255, 255, 0.5) 60%,
-    rgba(255, 255, 255, 0)
-  );
-  background-size: 200px 100%;
-  animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   IMPRESSÃO
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-@media print {
-  body {
-    background: white;
-    color: black;
-  }
-  a {
-    text-decoration: underline;
-  }
-  .no-print {
-    display: none !important;
-  }
-}
-
-/* Scrollbar fina */
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 2px;
 }
 
 /* Animações suaves */
