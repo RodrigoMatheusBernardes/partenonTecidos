@@ -273,15 +273,15 @@ export default function Home() {
         </section>
       )}
 
-      {/* SEÇÃO DE QUALIDADES (margem superior aumentada) */}
-    <br>  <section  className="mt-32 md:mt-40 py-24 md:py-32 border-t border-[#e8e3dc]">
+      {/* SEÇÃO DE QUALIDADES (CORRIGIDA) */}
+      <section className="mt-32 md:mt-40 py-24 md:py-32 border-t border-[#e8e3dc]">
         <div className="main-container">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
             <div className="flex flex-col items-center">
               <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
                 Qualidade Premium
               </h3>
-              <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
+              <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
                 Tecidos selecionados dos melhores fornecedores
               </p>
             </div>
@@ -294,7 +294,7 @@ export default function Home() {
               </p>
             </div>
             <div className="flex flex-col items-center">
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+              <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
                 Atendimento Especial
               </h3>
               <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
@@ -304,7 +304,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-</br>
+
       {/* FILTRO MOBILE */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
