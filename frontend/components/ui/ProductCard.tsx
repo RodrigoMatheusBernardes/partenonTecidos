@@ -95,7 +95,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
         </div>
 
         <div className="p-6 md:p-8 flex flex-col flex-1 gap-5">
-          <h3 className="font-serif font-light text-xl md:text-2xl leading-tight tracking-wide text-[#1a1a1a] line-clamp-2">
+          <h3 className="font-serif font-light text-xl md:text-2xl leading-tight tracking-wide text-metallic-navy line-clamp-2">
             {nome}
           </h3>
 

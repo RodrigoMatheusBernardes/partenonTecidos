@@ -159,7 +159,7 @@ export default function Home() {
                 </div>
 
                 <div className="text-center mb-12 md:mb-16">
-                  <h2 className="font-serif font-light text-3xl md:text-4xl text-[#1a1a1a]">
+                  <h2 className="font-serif font-light text-3xl md:text-4xl text-metallic-navy">
                     Nossa Coleção
                   </h2>
                   <p className="text-[#4a4a4a] font-medium text-sm mt-2 tracking-wide">
@@ -274,19 +274,19 @@ export default function Home() {
       )}
 
       {/* SEÇÃO DE QUALIDADES (margem superior aumentada) */}
-      <section className="mt-32 md:mt-40 py-24 md:py-32 border-t border-[#e8e3dc]">
+    <br>  <section  className="mt-32 md:mt-40 py-24 md:py-32 border-t border-[#e8e3dc]">
         <div className="main-container">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
             <div className="flex flex-col items-center">
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+              <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
                 Qualidade Premium
               </h3>
-              <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
+              <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
                 Tecidos selecionados dos melhores fornecedores
               </p>
             </div>
             <div className="flex flex-col items-center">
-              <h3 className="font-serif font-light text-xl text-[#1a1a1a] mb-3">
+              <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
                 Entrega Rápida
               </h3>
               <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
@@ -304,7 +304,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+</br>
       {/* FILTRO MOBILE */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button

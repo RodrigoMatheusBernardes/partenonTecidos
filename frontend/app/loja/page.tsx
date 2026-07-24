@@ -97,7 +97,7 @@ export default function LojaPage() {
       {/* HERO DA LOJA */}
       <div className="bg-light border-b border-gray-mid py-16 md:py-20">
         <div className="main-container text-center">
-          <h1 className="font-serif font-semibold text-4xl md:text-5xl text-dark-light tracking-wide mb-3">
+          <h1 className="font-serif font-semibold text-4xl md:text-5xl text-metallic-navy tracking-wide mb-3">
             Nossa Coleção
           </h1>
           <p className="text-text-secondary text-sm md:text-base max-w-lg mx-auto">
@@ -106,7 +106,8 @@ export default function LojaPage() {
         </div>
       </div>
 
-      <div className="main-container py-24 md:py-32">
+      {/* CONTEÚDO PRINCIPAL – com margem superior aumentada para mt-32 md:mt-40 */}
+      <div className="main-container mt-32 md:mt-40 py-24 md:py-32">
         <div className="flex gap-8 lg:gap-12">
           
           <aside className="hidden lg:block w-64 flex-shrink-0">
@@ -134,12 +135,12 @@ export default function LojaPage() {
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <button
                   onClick={() => setSidebarAberta(true)}
-                  className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-mid rounded-button text-sm font-medium text-dark-light hover:bg-light hover:border-dark-light transition-all focus:outline-none focus:ring-2 focus:ring-gold"
+                  className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-mid rounded-button text-sm font-medium text-dark-light hover:bg-light hover:border-[#0B1F33] transition-all focus:outline-none focus:ring-2 focus:ring-[#0B1F33]"
                 >
                   <SlidersHorizontal className="w-4 h-4" strokeWidth={2} />
                   Filtros
                   {activeFilters > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-dark-light text-white text-xs flex items-center justify-center font-bold">
+                    <span className="w-5 h-5 rounded-full bg-metallic-navy text-white text-xs flex items-center justify-center font-bold">
                       {activeFilters}
                     </span>
                   )}
@@ -152,7 +153,7 @@ export default function LojaPage() {
                 <select
                   value={ordenacao}
                   onChange={e => { setOrdenacao(e.target.value); setPagina(1); }}
-                  className="border border-gray-mid rounded-button px-4 py-2.5 text-sm font-medium bg-white text-dark-light focus:outline-none focus:ring-2 focus:ring-gold transition"
+                  className="border border-gray-mid rounded-button px-4 py-2.5 text-sm font-medium bg-white text-dark-light focus:outline-none focus:ring-2 focus:ring-[#0B1F33] transition"
                 >
                   <option value="">Mais relevantes</option>
                   <option value="menor-preco">Menor Preço</option>
@@ -168,7 +169,7 @@ export default function LojaPage() {
                 <p className="text-text-secondary font-medium text-lg mb-4">
                   Nenhum produto encontrado.
                 </p>
-                <button onClick={limparFiltros} className="text-sm font-semibold text-dark-light underline-offset-4 hover:text-gold hover:underline transition-colors">
+                <button onClick={limparFiltros} className="text-sm font-semibold text-dark-light underline-offset-4 hover:text-[#0B1F33] hover:underline transition-colors">
                   Limpar filtros
                 </button>
               </div>
@@ -242,7 +243,7 @@ export default function LojaPage() {
               />
             </div>
             <div className="p-6 border-t border-gray-mid">
-              <button onClick={() => setSidebarAberta(false)} className="w-full py-3 bg-dark-light text-white rounded-button font-medium text-sm hover:bg-gold hover:text-dark-light transition-all">
+              <button onClick={() => setSidebarAberta(false)} className="w-full py-3 bg-dark-light text-white rounded-button font-medium text-sm hover:bg-metallic-navy hover:text-white transition-all">
                 Ver {produtosFiltrados.length} produto{produtosFiltrados.length !== 1 ? 's' : ''}
               </button>
             </div>

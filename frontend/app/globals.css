@@ -37,10 +37,31 @@ h6 { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; font-
 p { font-weight: 400; font-size: clamp(0.875rem, 1.2vw, 1rem); line-height: 1.8; color: var(--color-text-secondary); margin: 0; }
 small { font-size: clamp(0.75rem, 1vw, 0.875rem); color: var(--color-text-light); }
 
-a { color: inherit; text-decoration: none; transition: color 0.2s ease, opacity 0.2s ease; }
-header a { color: inherit; }
-header a:hover { color: #0B1F33; }
-a:focus { outline: 2px solid #0B1F33; outline-offset: 2px; border-radius: 2px; }
+/* ═══════════════════════════════════════════════════════════════════════════
+   LINKS & INTERAÇÃO – CORRIGIDO
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LINKS & INTERAÇÃO – CORRIGIDO
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+header a {
+  color: inherit;
+}
+/* REMOVA A LINHA ABAIXO (ela que estava matando o hover dourado) */
+/* header a:hover { color: #0B1F33; } */
+
+a:focus {
+  outline: 2px solid #0B1F33;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
 
 img { max-width: 100%; height: auto; display: block; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
