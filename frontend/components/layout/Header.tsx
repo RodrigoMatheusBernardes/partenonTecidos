@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // ✅ Importação adicionada
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import CartDrawer from '@/components/CartDrawer';
+import SearchBar from '@/components/SearchBar'; // ✅ Importação do SearchBar
 import { Search, Heart, User, ShoppingBag, Menu, X } from 'lucide-react';
 
 export default function Header() {
@@ -14,15 +15,16 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const router = useRouter();
+  const router = useRouter(); // ✅ Inicialização do router
 
   const handleSearch = (termo: string) => {
     if (termo.trim()) {
       router.push(`/loja?busca=${encodeURIComponent(termo.trim())}`);
-      setSearchOpen(false);
+      setSearchOpen(false); // ✅ Fecha a barra de busca após a pesquisa
     }
   };
 
+  // WhatsApp number and message
   const whatsappNumber = '5511999999999';
   const whatsappMessage = encodeURIComponent(
     'Olá! Gostaria de mais informações sobre os tecidos da Parthenon.'
@@ -73,7 +75,7 @@ export default function Header() {
             <button onClick={() => setCartOpen(true)} className="text-white hover:text-[#C5A880] transition-colors relative">
               <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
               {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#C5A880] text-[#050A14] text-[0.6rem] w-5 h-5 flex items-center justify-center rounded-full font-bold">
+                <span className="absolute -top-2 -right-2 bg-[#C5A880] text-[#0B1F33] text-[0.6rem] w-5 h-5 flex items-center justify-center rounded-full font-bold">
                   {totalItems}
                 </span>
               )}
@@ -84,20 +86,10 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Search Input */}
+        {/* Search Input - Corrigido para usar o SearchBar e redirecionar */}
         {searchOpen && (
           <div className="py-4 border-t border-white/5">
-            <input
-              type="text"
-              placeholder="Buscar tecidos..."
-              className="w-full px-4 py-3 bg-[#050A14] border border-white/10 rounded-none text-sm font-light text-white placeholder:text-[#8a7a6a] focus:outline-none focus:ring-1 focus:ring-[#C5A880] tracking-[0.1em]"
-              autoFocus
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearch((e.target as HTMLInputElement).value);
-                }
-              }}
-            />
+            <SearchBar onSearch={handleSearch} placeholder="Buscar tecidos..." />
           </div>
         )}
       </div>
