@@ -5,7 +5,7 @@ import { MapPin, Mail, Phone, ChevronRight } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0B1F33] mt-40 md:mt-48 border-t border-white/5">
+    <footer className="bg-[#0B1F33] border-t border-white/5">
       
       {/* NEWSLETTER */}
       <div className="border-y border-white/10 py-16 md:py-20">
