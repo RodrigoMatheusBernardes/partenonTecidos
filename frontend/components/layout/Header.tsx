@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; // ✅ Importação adicionada
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import CartDrawer from '@/components/CartDrawer';
@@ -14,19 +14,17 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); // ✅ Estado local para a busca
-  const router = useRouter(); // ✅ Inicialização do router
+  const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
 
-  // ✅ Função que redireciona para a Loja com o termo de busca
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchTerm.trim()) {
       router.push(`/loja?busca=${encodeURIComponent(searchTerm.trim())}`);
-      setSearchOpen(false); // ✅ Fecha a barra de busca após a pesquisa
-      setSearchTerm(''); // ✅ Limpa o campo
+      setSearchOpen(false);
+      setSearchTerm('');
     }
   };
 
-  // WhatsApp number and message
   const whatsappNumber = '5511999999999';
   const whatsappMessage = encodeURIComponent(
     'Olá! Gostaria de mais informações sobre os tecidos da Parthenon.'
@@ -88,7 +86,7 @@ export default function Header() {
           </div>
         </div>
 
-        {/* ✅ Search Input restaurado com estado local para permitir digitação */}
+        {/* Search Input */}
         {searchOpen && (
           <div className="py-4 border-t border-white/5">
             <input
