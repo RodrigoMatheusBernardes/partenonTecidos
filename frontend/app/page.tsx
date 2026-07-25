@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // ✅ Adicionado para redirecionamento
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
 import SearchBar from '@/components/SearchBar';
@@ -24,6 +25,8 @@ interface Produto {
 }
 
 export default function Home() {
+  const router = useRouter(); // ✅ Hook para navegação
+
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
@@ -108,6 +111,13 @@ export default function Home() {
     setPagina(1);
   };
 
+  // ✅ Função para redirecionar para a Loja com a busca
+  const handleSearch = (termo: string) => {
+    if (termo.trim()) {
+      router.push(`/loja?busca=${encodeURIComponent(termo.trim())}`);
+    }
+  };
+
   if (erro) return <div className="text-center py-20 text-red-600">{erro}</div>;
 
   return (
@@ -164,7 +174,12 @@ export default function Home() {
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                   <div className="w-full sm:max-w-md">
-                    <SearchBar value={busca} onChange={setBusca} />
+                    {/* ✅ Passamos a função handleSearch para o componente */}
+                    <SearchBar
+                      value={busca}
+                      onChange={setBusca}
+                      onSearch={handleSearch}
+                    />
                   </div>
                   <div className="flex items-center gap-3">
                     <p className="text-sm text-[#8a7a6a] font-light whitespace-nowrap">
@@ -268,7 +283,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* SEÇÃO DE QUALIDADES – COM PADDING INFERIOR MUITO MAIOR PARA GARANTIR RESPIRO */}
+      {/* SEÇÃO DE QUALIDADES */}
       <section className="mt-32 md:mt-40 py-24 md:py-32 pb-32 md:pb-48 border-t border-[#e8e3dc]">
         <div className="main-container">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
@@ -300,7 +315,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ✅ DIVISOR DE RESPIRO GARANTIDO (96px mobile, 160px desktop) */}
+      {/* DIVISOR DE RESPIRO */}
       <div className="w-full h-24 md:h-40 bg-transparent" />
 
       {/* FILTRO MOBILE */}
