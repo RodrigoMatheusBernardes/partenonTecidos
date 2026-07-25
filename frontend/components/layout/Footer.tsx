@@ -7,9 +7,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#0B1F33] mt-40 md:mt-48 border-t border-white/5">
       
-      {/* ================================================================
-          CAMADA 1 – NEWSLETTER
-          ================================================================ */}
+      {/* NEWSLETTER */}
       <div className="border-y border-white/10 py-16 md:py-20">
         <div className="main-container flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16">
           <h2 className="font-serif font-light text-2xl md:text-3xl !text-white tracking-wide whitespace-nowrap">
@@ -26,9 +24,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ================================================================
-          CAMADA 2 – COLUNAS DE NAVEGAÇÃO
-          ================================================================ */}
+      {/* COLUNAS DE NAVEGAÇÃO */}
       <div className="main-container mt-32 md:mt-40 pt-12 md:pt-16 pb-24 md:pb-32">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-16 md:gap-20 lg:gap-24">
           
@@ -143,9 +139,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ================================================================
-          CAMADA 3 – REDES SOCIAIS
-          ================================================================ */}
+      {/* REDES SOCIAIS */}
       <div className="border-t border-white/10 mt-16 md:mt-32">
         <div className="main-container py-16 md:py-20">
           <div className="flex flex-wrap items-center justify-between gap-6">
@@ -165,9 +159,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ================================================================
-          CAMADA 4 – COPYRIGHT
-          ================================================================ */}
+      {/* COPYRIGHT */}
       <div className="border-t border-white/10 mt-24 md:mt-32 bg-[#050A14]">
         <div className="main-container py-8 md:py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs !text-white/60 font-light">
           <p className="text-center md:text-left">
