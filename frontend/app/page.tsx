@@ -268,8 +268,8 @@ export default function Home() {
         </section>
       )}
 
-           {/* SEÇÃO DE QUALIDADES – COM PADDING INFERIOR PARA RESPIRO GARANTIDO */}
-      <section className="mt-32 md:mt-40 py-24 md:py-32 pb-24 md:pb-40 border-t border-[#e8e3dc]">
+             {/* SEÇÃO DE QUALIDADES – COM PADDING INFERIOR MUITO MAIOR PARA GARANTIR RESPIRO */}
+      <section className="mt-32 md:mt-40 py-24 md:py-32 pb-32 md:pb-48 border-t border-[#e8e3dc]">
         <div className="main-container">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
             <div className="flex flex-col items-center">
@@ -299,7 +299,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* FILTRO MOBILE */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
