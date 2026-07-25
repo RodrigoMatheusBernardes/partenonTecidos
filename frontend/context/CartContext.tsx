@@ -35,30 +35,42 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// Helper para carregar do localStorage
+const loadCartFromStorage = (): CartItem[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem('cartItems');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.error('Erro ao carregar carrinho do localStorage:', e);
+  }
+  return [];
+};
+
+// Helper para salvar no localStorage
+const saveCartToStorage = (items: CartItem[]) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('cartItems', JSON.stringify(items));
+  } catch (e) {
+    console.error('Erro ao salvar carrinho no localStorage:', e);
+  }
+};
+
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(loadCartFromStorage);
   const [processing, setProcessing] = useState(false);
   const [cupom, setCupom] = useState<Cupom | null>(null);
   const [descontoCupom, setDescontoCupom] = useState(0);
 
-  // Carregar do localStorage ao iniciar
-  useEffect(() => {
-    const stored = localStorage.getItem('cartItems');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          setItems(parsed);
-        }
-      } catch (e) {
-        console.error('Erro ao carregar carrinho do localStorage');
-      }
-    }
-  }, []);
-
   // Salvar no localStorage sempre que items mudar
   useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(items));
+    saveCartToStorage(items);
   }, [items]);
 
   const reservarNoBackend = async (produtoId: string, quantidade: number, acao: 'reservar' | 'cancelar-reserva') => {
@@ -138,7 +150,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       } catch (e) { /* ignora */ }
     });
     setItems([]);
-    localStorage.removeItem('cartItems');
+    // O localStorage é atualizado automaticamente pelo useEffect
   }, [items]);
 
   const aplicarCupom = useCallback(async (codigo: string) => {
