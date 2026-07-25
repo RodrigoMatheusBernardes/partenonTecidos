@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
@@ -25,7 +26,11 @@ interface Categoria {
   nome: string;
 }
 
-export default function LojaPage() {
+// Componente interno que usa useSearchParams (precisa de Suspense)
+function LojaContent() {
+  const searchParams = useSearchParams();
+  const buscaInicial = searchParams.get('busca') || '';
+
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -34,7 +39,7 @@ export default function LojaPage() {
   const [precoMaxGlobal, setPrecoMaxGlobal] = useState(1000);
   const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<string[]>([]);
   const [ordenacao, setOrdenacao] = useState('');
-  const [busca, setBusca] = useState('');
+  const [busca, setBusca] = useState(buscaInicial);
   const [pagina, setPagina] = useState(1);
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const ITENS_POR_PAGINA = 16;
@@ -58,6 +63,7 @@ export default function LojaPage() {
       .finally(() => setCarregando(false));
   }, []);
 
+  // Filtro com base na busca (e outros filtros)
   const produtosFiltrados = produtos
     .filter(p => {
       if (busca.trim() && !p.nome.toLowerCase().includes(busca.toLowerCase())) return false;
@@ -79,8 +85,12 @@ export default function LojaPage() {
   const paginaAtual = produtosFiltrados.slice((pagina - 1) * ITENS_POR_PAGINA, pagina * ITENS_POR_PAGINA);
 
   const limparFiltros = () => {
-    setBusca(''); setPrecoMin(0); setPrecoMax(precoMaxGlobal);
-    setCategoriasSelecionadas([]); setOrdenacao(''); setPagina(1);
+    setBusca('');
+    setPrecoMin(0);
+    setPrecoMax(precoMaxGlobal);
+    setCategoriasSelecionadas([]);
+    setOrdenacao('');
+    setPagina(1);
   };
 
   const handlePrecoChange = (min: number, max: number) => { setPrecoMin(min); setPrecoMax(max); setPagina(1); };
@@ -93,7 +103,6 @@ export default function LojaPage() {
 
   return (
     <main className="min-h-screen bg-white pb-24">
-      
       {/* HERO DA LOJA */}
       <div className="bg-light border-b border-gray-mid py-16 md:py-20">
         <div className="main-container text-center">
@@ -106,10 +115,9 @@ export default function LojaPage() {
         </div>
       </div>
 
-      {/* CONTEÚDO PRINCIPAL – com margem superior aumentada para mt-32 md:mt-40 */}
+      {/* CONTEÚDO PRINCIPAL */}
       <div className="main-container mt-32 md:mt-40 py-24 md:py-32">
         <div className="flex gap-8 lg:gap-12">
-          
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-8 bg-white rounded-card shadow-sm-luxury border border-gray-mid p-6">
               <FiltersSidebar
@@ -126,8 +134,6 @@ export default function LojaPage() {
           </aside>
 
           <div className="flex-1 min-w-0">
-
-            {/* BARRA DE CONTROLES */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12">
               <div className="w-full sm:max-w-xs">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
@@ -145,11 +151,9 @@ export default function LojaPage() {
                     </span>
                   )}
                 </button>
-
                 <p className="text-sm text-text-secondary font-medium whitespace-nowrap ml-auto sm:ml-0">
                   {produtosFiltrados.length} produto{produtosFiltrados.length !== 1 ? 's' : ''}
                 </p>
-
                 <select
                   value={ordenacao}
                   onChange={e => { setOrdenacao(e.target.value); setPagina(1); }}
@@ -163,7 +167,6 @@ export default function LojaPage() {
               </div>
             </div>
 
-            {/* ESTADO VAZIO */}
             {!carregando && produtosFiltrados.length === 0 && (
               <div className="text-center py-20 bg-light rounded-card">
                 <p className="text-text-secondary font-medium text-lg mb-4">
@@ -175,7 +178,6 @@ export default function LojaPage() {
               </div>
             )}
 
-            {/* GRID DE PRODUTOS */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
               {carregando ? (
                 <div className="col-span-full flex justify-center items-center min-h-[50vh] py-12">
@@ -186,7 +188,6 @@ export default function LojaPage() {
               )}
             </div>
 
-            {/* PAGINAÇÃO */}
             {!carregando && totalPaginas > 1 && (
               <div className="mt-16 flex flex-wrap items-center justify-center gap-2">
                 <button
@@ -251,5 +252,14 @@ export default function LojaPage() {
         </>
       )}
     </main>
+  );
+}
+
+// Página principal com Suspense
+export default function LojaPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Carregando...</div>}>
+      <LojaContent />
+    </Suspense>
   );
 }
