@@ -7,16 +7,38 @@ import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { X, Trash2, Plus, Minus } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import { useRouter } from 'next/navigation';
+
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// ... resto do código
-
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
+  const router = useRouter();
   const { items, removeItem, updateQuantity, totalItems, totalPrice } = useCart();
   const [animate, setAnimate] = useState(false);
+
+  // Fecha o drawer ao navegar para outra página (se estiver aberto)
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (isOpen) onClose();
+    };
+    // Não temos um evento direto, mas podemos usar o useEffect para detectar mudanças na URL
+    // Vamos usar o router.events se estiver disponível (Next.js App Router não tem eventos)
+    // Alternativa: usar um observer de mudança de URL com useEffect e window.location
+    // Como não temos um evento simples, vamos fechar ao clicar em links que navegam
+    // Vamos adicionar um listener de clique em links dentro do drawer
+    const handleLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('a') && isOpen) {
+        // Pequeno delay para permitir a navegação
+        setTimeout(onClose, 100);
+      }
+    };
+    document.addEventListener('click', handleLinkClick);
+    return () => document.removeEventListener('click', handleLinkClick);
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -45,26 +67,28 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   return (
     <>
-      {/* OVERLAY */}
+      {/* OVERLAY - SEMPRE VISÍVEL, com opacidade ajustável */}
       <div
-        className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 md:hidden"
+        className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-300"
         onClick={onClose}
+        aria-hidden="true"
       />
 
-      {/* DRAWER */}
+      {/* DRAWER COM EFEITO GLASSMORPHISM */}
       <div
         className={`
           fixed top-0 right-0 h-full w-full max-w-md
-          bg-white shadow-xl-luxury z-50
+          bg-white/90 backdrop-blur-md shadow-xl-luxury z-50
           flex flex-col transition-transform duration-300
           ${animate ? 'translate-x-0' : 'translate-x-full'}
+          border-l border-white/20
         `}
       >
         {/* HEADER */}
         <div className="
           flex items-center justify-between
-          p-6 border-b border-gray-mid
-          bg-light
+          p-6 border-b border-gray-mid/30
+          bg-light/50
         ">
           <h2 className="
             font-serif text-2xl font-semibold
@@ -81,7 +105,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             {totalItems}
           </span>
 
-          {/* Botão Fechar - Substituído pelo novo sistema */}
           <Button
             variant="ghost"
             size="sm"
@@ -125,10 +148,11 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   key={item.id}
                   className="
                     flex gap-4 p-4
-                    bg-light rounded-card
-                    border border-gray-mid
+                    bg-light/50 rounded-card
+                    border border-gray-mid/30
                     transition-all duration-300
                     hover:border-dark-light
+                    backdrop-blur-sm
                   "
                 >
                   {/* IMAGEM */}
@@ -164,7 +188,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       R$ {item.preco.toFixed(2)}
                     </p>
 
-                    {/* QUANTIDADE - Botões substituídos pelo novo sistema */}
                     <div className="flex items-center gap-2">
                       <Button
                         variant="ghost"
@@ -196,7 +219,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     </div>
                   </div>
 
-                  {/* REMOVER - Botão substituído pelo novo sistema */}
                   <Button
                     variant="ghost"
                     size="sm"
@@ -215,13 +237,12 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         {/* FOOTER */}
         {items.length > 0 && (
           <div className="
-            border-t border-gray-mid
-            p-6 bg-light space-y-4
+            border-t border-gray-mid/30
+            p-6 bg-light/50 space-y-4
           ">
-            {/* SUBTOTAL */}
             <div className="
               flex items-center justify-between
-              pb-4 border-b border-gray-mid
+              pb-4 border-b border-gray-mid/30
             ">
               <span className="text-text-secondary font-medium">Subtotal:</span>
               <span className="text-2xl font-serif font-semibold text-dark-light">
@@ -229,9 +250,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </span>
             </div>
 
-            {/* CTA BUTTONS - Substituídos e simplificados */}
             <div className="space-y-3">
-              {/* Finalizar Compra - Usando a prop 'href' nativa do componente */}
               <Button
                 href="/checkout"
                 variant="primary"
@@ -242,7 +261,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 Finalizar Compra
               </Button>
 
-              {/* Continuar Comprando - Usando variante secundária */}
               <Button
                 variant="secondary"
                 size="lg"
