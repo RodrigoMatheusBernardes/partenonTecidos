@@ -38,7 +38,6 @@ export default function Footer() {
       <div className="main-container py-16 md:py-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-16">
           
-          {/* Coluna 1 – Institucional */}
           <div>
             <h4 className="font-serif font-medium text-white text-lg mb-6 tracking-wide">
               Institucional
@@ -51,7 +50,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Coluna 2 – Atendimento */}
           <div>
             <h4 className="font-serif font-medium text-white text-lg mb-6 tracking-wide">
               Atendimento
@@ -64,7 +62,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Coluna 3 – Minha Conta */}
           <div>
             <h4 className="font-serif font-medium text-white text-lg mb-6 tracking-wide">
               Minha Conta
@@ -77,7 +74,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Coluna 4 – Contato e Redes */}
           <div>
             <h4 className="font-serif font-medium text-white text-lg mb-6 tracking-wide">
               Contato
