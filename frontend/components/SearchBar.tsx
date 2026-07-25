@@ -1,7 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import Button from '@/components/ui/Button'; // <-- NOVO IMPORT
+import Button from '@/components/ui/Button';
 
 interface SearchBarProps {
   value?: string;
@@ -19,14 +19,15 @@ export default function SearchBar({
   className = '',
 }: SearchBarProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const novoValor = e.target.value;
-    if (onChange) onChange(novoValor);
+    if (onChange) onChange(e.target.value);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const termo = value || '';
-    if (onSearch) onSearch(termo);
+    if (onSearch && termo.trim()) {
+      onSearch(termo);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -62,7 +63,6 @@ export default function SearchBar({
         "
         aria-label="Buscar produtos"
       />
-      {/* Botão de busca substituído pelo novo componente Button */}
       <Button
         type="submit"
         variant="ghost"
