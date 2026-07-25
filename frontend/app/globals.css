@@ -22,20 +22,193 @@
   --color-error: #ef4444;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-body { font-family: var(--font-sans); font-weight: 400; font-size: 1rem; line-height: 1.7; background-color: var(--color-bg-primary); color: var(--color-text-primary); letter-spacing: 0.02em; }
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif); font-weight: 600; color: var(--color-text-primary); line-height: 1.3; letter-spacing: -0.01em; margin: 0; }
-h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: clamp(1rem, 3vw, 2rem); }
-h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); margin-bottom: clamp(0.75rem, 2.5vw, 1.5rem); }
-h3 { font-size: clamp(1.25rem, 3.5vw, 1.875rem); margin-bottom: clamp(0.5rem, 2vw, 1rem); }
-h4 { font-size: clamp(1rem, 2.5vw, 1.25rem); margin-bottom: 0.5rem; }
-h5 { font-size: 0.95rem; letter-spacing: 0.05em; font-weight: 500; }
-h6 { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-p { font-weight: 400; font-size: clamp(0.875rem, 1.2vw, 1rem); line-height: 1.8; color: var(--color-text-secondary); margin: 0; }
-small { font-size: clamp(0.75rem, 1vw, 0.875rem); color: var(--color-text-light); }
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.7;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  letter-spacing: 0.02em;
+}
+
+/* Reset de margens para elementos comuns */
+h1, h2, h3, h4, h5, h6,
+p, ul, ol, figure, blockquote,
+dl, dd {
+  margin: 0;
+}
+
+ul, ol {
+  padding-left: 0;
+  list-style: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TIPOGRAFIA
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: clamp(1rem, 3vw, 2rem);
+}
+h2 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: clamp(0.75rem, 2.5vw, 1.5rem);
+}
+h3 {
+  font-size: clamp(1.25rem, 3.5vw, 1.875rem);
+  margin-bottom: clamp(0.5rem, 2vw, 1rem);
+}
+h4 {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  margin-bottom: 0.5rem;
+}
+h5 {
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+h6 {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+p {
+  font-weight: 400;
+  font-size: clamp(0.875rem, 1.2vw, 1rem);
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+}
+
+small {
+  font-size: clamp(0.75rem, 1vw, 0.875rem);
+  color: var(--color-text-light);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SISTEMA DE ESPAÇAMENTO (múltiplos de 8px)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --space-xs: 0.5rem;   /* 8px */
+  --space-sm: 1rem;     /* 16px */
+  --space-md: 1.5rem;   /* 24px */
+  --space-lg: 2rem;     /* 32px */
+  --space-xl: 3rem;     /* 48px */
+  --space-2xl: 4rem;    /* 64px */
+  --space-3xl: 5rem;    /* 80px */
+  --space-4xl: 6rem;    /* 96px */
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONTAINERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.main-container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Alias para compatibilidade com componentes que usam "container" */
+.container-main {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PADDING PADRÃO PARA SEÇÕES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.section-padding {
+  padding-top: var(--space-2xl, 4rem);
+  padding-bottom: var(--space-2xl, 4rem);
+}
+
+.section-padding--large {
+  padding-top: var(--space-3xl, 5rem);
+  padding-bottom: var(--space-3xl, 5rem);
+}
+
+.section-padding--small {
+  padding-top: var(--space-xl, 3rem);
+  padding-bottom: var(--space-xl, 3rem);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GRIDS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: clamp(1rem, 3vw, 2rem);
+}
+
+@media (max-width: 640px) {
+  .grid-responsive {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITÁRIOS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    LINKS & INTERAÇÃO
@@ -52,43 +225,91 @@ header a {
 }
 
 a:focus {
-  outline: 2px solid #0B1F33;
+  outline: 2px solid var(--color-text-primary);
   outline-offset: 2px;
   border-radius: 2px;
 }
 
-img { max-width: 100%; height: auto; display: block; }
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--color-bg-secondary); border-radius: 10px; }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 10px; transition: background 0.3s ease; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-text-light); }
+/* ═══════════════════════════════════════════════════════════════════════════
+   IMAGENS
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-input, textarea, select {
-  font-family: var(--font-sans); font-size: 1rem; border: 1px solid var(--color-border); border-radius: 0.375rem; padding: 0.75rem 1rem;
-  background-color: var(--color-bg-primary); color: var(--color-text-primary); transition: border-color 0.3s ease, box-shadow 0.3s ease;
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
-input::placeholder, textarea::placeholder { color: var(--color-text-light); }
-input:focus, textarea:focus, select:focus { outline: none; border-color: var(--color-text-primary); box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1); }
-textarea { resize: vertical; min-height: 120px; }
 
-.main-container { width: 100%; max-width: 1280px; margin-left: auto; margin-right: auto; padding-left: 1.5rem; padding-right: 1.5rem; }
-.grid-responsive { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: clamp(1rem, 3vw, 2rem); }
-@media (max-width: 640px) { .grid-responsive { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } }
-.flex-center { display: flex; align-items: center; justify-content: center; }
-.line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ============================================================
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-light);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FORMULÁRIOS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+input,
+textarea,
+select {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-light);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-text-primary);
+  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    UTILITÁRIOS – CINZA CHUMBO (PADRÃO DA LOJA)
-   ============================================================ */
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 @utility text-lead-gray {
   color: #262626;
 }
 
-/* ============================================================
-   UTILITÁRIOS METALLIC NAVY – EFEITO ESCURO E METÁLICO (DESTAQUE)
-   ============================================================ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITÁRIOS – METALLIC NAVY (EFEITO ESCURO E METÁLICO)
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 @utility text-metallic-navy {
   background: linear-gradient(145deg, #0A1420 10%, #1A3A5C 40%, #4C8BBB 70%, #1A3A5C 85%, #0A1420 95%);
@@ -106,12 +327,67 @@ textarea { resize: vertical; min-height: 120px; }
   background: linear-gradient(145deg, #1A3A5C 10%, #2E5F8E 40%, #6CA0C8 70%, #2E5F8E 85%, #1A3A5C 95%);
 }
 
-.skip-to-main { position: absolute; top: -40px; left: 0; background: var(--color-text-primary); color: white; padding: 8px 16px; text-decoration: none; border-radius: 0 0 4px 0; z-index: 1000; }
-.skip-to-main:focus { top: 0; }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACESSIBILIDADE
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.animate-fadeInUp { animation: fadeInUp 0.6s ease-out; }
-.font-serif { font-family: var(--font-serif); }
-.font-product { font-family: var(--font-product); }
-.font-sans { font-family: var(--font-sans); }
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-text-primary);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+  z-index: 1000;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMAÇÕES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FAMÍLIAS DE FONTES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-product {
+  font-family: var(--font-product);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
