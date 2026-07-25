@@ -268,8 +268,8 @@ export default function Home() {
         </section>
       )}
 
-      {/* SEÇÃO DE QUALIDADES – CORRIGIDA COM text-lead-gray */}
-      <section className="mt-32 md:mt-40 py-24 md:py-32 border-t border-[#e8e3dc]">
+      {/* SEÇÃO DE QUALIDADES – COM MARGEM INFERIOR PARA RESPIRO */}
+      <section className="mt-32 md:mt-40 py-24 md:py-32 mb-24 md:mb-40 border-t border-[#e8e3dc]">
         <div className="main-container">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
             <div className="flex flex-col items-center">
