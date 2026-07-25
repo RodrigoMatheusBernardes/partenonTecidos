@@ -38,11 +38,7 @@ p { font-weight: 400; font-size: clamp(0.875rem, 1.2vw, 1rem); line-height: 1.8;
 small { font-size: clamp(0.75rem, 1vw, 0.875rem); color: var(--color-text-light); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LINKS & INTERAÇÃO – CORRIGIDO
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   LINKS & INTERAÇÃO – CORRIGIDO
+   LINKS & INTERAÇÃO
    ═══════════════════════════════════════════════════════════════════════════ */
 
 a {
@@ -54,8 +50,6 @@ a {
 header a {
   color: inherit;
 }
-/* REMOVA A LINHA ABAIXO (ela que estava matando o hover dourado) */
-/* header a:hover { color: #0B1F33; } */
 
 a:focus {
   outline: 2px solid #0B1F33;
@@ -85,13 +79,19 @@ textarea { resize: vertical; min-height: 120px; }
 .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* ============================================================
-   UTILITÁRIOS METALLIC NAVY – SINTAXE CORRETA DO TAILWIND v4
-  /* ============================================================
-   UTILITÁRIOS METALLIC NAVY – EFEITO DE ALTO BRILHO (MÁXIMO DESTAQUE)
+   UTILITÁRIOS – CINZA CHUMBO (PADRÃO DA LOJA)
+   ============================================================ */
+
+@utility text-lead-gray {
+  color: #262626;
+}
+
+/* ============================================================
+   UTILITÁRIOS METALLIC NAVY – EFEITO ESCURO E METÁLICO (DESTAQUE)
    ============================================================ */
 
 @utility text-metallic-navy {
-  background: linear-gradient(145deg, #0A1A2F 10%, #1E4A8C 40%, #8ECAE6 65%, #1E4A8C 85%, #0A1A2F 95%);
+  background: linear-gradient(145deg, #0A1420 10%, #1A3A5C 40%, #4C8BBB 70%, #1A3A5C 85%, #0A1420 95%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -99,11 +99,11 @@ textarea { resize: vertical; min-height: 120px; }
 }
 
 @utility bg-metallic-navy {
-  background: linear-gradient(145deg, #0A1A2F 10%, #1E4A8C 40%, #8ECAE6 65%, #1E4A8C 85%, #0A1A2F 95%);
+  background: linear-gradient(145deg, #0A1420 10%, #1A3A5C 40%, #4C8BBB 70%, #1A3A5C 85%, #0A1420 95%);
 }
 
 @utility bg-metallic-navy-hover {
-  background: linear-gradient(145deg, #1E4A8C 10%, #2E6AB8 40%, #9EDAF0 65%, #2E6AB8 85%, #1E4A8C 95%);
+  background: linear-gradient(145deg, #1A3A5C 10%, #2E5F8E 40%, #6CA0C8 70%, #2E5F8E 85%, #1A3A5C 95%);
 }
 
 .skip-to-main { position: absolute; top: -40px; left: 0; background: var(--color-text-primary); color: white; padding: 8px 16px; text-decoration: none; border-radius: 0 0 4px 0; z-index: 1000; }

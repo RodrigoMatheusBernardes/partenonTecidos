@@ -108,24 +108,19 @@ export default function Home() {
     setPagina(1);
   };
 
-  // Se houver erro, exibe a mensagem (sem o banner)
   if (erro) return <div className="text-center py-20 text-red-600">{erro}</div>;
 
   return (
     <>
-      {/* 1. O Banner SEMPRE será renderizado primeiro */}
       <HomeBanner />
 
-      {/* 2. Agora verificamos o estado de carregamento */}
       {carregando ? (
-        // Estado de carregamento: margem superior unificada com as seções carregadas
         <div className="w-full bg-[#F7F7F7] mt-32 md:mt-40 py-24 md:py-32">
           <div className="main-container flex justify-center items-center min-h-[400px]">
             <div className="w-12 h-12 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
           </div>
         </div>
       ) : (
-        // 3. Conteúdo normal
         <section className="w-full bg-[#F7F7F7] mt-32 md:mt-40 py-24 md:py-32">
           <div className="main-container">
             <div className="flex flex-col md:flex-row gap-8">
@@ -273,7 +268,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* SEÇÃO DE QUALIDADES (CORRIGIDA) */}
+      {/* SEÇÃO DE QUALIDADES – CORRIGIDA COM text-lead-gray */}
       <section className="mt-32 md:mt-40 py-24 md:py-32 border-t border-[#e8e3dc]">
         <div className="main-container">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
@@ -281,7 +276,7 @@ export default function Home() {
               <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
                 Qualidade Premium
               </h3>
-              <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
+              <p className="text-lead-gray font-normal text-sm leading-relaxed max-w-sm mx-auto">
                 Tecidos selecionados dos melhores fornecedores
               </p>
             </div>
@@ -289,7 +284,7 @@ export default function Home() {
               <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
                 Entrega Rápida
               </h3>
-              <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
+              <p className="text-lead-gray font-normal text-sm leading-relaxed max-w-sm mx-auto">
                 Enviamos para todo o Brasil com agilidade
               </p>
             </div>
@@ -297,7 +292,7 @@ export default function Home() {
               <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
                 Atendimento Especial
               </h3>
-              <p className="text-[#333333] font-normal text-sm leading-relaxed max-w-sm mx-auto">
+              <p className="text-lead-gray font-normal text-sm leading-relaxed max-w-sm mx-auto">
                 Suporte personalizado para suas necessidades
               </p>
             </div>
