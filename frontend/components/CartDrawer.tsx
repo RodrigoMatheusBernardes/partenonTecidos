@@ -19,20 +19,11 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { items, removeItem, updateQuantity, totalItems, totalPrice } = useCart();
   const [animate, setAnimate] = useState(false);
 
-  // Fecha o drawer ao navegar para outra página (se estiver aberto)
+  // Fecha o drawer ao navegar para outra página
   useEffect(() => {
-    const handleRouteChange = () => {
-      if (isOpen) onClose();
-    };
-    // Não temos um evento direto, mas podemos usar o useEffect para detectar mudanças na URL
-    // Vamos usar o router.events se estiver disponível (Next.js App Router não tem eventos)
-    // Alternativa: usar um observer de mudança de URL com useEffect e window.location
-    // Como não temos um evento simples, vamos fechar ao clicar em links que navegam
-    // Vamos adicionar um listener de clique em links dentro do drawer
     const handleLinkClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest('a') && isOpen) {
-        // Pequeno delay para permitir a navegação
         setTimeout(onClose, 100);
       }
     };
@@ -67,33 +58,30 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   return (
     <>
-      {/* OVERLAY - SEMPRE VISÍVEL, com opacidade ajustável */}
+      {/* OVERLAY – mais suave */}
       <div
-        className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-300"
+        className="fixed inset-0 bg-black/30 z-40 transition-opacity duration-300"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* DRAWER COM EFEITO GLASSMORPHISM */}
+      {/* DRAWER – vidro fosco aprimorado */}
       <div
         className={`
           fixed top-0 right-0 h-full w-full max-w-md
-          bg-white/90 backdrop-blur-md shadow-xl-luxury z-50
+          bg-white/70 backdrop-blur-lg shadow-xl-luxury z-50
           flex flex-col transition-transform duration-300
           ${animate ? 'translate-x-0' : 'translate-x-full'}
-          border-l border-white/20
+          border-l border-white/30
         `}
       >
         {/* HEADER */}
         <div className="
           flex items-center justify-between
-          p-6 border-b border-gray-mid/30
-          bg-light/50
+          p-6 border-b border-gray-mid/20
+          bg-light/30
         ">
-          <h2 className="
-            font-serif text-2xl font-semibold
-            text-dark-light
-          ">
+          <h2 className="font-serif text-2xl font-semibold text-dark-light">
             Carrinho
           </h2>
           <span className="
@@ -125,7 +113,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             ">
               <div className="
                 w-16 h-16 rounded-card
-                bg-light flex items-center justify-center
+                bg-light/30 backdrop-blur-sm flex items-center justify-center
                 mb-4
               ">
                 <svg className="w-8 h-8 text-text-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,11 +136,10 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   key={item.id}
                   className="
                     flex gap-4 p-4
-                    bg-light/50 rounded-card
-                    border border-gray-mid/30
+                    bg-white/50 backdrop-blur-sm rounded-card
+                    border border-gray-mid/20
                     transition-all duration-300
                     hover:border-dark-light
-                    backdrop-blur-sm
                   "
                 >
                   {/* IMAGEM */}
@@ -181,10 +168,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     ">
                       {item.nome}
                     </h3>
-                    <p className="
-                      text-gold font-semibold
-                      text-sm md:text-base mb-3
-                    ">
+                    <p className="text-gold font-semibold text-sm md:text-base mb-3">
                       R$ {item.preco.toFixed(2)}
                     </p>
 
@@ -237,12 +221,12 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         {/* FOOTER */}
         {items.length > 0 && (
           <div className="
-            border-t border-gray-mid/30
-            p-6 bg-light/50 space-y-4
+            border-t border-gray-mid/20
+            p-6 bg-light/30 backdrop-blur-sm space-y-4
           ">
             <div className="
               flex items-center justify-between
-              pb-4 border-b border-gray-mid/30
+              pb-4 border-b border-gray-mid/20
             ">
               <span className="text-text-secondary font-medium">Subtotal:</span>
               <span className="text-2xl font-serif font-semibold text-dark-light">
