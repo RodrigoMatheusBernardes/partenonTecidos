@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // ✅ Importante para o redirecionamento
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
 import SearchBar from '@/components/SearchBar';
@@ -25,7 +25,7 @@ interface Produto {
 }
 
 export default function Home() {
-  const router = useRouter(); // ✅ Inicializa o router
+  const router = useRouter();
 
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -111,12 +111,19 @@ export default function Home() {
     setPagina(1);
   };
 
-  // ✅ Função que redireciona para a Loja com o termo de busca
   const handleSearch = (termo: string) => {
     if (termo.trim()) {
       router.push(`/loja?busca=${encodeURIComponent(termo.trim())}`);
     }
   };
+
+  // 🔍 Verifica se há algum filtro ativo
+  const temFiltroAtivo =
+    busca.trim() !== '' ||
+    categoriasSelecionadas.length > 0 ||
+    precoMin > 0 ||
+    precoMax < precoMaxGlobal ||
+    ordenacao !== '';
 
   if (erro) return <div className="text-center py-20 text-red-600">{erro}</div>;
 
@@ -159,9 +166,12 @@ export default function Home() {
               </aside>
 
               <div className="flex-1">
-                <div className="mb-16">
-                  <TrendingBar />
-                </div>
+                {/* ⭐ Produtos em Alta – exibido apenas se não houver filtros ativos */}
+                {!temFiltroAtivo && (
+                  <div className="mb-16">
+                    <TrendingBar />
+                  </div>
+                )}
 
                 <div className="text-center mb-12 md:mb-16">
                   <h2 className="font-serif font-light text-3xl md:text-4xl text-metallic-navy">
@@ -174,7 +184,6 @@ export default function Home() {
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                   <div className="w-full sm:max-w-md">
-                    {/* ✅ Passamos a prop onSearch para o componente */}
                     <SearchBar
                       value={busca}
                       onChange={setBusca}
@@ -283,7 +292,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* SEÇÃO DE QUALIDADES */}
+      {/* SEÇÃO DE QUALIDADES (inalterada) */}
       <section className="mt-32 md:mt-40 py-24 md:py-32 pb-32 md:pb-48 border-t border-[#e8e3dc]">
         <div className="main-container">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
@@ -318,7 +327,7 @@ export default function Home() {
       {/* DIVISOR DE RESPIRO */}
       <div className="w-full h-24 md:h-40 bg-transparent" />
 
-      {/* FILTRO MOBILE */}
+      {/* FILTRO MOBILE (inalterado) */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
           onClick={() => setSidebarAberta(true)}
