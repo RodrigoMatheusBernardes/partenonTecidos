@@ -65,11 +65,11 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         aria-hidden="true"
       />
 
-      {/* DRAWER – vidro fosco aprimorado */}
+      {/* DRAWER – vidro fosco com transparência ajustada */}
       <div
         className={`
           fixed top-0 right-0 h-full w-full max-w-md
-          bg-white/70 backdrop-blur-lg shadow-xl-luxury z-50
+          bg-white/60 backdrop-blur-lg shadow-xl-luxury z-50
           flex flex-col transition-transform duration-300
           ${animate ? 'translate-x-0' : 'translate-x-full'}
           border-l border-white/30
@@ -183,7 +183,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         <Minus className="w-3 h-3" strokeWidth={2} />
                       </Button>
 
-                      <span className="w-8 text-center font-medium text-sm">
+                      {/* QUANTIDADE – cor escura */}
+                      <span className="w-8 text-center font-medium text-sm text-dark-light">
                         {item.quantidade}
                       </span>
 
@@ -197,6 +198,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         <Plus className="w-3 h-3" strokeWidth={2} />
                       </Button>
 
+                      {/* SUBTOTAL DO ITEM – cor escura */}
                       <span className="ml-auto text-right text-sm font-semibold text-dark-light">
                         R$ {(item.preco * item.quantidade).toFixed(2)}
                       </span>
