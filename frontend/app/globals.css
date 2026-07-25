@@ -62,13 +62,13 @@ ul, ol {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   TIPOGRAFIA
+   TIPOGRAFIA – agora herdam cor (permite classes como text-white)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: inherit; /* ← essencial para classes de cor do Tailwind */
   line-height: 1.3;
   letter-spacing: -0.01em;
 }
@@ -105,12 +105,12 @@ p {
   font-weight: 400;
   font-size: clamp(0.875rem, 1.2vw, 1rem);
   line-height: 1.8;
-  color: var(--color-text-secondary);
+  color: inherit; /* também herda, permitindo text-* */
 }
 
 small {
   font-size: clamp(0.75rem, 1vw, 0.875rem);
-  color: var(--color-text-light);
+  color: inherit;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -141,7 +141,7 @@ small {
   padding-right: 1.5rem;
 }
 
-/* Alias para compatibilidade com componentes que usam "container" */
+/* Alias para compatibilidade */
 .container-main {
   width: 100%;
   max-width: 1280px;
