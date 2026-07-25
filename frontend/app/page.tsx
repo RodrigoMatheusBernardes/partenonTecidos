@@ -268,7 +268,7 @@ export default function Home() {
         </section>
       )}
 
-             {/* SEÇÃO DE QUALIDADES – COM PADDING INFERIOR MUITO MAIOR PARA GARANTIR RESPIRO */}
+      {/* SEÇÃO DE QUALIDADES – COM PADDING INFERIOR MUITO MAIOR PARA GARANTIR RESPIRO */}
       <section className="mt-32 md:mt-40 py-24 md:py-32 pb-32 md:pb-48 border-t border-[#e8e3dc]">
         <div className="main-container">
           <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
@@ -299,6 +299,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ✅ DIVISOR DE RESPIRO GARANTIDO (96px mobile, 160px desktop) */}
+      <div className="w-full h-24 md:h-40 bg-transparent" />
+
       {/* FILTRO MOBILE */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
