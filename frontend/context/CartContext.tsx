@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -16,7 +16,7 @@ interface CartItem {
 
 interface Cupom {
   codigo: string;
-  desconto: number; // percentual
+  desconto: number;
 }
 
 interface CartContextType {
@@ -27,7 +27,6 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
-  // Novos campos para cupom
   aplicarCupom: (codigo: string) => Promise<void>;
   removerCupom: () => void;
   cupom: Cupom | null;
@@ -41,6 +40,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [processing, setProcessing] = useState(false);
   const [cupom, setCupom] = useState<Cupom | null>(null);
   const [descontoCupom, setDescontoCupom] = useState(0);
+
+  // Carregar do localStorage ao iniciar
+  useEffect(() => {
+    const stored = localStorage.getItem('cartItems');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          setItems(parsed);
+        }
+      } catch (e) {
+        console.error('Erro ao carregar carrinho do localStorage');
+      }
+    }
+  }, []);
+
+  // Salvar no localStorage sempre que items mudar
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(items));
+  }, [items]);
 
   const reservarNoBackend = async (produtoId: string, quantidade: number, acao: 'reservar' | 'cancelar-reserva') => {
     try {
@@ -119,11 +138,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       } catch (e) { /* ignora */ }
     });
     setItems([]);
+    localStorage.removeItem('cartItems');
   }, [items]);
 
-  // Funções de cupom (implementação futura; por enquanto, apenas simulam)
   const aplicarCupom = useCallback(async (codigo: string) => {
-    // Implemente a validação real na sua API
     toast.error('Sistema de cupons em manutenção');
     throw new Error('Não implementado');
   }, []);
