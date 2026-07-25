@@ -51,9 +51,11 @@ export default function TrendingBar() {
 
   if (loading) {
     return (
-      <div className="py-12 md:py-16 w-full">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-serif font-light text-[#1a1a1a]">Produtos em Alta</h2>
+      <div className="w-full py-12 md:py-16">
+        <div className="text-center mb-10 md:mb-12">
+          <h2 className="text-2xl md:text-4xl font-serif font-light text-metallic-navy">
+            Produtos em Alta
+          </h2>
           <p className="text-[#8a7a6a] font-light text-sm mt-2">Os favoritos da nossa comunidade</p>
         </div>
         <div className="flex justify-center py-12">
@@ -69,33 +71,51 @@ export default function TrendingBar() {
   const produtosVisiveis = produtos.slice(currentIndex, currentIndex + itemsPerView);
 
   return (
-    <div className="py-12 md:py-16 w-full">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-serif font-light text-[#1a1a1a]">Produtos em Alta</h2>
+    <div className="w-full py-12 md:py-16">
+      <div className="text-center mb-10 md:mb-12">
+        <h2 className="text-2xl md:text-4xl font-serif font-light text-metallic-navy">
+          Produtos em Alta
+        </h2>
         <p className="text-[#8a7a6a] font-light text-sm mt-2">Os favoritos da nossa comunidade</p>
       </div>
 
       <div className="relative">
+        {/* Setas de navegação (agora mais adaptáveis ao mobile) */}
         {produtos.length > itemsPerView && (
           <>
             <button
               onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
               disabled={currentIndex === 0}
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-white/90 backdrop-blur-sm border border-[#e8e3dc] rounded-full shadow-sm hover:border-[#C5A880] hover:shadow-md hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc] transition-all duration-300"
+              className="
+                absolute left-1 md:left-2 top-1/2 -translate-y-1/2 z-10
+                p-2 md:p-3 bg-white/90 backdrop-blur-sm
+                border border-[#e8e3dc] rounded-full shadow-sm
+                hover:border-[#0B1F33] hover:shadow-md hover:scale-105
+                disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc]
+                transition-all duration-300
+              "
             >
-              <ChevronLeft className="w-5 h-5 text-[#1a1a1a]" />
+              <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-[#1a1a1a]" />
             </button>
             <button
               onClick={() => setCurrentIndex(Math.min(maxIndex, currentIndex + 1))}
               disabled={currentIndex >= maxIndex}
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-white/90 backdrop-blur-sm border border-[#e8e3dc] rounded-full shadow-sm hover:border-[#C5A880] hover:shadow-md hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc] transition-all duration-300"
+              className="
+                absolute right-1 md:right-2 top-1/2 -translate-y-1/2 z-10
+                p-2 md:p-3 bg-white/90 backdrop-blur-sm
+                border border-[#e8e3dc] rounded-full shadow-sm
+                hover:border-[#0B1F33] hover:shadow-md hover:scale-105
+                disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc]
+                transition-all duration-300
+              "
             >
-              <ChevronRight className="w-5 h-5 text-[#1a1a1a]" />
+              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-[#1a1a1a]" />
             </button>
           </>
         )}
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+        {/* Grid de produtos – mais adaptável ao mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
           {produtosVisiveis.map((produto) => (
             <ProductCard key={produto._id} produto={produto} />
           ))}
