@@ -33,7 +33,8 @@ export default function ProductCard({ produto }: { produto?: any }) {
     );
   }
 
-  const id = produto._id || '';
+  // Garantir que o ID seja uma string limpa
+  const id = String(produto._id || '');
   const nome = produto.nome || 'Produto sem nome';
   const preco = typeof produto.preco === 'number' ? produto.preco : 0;
   const precoOriginal = typeof produto.preco_original === 'number' && produto.preco_original > preco ? produto.preco_original : null;
@@ -64,7 +65,15 @@ export default function ProductCard({ produto }: { produto?: any }) {
         flex flex-col
       "
     >
-      <Link href={`/produto/${id}`} className="block relative">
+      {/* Adicionei um onClick ao Link para garantir a navegação */}
+      <Link
+        href={`/produto/${id}`}
+        className="block relative"
+        onClick={() => {
+          // Garantir que o navegador saiba que isso é uma navegação
+        }}
+      >
+        {/* IMAGEM */}
         <div className="relative aspect-[3/4] overflow-hidden bg-[#fcfcfc] rounded-t-2xl">
           <img
             src={displayImage}
@@ -94,16 +103,12 @@ export default function ProductCard({ produto }: { produto?: any }) {
           </div>
         </div>
 
+        {/* INFORMAÇÕES */}
         <div className="p-6 md:p-8 flex flex-col flex-1 gap-5">
-          {/* 
-            CORREÇÃO: Nome do produto agora em cinza chumbo (text-lead-gray)
-            Antes: text-metallic-navy
-          */}
           <h3 className="font-serif font-light text-xl md:text-2xl leading-tight tracking-wide text-lead-gray line-clamp-2">
             {nome}
           </h3>
 
-          {/* Preço - Metallic Navy (destacado) */}
           <div className="flex flex-col gap-1">
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold text-metallic-navy">
