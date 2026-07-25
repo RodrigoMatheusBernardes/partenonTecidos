@@ -19,7 +19,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { items, removeItem, updateQuantity, totalItems, totalPrice } = useCart();
   const [animate, setAnimate] = useState(false);
 
-  // Fecha o drawer ao navegar para outra página
   useEffect(() => {
     const handleLinkClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -58,14 +57,14 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   return (
     <>
-      {/* OVERLAY – mais suave */}
+      {/* OVERLAY */}
       <div
         className="fixed inset-0 bg-black/30 z-40 transition-opacity duration-300"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* DRAWER – vidro fosco com transparência ajustada */}
+      {/* DRAWER */}
       <div
         className={`
           fixed top-0 right-0 h-full w-full max-w-md
@@ -81,7 +80,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           p-6 border-b border-gray-mid/20
           bg-light/30
         ">
-          <h2 className="font-serif text-2xl font-semibold text-dark-light">
+          <h2 className="font-serif text-2xl font-semibold text-gray-800">
             Carrinho
           </h2>
           <span className="
@@ -92,7 +91,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           ">
             {totalItems}
           </span>
-
           <Button
             variant="ghost"
             size="sm"
@@ -142,7 +140,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     hover:border-dark-light
                   "
                 >
-                  {/* IMAGEM */}
                   {item.foto && (
                     <div className="
                       relative w-20 h-20 flex-shrink-0
@@ -159,10 +156,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     </div>
                   )}
 
-                  {/* INFO */}
                   <div className="flex-1 min-w-0">
                     <h3 className="
-                      font-serif font-medium text-dark-light
+                      font-serif font-medium text-gray-800
                       text-sm md:text-base
                       line-clamp-2 mb-2
                     ">
@@ -183,8 +179,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         <Minus className="w-3 h-3" strokeWidth={2} />
                       </Button>
 
-                      {/* QUANTIDADE – cor escura */}
-                      <span className="w-8 text-center font-medium text-sm text-dark-light">
+                      {/* QUANTIDADE – cinza escuro */}
+                      <span className="w-8 text-center font-medium text-sm text-gray-800">
                         {item.quantidade}
                       </span>
 
@@ -198,8 +194,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         <Plus className="w-3 h-3" strokeWidth={2} />
                       </Button>
 
-                      {/* SUBTOTAL DO ITEM – cor escura */}
-                      <span className="ml-auto text-right text-sm font-semibold text-dark-light">
+                      {/* SUBTOTAL DO ITEM – cinza escuro */}
+                      <span className="ml-auto text-right text-sm font-semibold text-gray-800">
                         R$ {(item.preco * item.quantidade).toFixed(2)}
                       </span>
                     </div>
@@ -231,7 +227,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               pb-4 border-b border-gray-mid/20
             ">
               <span className="text-text-secondary font-medium">Subtotal:</span>
-              <span className="text-2xl font-serif font-semibold text-dark-light">
+              {/* TOTAL – cinza escuro */}
+              <span className="text-2xl font-serif font-semibold text-gray-800">
                 R$ {totalPrice.toFixed(2)}
               </span>
             </div>
