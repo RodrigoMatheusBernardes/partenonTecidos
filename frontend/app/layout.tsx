@@ -7,7 +7,7 @@ import { CartProvider } from '@/context/CartContext';
 import { AuthProvider } from '@/context/AuthContext';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import ScrollToTopButton from '@/components/ScrollToTopButton';
+import WhatsAppFloatingButton from '@/components/WhatsAppFloatingButton'; // ✅ Substitui o antigo ScrollToTopButton
 import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -22,14 +22,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-white text-[--color-text-primary] font-sans antialiased min-h-screen flex flex-col">
         <AuthProvider>
           <CartProvider>
-            {/* TopBar removida */}
+            {/* 
+              SE QUISER VOLTAR COM A TOPBAR E O MENU DE CATEGORIAS, 
+              DESCOMENTE AS LINHAS ABAIXO E IMPORTE OS COMPONENTES.
+            */}
+            {/* <TopBar /> */}
             <Header />
-            {/* HorizontalCategoryNav removida */}
+            {/* <HorizontalCategoryNav /> */}
+            
             <main className="flex-1 pb-16 md:pb-24">
               {children}
             </main>
+            
             <Footer />
-            <ScrollToTopButton />
+            
+            {/* ✅ Agora usamos o botão do WhatsApp no lugar da seta */}
+            <WhatsAppFloatingButton />
+            
             <Toaster
               position="top-right"
               toastOptions={{
