@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'; // ✅ Importação adicionada
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import CartDrawer from '@/components/CartDrawer';
-import SearchBar from '@/components/SearchBar'; // ✅ Importação do SearchBar
 import { Search, Heart, User, ShoppingBag, Menu, X } from 'lucide-react';
 
 export default function Header() {
@@ -15,12 +14,15 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // ✅ Estado local para a busca
   const router = useRouter(); // ✅ Inicialização do router
 
-  const handleSearch = (termo: string) => {
-    if (termo.trim()) {
-      router.push(`/loja?busca=${encodeURIComponent(termo.trim())}`);
+  // ✅ Função que redireciona para a Loja com o termo de busca
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchTerm.trim()) {
+      router.push(`/loja?busca=${encodeURIComponent(searchTerm.trim())}`);
       setSearchOpen(false); // ✅ Fecha a barra de busca após a pesquisa
+      setSearchTerm(''); // ✅ Limpa o campo
     }
   };
 
@@ -86,10 +88,18 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Search Input - Corrigido para usar o SearchBar e redirecionar */}
+        {/* ✅ Search Input restaurado com estado local para permitir digitação */}
         {searchOpen && (
           <div className="py-4 border-t border-white/5">
-            <SearchBar onSearch={handleSearch} placeholder="Buscar tecidos..." />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleSearch}
+              placeholder="Buscar tecidos..."
+              className="w-full px-4 py-3 bg-[#0B1F33] border border-white/20 rounded-none text-sm font-light text-white placeholder:text-[#8a7a6a] focus:outline-none focus:ring-1 focus:ring-[#C5A880] tracking-[0.1em]"
+              autoFocus
+            />
           </div>
         )}
       </div>
