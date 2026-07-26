@@ -57,26 +57,17 @@ export default function FiltersSidebar({
     onPrecoChange(min, max);
   };
 
-  const totalFiltrosAtivos = (precoMin > 0 || precoMax < precoMaxGlobal ? 1 : 0) + categoriasSelecionadas.length;
-
   return (
-    <aside className="w-full flex flex-col gap-6 p-4 md:p-6 bg-white rounded-card border border-gray-mid">
+    <aside className="w-full flex flex-col gap-8">
       
       {/* HEADER */}
-      <div className="flex items-center justify-between pb-4 border-b border-gray-mid">
-        <h2 className="font-serif font-semibold text-xl text-dark-light tracking-tight">
-          Filtros
-          {totalFiltrosAtivos > 0 && (
-            <span className="ml-2 text-sm font-medium text-text-light">
-              ({totalFiltrosAtivos})
-            </span>
-          )}
-        </h2>
+      <div className="flex items-center justify-between pb-4 border-b border-[#e8e3dc]">
+        <h2 className="font-serif font-light text-xl text-[#1a1a1a] tracking-wide">Filtros</h2>
         <div className="flex items-center gap-3">
-          {totalFiltrosAtivos > 0 && (
+          {(precoMin > 0 || precoMax < precoMaxGlobal || categoriasSelecionadas.length > 0) && (
             <button
               onClick={limparFiltros}
-              className="text-xs font-medium text-text-light hover:text-dark-light transition-colors"
+              className="text-xs text-[#8a7a6a] hover:text-[#1a1a1a] transition-colors"
             >
               Limpar
             </button>
@@ -84,8 +75,7 @@ export default function FiltersSidebar({
           {isMobile && onClose && (
             <button
               onClick={onClose}
-              className="text-dark-light hover:text-gold transition-colors"
-              aria-label="Fechar filtros"
+              className="text-[#1a1a1a] hover:text-[#C5A880] transition-colors"
             >
               <X className="w-5 h-5" strokeWidth={1.5} />
             </button>
@@ -93,38 +83,37 @@ export default function FiltersSidebar({
         </div>
       </div>
 
-      {/* PREÇO */}
+      {/* PREÇO SECTION */}
       <div>
-        <h3 className="text-xs font-medium uppercase tracking-wider text-text-light mb-4">
-          Preço
-        </h3>
+        <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">Preço</h3>
         <div className="flex items-center gap-2 mb-4">
           <input
             type="number"
             value={minInput}
             onChange={(e) => setMinInput(e.target.value)}
             placeholder="Mín"
-            className="w-16 border border-gray-mid rounded bg-white px-2 py-1.5 text-xs text-center text-dark-light placeholder:text-text-light focus:outline-none focus:ring-1 focus:ring-gold transition"
+            className="w-14 border border-[#e8e3dc] rounded bg-transparent px-2 py-1.5 text-xs text-center text-[#4a4a4a] placeholder:text-[#d4cec4] focus:outline-none focus:border-[#C5A880] transition-colors"
           />
-          <span className="text-text-light text-xs">—</span>
+          <span className="text-[#d4cec4] text-xs">—</span>
           <input
             type="number"
             value={maxInput}
             onChange={(e) => setMaxInput(e.target.value)}
             placeholder="Máx"
-            className="w-16 border border-gray-mid rounded bg-white px-2 py-1.5 text-xs text-center text-dark-light placeholder:text-text-light focus:outline-none focus:ring-1 focus:ring-gold transition"
+            className="w-14 border border-[#e8e3dc] rounded bg-transparent px-2 py-1.5 text-xs text-center text-[#4a4a4a] placeholder:text-[#d4cec4] focus:outline-none focus:border-[#C5A880] transition-colors"
           />
           <button
             onClick={handlePrecoManual}
-            className="bg-dark-light text-white text-xs font-medium px-4 py-1.5 rounded hover:bg-gray-700 transition-colors"
+            className="bg-[#1a1a1a] text-white text-[10px] font-medium px-4 py-1.5 rounded hover:bg-[#2d2d2d] transition-colors"
           >
             OK
           </button>
         </div>
 
+        {/* CUSTOM RADIOS */}
         <div className="flex flex-col gap-2.5">
           {faixasPreco.map((faixa) => (
-            <label key={faixa.label} className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group">
+            <label key={faixa.label} className="flex items-center gap-2.5 text-sm text-[#4a4a4a] cursor-pointer group">
               <input
                 type="radio"
                 name="faixa-preco"
@@ -132,13 +121,13 @@ export default function FiltersSidebar({
                 onChange={() => onPrecoChange(faixa.min, faixa.max)}
                 className="hidden peer"
               />
-              <span className="relative w-4 h-4 border border-gray-mid rounded-full bg-white flex items-center justify-center peer-checked:border-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
-                <span className="w-2 h-2 rounded-full bg-gold opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></span>
+              <span className="relative w-4 h-4 border border-[#d4cec4] rounded-full bg-white flex items-center justify-center peer-checked:border-[#C5A880] group-hover:border-[#C5A880] transition-colors duration-200 flex-shrink-0">
+                <span className="w-2 h-2 rounded-full bg-[#C5A880] opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></span>
               </span>
-              <span className="text-sm font-light group-hover:font-medium transition-all">{faixa.label}</span>
+              <span className="text-sm font-light group-hover:font-normal transition-all">{faixa.label}</span>
             </label>
           ))}
-          <label className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group">
+          <label className="flex items-center gap-2.5 text-sm text-[#4a4a4a] cursor-pointer group">
             <input
               type="radio"
               name="faixa-preco"
@@ -146,35 +135,34 @@ export default function FiltersSidebar({
               onChange={() => onPrecoChange(0, precoMaxGlobal)}
               className="hidden peer"
             />
-            <span className="relative w-4 h-4 border border-gray-mid rounded-full bg-white flex items-center justify-center peer-checked:border-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
-              <span className="w-2 h-2 rounded-full bg-gold opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></span>
+            <span className="relative w-4 h-4 border border-[#d4cec4] rounded-full bg-white flex items-center justify-center peer-checked:border-[#C5A880] group-hover:border-[#C5A880] transition-colors duration-200 flex-shrink-0">
+              <span className="w-2 h-2 rounded-full bg-[#C5A880] opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></span>
             </span>
-            <span className="text-sm font-light group-hover:font-medium transition-all">Todos os preços</span>
+            <span className="text-sm font-light group-hover:font-normal transition-all">Todos os preços</span>
           </label>
         </div>
       </div>
 
-      <div className="border-b border-gray-mid my-1" />
+      {/* DIVISÓRIA */}
+      <div className="border-b border-[#e8e3dc] my-1" />
 
-      {/* CATEGORIAS */}
+      {/* CATEGORIAS SECTION */}
       {categorias.length > 0 && (
         <div>
-          <h3 className="text-xs font-medium uppercase tracking-wider text-text-light mb-4">
-            Categorias
-          </h3>
+          <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">Categorias</h3>
           <div className="flex flex-col gap-2.5 max-h-60 overflow-y-auto pr-2">
             {categorias.map((cat) => (
-              <label key={cat._id} className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group">
+              <label key={cat._id} className="flex items-center gap-2.5 text-sm text-[#4a4a4a] cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={categoriasSelecionadas.includes(cat._id)}
                   onChange={() => onCategoriaChange(cat._id)}
                   className="hidden peer"
                 />
-                <span className="w-4 h-4 border border-gray-mid rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
+                <span className="w-4 h-4 border border-[#d4cec4] rounded-sm bg-white flex items-center justify-center peer-checked:border-[#C5A880] peer-checked:bg-[#C5A880] group-hover:border-[#C5A880] transition-colors duration-200 flex-shrink-0">
                   <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
                 </span>
-                <span className="text-sm font-light group-hover:font-medium transition-all">{cat.nome}</span>
+                <span className="text-sm font-light group-hover:font-normal transition-all">{cat.nome}</span>
               </label>
             ))}
           </div>
