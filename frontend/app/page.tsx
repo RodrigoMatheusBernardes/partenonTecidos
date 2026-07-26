@@ -9,6 +9,8 @@ import FiltersSidebar from '@/components/FiltersSidebar';
 import ProductCard from '@/components/ui/ProductCard';
 import HomeBanner from '@/components/HomeBanner';
 import TrendingBar from '@/components/TrendingBar';
+import { SkeletonProduct } from '@/components/Skeleton';
+import { SlidersHorizontal } from 'lucide-react';
 
 interface Categoria { _id: string; nome: string; }
 interface Produto {
@@ -117,7 +119,6 @@ export default function Home() {
     }
   };
 
-  // 🔍 Verifica se há algum filtro ativo
   const temFiltroAtivo =
     busca.trim() !== '' ||
     categoriasSelecionadas.length > 0 ||
@@ -131,211 +132,220 @@ export default function Home() {
     <>
       <HomeBanner />
 
-      {carregando ? (
-        <div className="w-full bg-[#F7F7F7] mt-32 md:mt-40 py-24 md:py-32">
-          <div className="main-container flex justify-center items-center min-h-[400px]">
-            <div className="w-12 h-12 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
+      <section className="w-full bg-[#F7F7F7] py-16 md:py-20">
+        <div className="main-container">
+          <div className="flex flex-col md:flex-row gap-8">
+            <aside className="hidden md:block w-64 flex-shrink-0">
+              <FiltersSidebar
+                precoMin={precoMin}
+                precoMax={precoMax}
+                precoMaxGlobal={precoMaxGlobal}
+                categorias={categorias}
+                categoriasSelecionadas={categoriasSelecionadas}
+                onPrecoChange={(min, max) => {
+                  setPrecoMin(min);
+                  setPrecoMax(max);
+                  setPagina(1);
+                }}
+                onCategoriaChange={catId => {
+                  setCategoriasSelecionadas(prev =>
+                    prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]
+                  );
+                  setPagina(1);
+                }}
+                limparFiltros={limparFiltros}
+              />
+            </aside>
+
+            <div className="flex-1">
+              {!temFiltroAtivo && (
+                <div className="mb-16">
+                  <TrendingBar />
+                </div>
+              )}
+
+              <div className="text-center mb-12 md:mb-16">
+                <h2 className="font-serif font-light text-3xl md:text-4xl text-metallic-navy">
+                  Nossa Coleção
+                </h2>
+                <p className="text-text-secondary font-light text-sm mt-2 tracking-wide">
+                  Explore nossos tecidos
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div className="w-full sm:max-w-md">
+                  <SearchBar
+                    value={busca}
+                    onChange={setBusca}
+                    onSearch={handleSearch}
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  <p className="text-sm text-text-secondary font-light whitespace-nowrap">
+                    {produtosFiltrados.length} produto(s)
+                  </p>
+                  <select
+                    value={ordenacao}
+                    onChange={e => {
+                      setOrdenacao(e.target.value);
+                      setPagina(1);
+                    }}
+                    className="border border-gray-mid rounded-lg px-3 py-2 text-sm bg-white text-dark-light font-light focus:outline-none focus:ring-1 focus:ring-gold"
+                  >
+                    <option value="">Mais relevantes</option>
+                    <option value="menor-preco">Menor Preço</option>
+                    <option value="maior-preco">Maior Preço</option>
+                    <option value="nome">Nome (A-Z)</option>
+                  </select>
+                </div>
+              </div>
+
+              {carregando ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <SkeletonProduct key={i} />
+                  ))}
+                </div>
+              ) : produtosFiltrados.length === 0 ? (
+                <div className="text-center py-12 bg-white/60 rounded-2xl">
+                  <p className="text-text-secondary font-light">Nenhum produto encontrado.</p>
+                  <button
+                    onClick={limparFiltros}
+                    className="mt-2 text-sm text-dark-light hover:underline font-light"
+                  >
+                    Limpar filtros
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                    {paginaAtual.map(produto => (
+                      <ProductCard key={produto._id} produto={produto} />
+                    ))}
+                  </div>
+
+                  {totalPaginas > 1 && (
+                    <div className="mt-12 flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => {
+                          setPagina(prev => Math.max(1, prev - 1));
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        disabled={pagina === 1}
+                        className="px-4 py-2 text-sm font-light text-text-secondary border border-gray-mid rounded-button hover:bg-light hover:border-dark-light transition disabled:opacity-40"
+                      >
+                        Anterior
+                      </button>
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: totalPaginas }, (_, i) => i + 1)
+                          .filter(
+                            num =>
+                              totalPaginas <= 5 ||
+                              num === 1 ||
+                              num === totalPaginas ||
+                              Math.abs(num - pagina) <= 1
+                          )
+                          .map((num, idx, arr) => (
+                            <React.Fragment key={num}>
+                              {idx > 0 && arr[idx - 1] !== num - 1 && (
+                                <span className="text-text-light px-2">…</span>
+                              )}
+                              <button
+                                onClick={() => {
+                                  setPagina(num);
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                className={`min-w-[2.5rem] h-9 px-3 rounded-button text-sm font-light transition ${
+                                  num === pagina
+                                    ? 'bg-dark-light text-white'
+                                    : 'text-text-secondary hover:bg-light hover:text-dark-light'
+                                }`}
+                              >
+                                {num}
+                              </button>
+                            </React.Fragment>
+                          ))}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setPagina(prev => Math.min(totalPaginas, prev + 1));
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        disabled={pagina === totalPaginas}
+                        className="px-4 py-2 text-sm font-light text-text-secondary border border-gray-mid rounded-button hover:bg-light hover:border-dark-light transition disabled:opacity-40"
+                      >
+                        Próximo
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
-      ) : (
-        <section className="w-full bg-[#F7F7F7] mt-32 md:mt-40 py-24 md:py-32">
-          <div className="main-container">
-            <div className="flex flex-col md:flex-row gap-8">
-              <aside className="hidden md:block w-64 flex-shrink-0">
-                <FiltersSidebar
-                  precoMin={precoMin}
-                  precoMax={precoMax}
-                  precoMaxGlobal={precoMaxGlobal}
-                  categorias={categorias}
-                  categoriasSelecionadas={categoriasSelecionadas}
-                  onPrecoChange={(min, max) => {
-                    setPrecoMin(min);
-                    setPrecoMax(max);
-                    setPagina(1);
-                  }}
-                  onCategoriaChange={catId => {
-                    setCategoriasSelecionadas(prev =>
-                      prev.includes(catId)
-                        ? prev.filter(c => c !== catId)
-                        : [...prev, catId]
-                    );
-                    setPagina(1);
-                  }}
-                  limparFiltros={limparFiltros}
-                />
-              </aside>
+      </section>
 
-              <div className="flex-1">
-                {/* ⭐ Produtos em Alta – exibido apenas se não houver filtros ativos */}
-                {!temFiltroAtivo && (
-                  <div className="mb-16">
-                    <TrendingBar />
-                  </div>
-                )}
-
-                <div className="text-center mb-12 md:mb-16">
-                  <h2 className="font-serif font-light text-3xl md:text-4xl text-metallic-navy">
-                    Nossa Coleção
-                  </h2>
-                  <p className="text-[#4a4a4a] font-medium text-sm mt-2 tracking-wide">
-                    Explore nossos tecidos
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                  <div className="w-full sm:max-w-md">
-                    <SearchBar
-                      value={busca}
-                      onChange={setBusca}
-                      onSearch={handleSearch}
-                    />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <p className="text-sm text-[#8a7a6a] font-light whitespace-nowrap">
-                      {produtosFiltrados.length} produto(s)
-                    </p>
-                    <select
-                      value={ordenacao}
-                      onChange={e => {
-                        setOrdenacao(e.target.value);
-                        setPagina(1);
-                      }}
-                      className="border border-[#e8e3dc] rounded-lg px-3 py-2 text-sm bg-white text-[#1a1a1a] font-light focus:outline-none focus:ring-1 focus:ring-[#c9a96e]"
-                    >
-                      <option value="">Mais relevantes</option>
-                      <option value="menor-preco">Menor Preço</option>
-                      <option value="maior-preco">Maior Preço</option>
-                      <option value="nome">Nome (A-Z)</option>
-                    </select>
-                  </div>
-                </div>
-
-                {produtosFiltrados.length === 0 ? (
-                  <div className="text-center py-12 bg-white/60 rounded-2xl">
-                    <p className="text-[#8a7a6a] font-light">Nenhum produto encontrado.</p>
-                    <button
-                      onClick={limparFiltros}
-                      className="mt-2 text-sm text-[#1a1a1a] hover:underline font-light"
-                    >
-                      Limpar filtros
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                      {paginaAtual.map(produto => (
-                        <ProductCard key={produto._id} produto={produto} />
-                      ))}
-                    </div>
-
-                    {totalPaginas > 1 && (
-                      <div className="mt-12 flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => {
-                            setPagina(prev => Math.max(1, prev - 1));
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                          }}
-                          disabled={pagina === 1}
-                          className="px-3 py-2 text-sm font-light text-gray-400 hover:text-gray-600 disabled:opacity-30 transition"
-                          aria-label="Anterior"
-                        >
-                          ‹ Anterior
-                        </button>
-                        <div className="flex items-center gap-1">
-                          {Array.from({ length: totalPaginas }, (_, i) => i + 1)
-                            .filter(
-                              num =>
-                                totalPaginas <= 5 ||
-                                num === 1 ||
-                                num === totalPaginas ||
-                                Math.abs(num - pagina) <= 1
-                            )
-                            .map((num, idx, arr) => (
-                              <React.Fragment key={num}>
-                                {idx > 0 && arr[idx - 1] !== num - 1 && (
-                                  <span className="text-gray-400 px-2">…</span>
-                                )}
-                                <button
-                                  onClick={() => {
-                                    setPagina(num);
-                                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                                  }}
-                                  className={`min-w-[2rem] h-8 px-2 rounded-md text-sm font-light transition ${
-                                    num === pagina
-                                      ? 'bg-[#1a1a1a] text-white'
-                                      : 'text-gray-600 hover:bg-gray-100'
-                                  }`}
-                                >
-                                  {num}
-                                </button>
-                              </React.Fragment>
-                            ))}
-                        </div>
-                        <button
-                          onClick={() => {
-                            setPagina(prev => Math.min(totalPaginas, prev + 1));
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                          }}
-                          disabled={pagina === totalPaginas}
-                          className="px-3 py-2 text-sm font-light text-gray-400 hover:text-gray-600 disabled:opacity-30 transition"
-                          aria-label="Próximo"
-                        >
-                          Próximo ›
-                        </button>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* SEÇÃO DE QUALIDADES (inalterada) */}
-      <section className="mt-32 md:mt-40 py-24 md:py-32 pb-32 md:pb-48 border-t border-[#e8e3dc]">
-        <div className="main-container">
-          <div className="grid md:grid-cols-3 gap-12 md:gap-20 text-center">
+      {/* SEÇÃO DE QUALIDADES – centralizada verticalmente */}
+      <section className="py-16 md:py-20 border-t border-gray-mid">
+        <div className="main-container flex flex-col justify-center min-h-[300px] md:min-h-[400px]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 text-center">
             <div className="flex flex-col items-center">
-              <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
+              <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-serif font-medium text-xl text-dark-light mb-2">
                 Qualidade Premium
               </h3>
-              <p className="text-lead-gray font-normal text-sm leading-relaxed max-w-sm mx-auto">
-                Tecidos selecionados dos melhores fornecedores
+              <p className="text-text-secondary font-light text-sm leading-relaxed max-w-xs mx-auto">
+                Tecidos selecionados dos melhores fornecedores do mundo.
               </p>
             </div>
+
             <div className="flex flex-col items-center">
-              <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
+              <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                </svg>
+              </div>
+              <h3 className="font-serif font-medium text-xl text-dark-light mb-2">
                 Entrega Rápida
               </h3>
-              <p className="text-lead-gray font-normal text-sm leading-relaxed max-w-sm mx-auto">
-                Enviamos para todo o Brasil com agilidade
+              <p className="text-text-secondary font-light text-sm leading-relaxed max-w-xs mx-auto">
+                Enviamos para todo o Brasil com agilidade e segurança.
               </p>
             </div>
+
             <div className="flex flex-col items-center">
-              <h3 className="font-serif font-light text-xl text-metallic-navy mb-3">
+              <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                </svg>
+              </div>
+              <h3 className="font-serif font-medium text-xl text-dark-light mb-2">
                 Atendimento Especial
               </h3>
-              <p className="text-lead-gray font-normal text-sm leading-relaxed max-w-sm mx-auto">
-                Suporte personalizado para suas necessidades
+              <p className="text-text-secondary font-light text-sm leading-relaxed max-w-xs mx-auto">
+                Suporte personalizado para suas necessidades.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* DIVISOR DE RESPIRO */}
-      <div className="w-full h-24 md:h-40 bg-transparent" />
-
-      {/* FILTRO MOBILE (inalterado) */}
+      {/* FILTRO MOBILE */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
           onClick={() => setSidebarAberta(true)}
-          className="bg-[#1a1a1a] text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-2xl hover:bg-[#2d2d2d] transition-colors"
+          className="bg-dark-light text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:bg-metallic-navy transition-colors"
+          aria-label="Abrir filtros"
         >
-          ⚙️
+          <SlidersHorizontal className="w-6 h-6" strokeWidth={2} />
         </button>
       </div>
+
       {sidebarAberta && (
         <div className="md:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setSidebarAberta(false)}>
           <div
@@ -360,19 +370,9 @@ export default function Home() {
                 setPagina(1);
               }}
               limparFiltros={limparFiltros}
+              isMobile
+              onClose={() => setSidebarAberta(false)}
             />
-            <button
-              onClick={() => setSidebarAberta(false)}
-              className="mt-6 w-full bg-[#f8f6f2] py-2.5 rounded-lg text-sm text-[#1a1a1a] font-light hover:bg-[#e8e3dc] transition-colors"
-            >
-              Fechar
-            </button>
-            <button
-              onClick={() => { limparFiltros(); setSidebarAberta(false); }}
-              className="mt-2 w-full text-sm text-[#8a7a6a] hover:text-[#1a1a1a] transition-colors font-light"
-            >
-              Limpar filtros
-            </button>
           </div>
         </div>
       )}
