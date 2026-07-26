@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
+import Button from '@/components/ui/Button';
+import { Trash2, Plus, Minus } from 'lucide-react';
 
 export default function CarrinhoPage() {
   const {
@@ -20,9 +22,9 @@ export default function CarrinhoPage() {
 
   if (items.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8 text-center">
-        <p className="text-gray-500 text-lg mb-4">Seu carrinho está vazio.</p>
-        <Link href="/" className="text-indigo-600 hover:underline">
+      <div className="main-container py-16 md:py-20 text-center">
+        <p className="text-text-secondary text-lg mb-4">Seu carrinho está vazio.</p>
+        <Link href="/" className="text-gold hover:underline">
           Continuar comprando
         </Link>
       </div>
@@ -32,98 +34,114 @@ export default function CarrinhoPage() {
   const totalFinal = totalPrice - (descontoCupom || 0);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Carrinho de Compras</h1>
+    <div className="main-container py-16 md:py-20">
+      <h1 className="font-serif font-semibold text-3xl md:text-4xl text-dark-light mb-8">
+        Carrinho de Compras
+      </h1>
 
       <div className="space-y-4">
         {items.map((item) => (
           <div
             key={item.id}
-            className="flex flex-col sm:flex-row items-center gap-4 border rounded-lg p-4 bg-white shadow-sm"
+            className="flex flex-col sm:flex-row items-center gap-4 border border-gray-mid rounded-card p-4 bg-white shadow-sm-luxury"
           >
             {item.foto ? (
-              <img src={item.foto} alt={item.nome} className="w-20 h-20 object-cover rounded" />
+              <img
+                src={item.foto.replace('http://localhost:5000', 'https://partenontecidos.onrender.com')}
+                alt={item.nome}
+                className="w-20 h-20 object-cover rounded-card"
+              />
             ) : (
-              <div className="w-20 h-20 bg-gray-200 rounded flex items-center justify-center text-gray-400">
+              <div className="w-20 h-20 bg-light rounded-card flex items-center justify-center text-text-light">
                 📦
               </div>
             )}
 
             <div className="flex-1 text-center sm:text-left">
-              <h3 className="font-semibold">{item.nome}</h3>
-              <p className="text-green-700 font-bold">R$ {item.preco.toFixed(2)}</p>
+              <h3 className="font-serif font-medium text-dark-light">{item.nome}</h3>
+              <p className="text-gold font-semibold">R$ {item.preco.toFixed(2)}</p>
             </div>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => updateQuantity(item.id, item.quantidade - 1)}
                 disabled={item.quantidade <= 1}
-                className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                className="w-8 h-8 rounded-full bg-light border border-gray-mid hover:bg-gray-200 disabled:opacity-40 transition"
               >
-                −
+                <Minus className="w-3 h-3 mx-auto" strokeWidth={2} />
               </button>
-              <span className="w-8 text-center font-medium">{item.quantidade}</span>
+              <span className="w-8 text-center font-medium text-dark-light">
+                {item.quantidade}
+              </span>
               <button
                 onClick={() => updateQuantity(item.id, item.quantidade + 1)}
                 disabled={item.quantidade >= item.maxEstoque}
-                className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                className="w-8 h-8 rounded-full bg-light border border-gray-mid hover:bg-gray-200 disabled:opacity-40 transition"
               >
-                +
+                <Plus className="w-3 h-3 mx-auto" strokeWidth={2} />
               </button>
             </div>
 
-            <p className="font-bold w-24 text-center">
+            <p className="font-semibold text-dark-light w-24 text-center">
               R$ {(item.preco * item.quantidade).toFixed(2)}
             </p>
 
-            <button onClick={() => removeItem(item.id)} className="text-red-500 hover:text-red-700 transition">
-              ✕
+            <button
+              onClick={() => removeItem(item.id)}
+              className="text-error hover:text-red-700 transition p-1"
+              aria-label="Remover item"
+            >
+              <Trash2 className="w-5 h-5" strokeWidth={1.5} />
             </button>
           </div>
         ))}
       </div>
 
       {/* Cupom de desconto */}
-      <div className="flex gap-2 mt-6">
+      <div className="flex flex-col sm:flex-row gap-2 mt-8 max-w-md">
         <input
           type="text"
           value={codigoCupom}
           onChange={(e) => setCodigoCupom(e.target.value)}
           placeholder="Código do cupom"
-          className="border rounded px-3 py-2 flex-1"
+          className="flex-1 border border-gray-mid rounded-button px-4 py-2.5 text-sm bg-white text-dark-light placeholder:text-text-light focus:outline-none focus:ring-2 focus:ring-gold transition"
         />
-        <button
+        <Button
+          variant="primary"
+          size="sm"
           onClick={async () => {
             try { await aplicarCupom(codigoCupom); } catch {}
           }}
-          className="bg-indigo-600 text-white px-4 py-2 rounded"
+          className="whitespace-nowrap"
         >
           Aplicar
-        </button>
+        </Button>
       </div>
 
       {cupom && (
-        <div className="flex justify-between text-green-600 mt-2">
-          <span>Cupom {cupom.codigo} (-{cupom.desconto}%)</span>
-          <button onClick={removerCupom} className="text-red-500">Remover</button>
+        <div className="flex flex-wrap items-center justify-between text-success mt-2 text-sm">
+          <span>Cupom <strong>{cupom.codigo}</strong> (-{cupom.desconto}%)</span>
+          <button onClick={removerCupom} className="text-error hover:underline">Remover</button>
         </div>
       )}
 
       {/* Total e ações */}
-      <div className="mt-8 border-t pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="mt-12 border-t border-gray-mid pt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           {descontoCupom > 0 && (
-            <p className="text-sm text-gray-500 line-through">R$ {totalPrice.toFixed(2)}</p>
+            <p className="text-sm text-text-light line-through">R$ {totalPrice.toFixed(2)}</p>
           )}
-          <p className="text-2xl font-bold">Total: R$ {totalFinal.toFixed(2)}</p>
+          <p className="text-2xl font-serif font-semibold text-dark-light">
+            Total: R$ {totalFinal.toFixed(2)}
+          </p>
         </div>
-        <div className="flex gap-4">
-          <Link href="/" className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Button href="/" variant="secondary" size="lg" className="w-full sm:w-auto">
             Continuar Comprando
-          </Link>
-          <Link href="/checkout" className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700">
+          </Button>
+          <Button href="/checkout" variant="primary" size="lg" className="w-full sm:w-auto">
             Finalizar Pedido
-          </Link>
+          </Button>
         </div>
       </div>
     </div>
