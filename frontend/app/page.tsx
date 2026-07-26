@@ -9,7 +9,6 @@ import FiltersSidebar from '@/components/FiltersSidebar';
 import ProductCard from '@/components/ui/ProductCard';
 import HomeBanner from '@/components/HomeBanner';
 import TrendingBar from '@/components/TrendingBar';
-import { SkeletonProduct } from '@/components/Skeleton';
 import { SlidersHorizontal } from 'lucide-react';
 
 interface Categoria { _id: string; nome: string; }
@@ -202,10 +201,8 @@ export default function Home() {
               </div>
 
               {carregando ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <SkeletonProduct key={i} />
-                  ))}
+                <div className="col-span-full flex justify-center items-center min-h-[50vh] py-12">
+                  <div className="w-12 h-12 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
                 </div>
               ) : produtosFiltrados.length === 0 ? (
                 <div className="text-center py-12 bg-white/60 rounded-2xl">
