@@ -33,7 +33,6 @@ export default function ProductCard({ produto }: { produto?: any }) {
     );
   }
 
-  // Garantir que o ID seja uma string limpa
   const id = String(produto._id || '');
   const nome = produto.nome || 'Produto sem nome';
   const preco = typeof produto.preco === 'number' ? produto.preco : 0;
@@ -60,20 +59,12 @@ export default function ProductCard({ produto }: { produto?: any }) {
         shadow-[0_8px_30px_rgba(0,0,0,0.05)]
         border border-[#f0f0f0]
         hover:shadow-[0_16px_60px_rgba(0,0,0,0.1)]
-        hover:-translate-y-[6px]
-        transition-all duration-400 ease-out
+        hover:-translate-y-[4px]
+        transition-all duration-300 ease-out
         flex flex-col
       "
     >
-      {/* Adicionei um onClick ao Link para garantir a navegação */}
-      <Link
-        href={`/produto/${id}`}
-        className="block relative"
-        onClick={() => {
-          // Garantir que o navegador saiba que isso é uma navegação
-        }}
-      >
-        {/* IMAGEM */}
+      <Link href={`/produto/${id}`} className="block relative">
         <div className="relative aspect-[3/4] overflow-hidden bg-[#fcfcfc] rounded-t-2xl">
           <img
             src={displayImage}
@@ -82,7 +73,6 @@ export default function ProductCard({ produto }: { produto?: any }) {
             onError={() => setImgError(true)}
           />
 
-          {/* Badge de desconto - Metallic Navy */}
           {descontoPercentual > 0 && (
             <div className="absolute top-3 left-3 z-10 bg-metallic-navy text-white text-[10px] font-medium px-2.5 py-1 rounded-md uppercase tracking-widest shadow-sm">
               -{descontoPercentual}%
@@ -103,30 +93,29 @@ export default function ProductCard({ produto }: { produto?: any }) {
           </div>
         </div>
 
-        {/* INFORMAÇÕES */}
-        <div className="p-6 md:p-8 flex flex-col flex-1 gap-5">
-          <h3 className="font-serif font-light text-xl md:text-2xl leading-tight tracking-wide text-lead-gray line-clamp-2">
+        <div className="p-4 md:p-6 flex flex-col flex-1 gap-3">
+          <h3 className="font-serif font-light text-lg md:text-xl leading-tight tracking-wide text-dark-light line-clamp-2">
             {nome}
           </h3>
 
           <div className="flex flex-col gap-1">
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-metallic-navy">
+              <span className="font-serif text-2xl md:text-3xl font-bold text-metallic-navy">
                 R$ {preco.toFixed(2)}
               </span>
               {precoOriginal && (
-                <span className="text-sm text-[#8a7a6a] line-through font-light">
+                <span className="text-sm text-text-light line-through font-light">
                   R$ {precoOriginal.toFixed(2)}
                 </span>
               )}
             </div>
-            <p className="text-xs text-[#8a7a6a] font-light mt-1">
+            <p className="text-xs text-text-light font-light mt-1">
               ou 3x de R$ {(preco / 3).toFixed(2)}
             </p>
           </div>
 
           {estoque > 0 && estoque <= 5 && (
-            <p className="text-xs text-red-500 font-medium">⚠️ Últimas unidades!</p>
+            <p className="text-xs text-error font-medium">⚠️ Últimas unidades!</p>
           )}
 
           <Button

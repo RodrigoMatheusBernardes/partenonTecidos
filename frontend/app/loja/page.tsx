@@ -115,8 +115,8 @@ function LojaContent() {
         </div>
       </div>
 
-      {/* CONTEÚDO PRINCIPAL */}
-      <div className="main-container mt-32 md:mt-40 py-24 md:py-32">
+      {/* CONTEÚDO PRINCIPAL – padding padronizado */}
+      <div className="main-container py-16 md:py-20">
         <div className="flex gap-8 lg:gap-12">
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-8 bg-white rounded-card shadow-sm-luxury border border-gray-mid p-6">
