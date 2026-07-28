@@ -2,14 +2,13 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
-// CORREÇÃO: Caminhos relativos corretos e case-sensitive
-const User = require('../models/User');                     // Maiúsculo
-const authMiddleware = require('../middleware/auth');       // middleware (minúsculo, verifique se o arquivo é auth.js)
-const PasswordResetToken = require('../models/PasswordResetToken'); // Nome do arquivo (verifique se é exatamente este)
+const User = require('../models/User');
+const authMiddleware = require('../middleware/auth');
+const PasswordResetToken = require('../models/PasswordResetToken');
 
 const router = express.Router();
 
-// POST /api/auth/registrar
+// POST /api/auth/registrar – cliente comum (customer)
 router.post('/registrar', async (req, res) => {
   try {
     const { nome, email, password } = req.body;
@@ -38,7 +37,7 @@ router.post('/registrar', async (req, res) => {
   }
 });
 
-// POST /api/auth/login
+// POST /api/auth/login – todos os perfis
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -67,12 +66,41 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// GET /api/auth/me
+// GET /api/auth/me – dados do usuário autenticado
 router.get('/me', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
     res.json({ id: user._id, nome: user.nome, email: user.email, role: user.role });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/auth/criar-vendedor – apenas administradores
+router.post('/criar-vendedor', authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Apenas administradores podem criar vendedores.' });
+    }
+
+    const { nome, email, password } = req.body;
+    if (!nome || !email || !password) {
+      return res.status(400).json({ error: 'Nome, email e senha são obrigatórios.' });
+    }
+
+    const existente = await User.findOne({ email });
+    if (existente) {
+      return res.status(400).json({ error: 'Este email já está cadastrado.' });
+    }
+
+    const user = new User({ nome, email, password, role: 'seller' });
+    await user.save();
+
+    res.status(201).json({
+      message: 'Vendedor criado com sucesso!',
+      user: { id: user._id, nome: user.nome, email: user.email, role: user.role }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
