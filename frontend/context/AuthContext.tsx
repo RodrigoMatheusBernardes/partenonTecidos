@@ -6,7 +6,7 @@ export interface User {
   id: string;
   nome: string;
   email: string;
-  role: 'admin' | 'customer' | 'vendedor';
+  role: 'admin' | 'seller' | 'customer';
 }
 
 interface AuthContextType {
@@ -14,6 +14,7 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isSeller: boolean;
   login: (userData: User, token: string) => void;
   logout: () => void;
 }
@@ -23,10 +24,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true); // controle de carregamento inicial
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Carrega o token do localStorage ao iniciar
     const savedToken = localStorage.getItem('token');
     if (savedToken) {
       try {
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: payload.id,
           nome: payload.nome || 'Usuário',
           email: payload.email,
-          role: payload.role,
+          role: payload.role || 'customer',
         };
         setToken(savedToken);
         setUser(userData);
@@ -61,14 +61,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = !!user;
   const isAdmin = user?.role === 'admin';
+  const isSeller = user?.role === 'seller';
 
-  // Se ainda estiver carregando, retorna null ou um indicador de carregamento
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated, isAdmin, login, logout }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated, isAdmin, isSeller, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
