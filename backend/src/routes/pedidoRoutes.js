@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const Pedido = require('../models/Pedido');
 const Produto = require('../models/Produto');
 const Cupom = require('../models/Cupom');
-const Vendedor = require('../models/Vendedor');   // <-- NOVO
+const Vendedor = require('../models/Vendedor');
 const authMiddleware = require('../middleware/auth');
 
 // ============================================================
@@ -14,7 +14,6 @@ router.post('/', async (req, res) => {
   try {
     const { cliente: clienteBody, itens, cupom, vendedor: codigoVendedor } = req.body;
 
-    // Determinar dados do cliente (token ou corpo)
     let cliente = clienteBody;
     if (req.headers.authorization) {
       try {
@@ -39,12 +38,10 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Dados do cliente e itens são obrigatórios.' });
     }
 
-    // Calcular total bruto
     let totalBruto = itens.reduce((acc, i) => acc + i.preco * i.quantidade, 0);
     let desconto = 0;
     let cupomCodigo = '';
 
-    // Validar cupom
     if (cupom) {
       const cupomDoc = await Cupom.findOne({ codigo: cupom.toUpperCase(), ativo: true });
       if (!cupomDoc) return res.status(400).json({ error: 'Cupom inválido ou expirado.' });
@@ -59,7 +56,6 @@ router.post('/', async (req, res) => {
 
     const total = totalBruto - desconto;
 
-    // --- PROCESSAR VENDEDOR (AGORA DENTRO DA ROTA) ---
     let vendedorId = null;
     let vendedorCodigo = '';
     let comissaoValor = 0;
@@ -74,7 +70,6 @@ router.post('/', async (req, res) => {
         }
       } catch (e) { /* ignora erro */ }
     }
-    // --- FIM VENDEDOR ---
 
     const pedido = new Pedido({
       cliente,
@@ -90,7 +85,6 @@ router.post('/', async (req, res) => {
 
     await pedido.save();
 
-    // Abater estoque e reservado
     for (const item of itens) {
       await Produto.findByIdAndUpdate(item.produtoId, {
         $inc: {
@@ -100,7 +94,6 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Incrementar uso do cupom
     if (cupomCodigo) {
       const cupomDoc = await Cupom.findOne({ codigo: cupomCodigo });
       if (cupomDoc) {
@@ -126,14 +119,22 @@ router.post('/', async (req, res) => {
 });
 
 // ============================================================
-// GET /api/pedidos – Listar pedidos do cliente logado (ou todos se admin)
+// GET /api/pedidos – Listar pedidos (filtrado por role)
 // ============================================================
 router.get('/', authMiddleware, async (req, res) => {
   try {
     let query = {};
-    if (req.user.role !== 'admin') {
+
+    if (req.user.role === 'admin') {
+      // admin vê todos
+    } else if (req.user.role === 'seller') {
+      // vendedor vê apenas seus pedidos
+      query = { vendedor_id: req.user.id };
+    } else {
+      // customer vê apenas seus pedidos (por email)
       query = { 'cliente.email': req.user.email };
     }
+
     const pedidos = await Pedido.find(query).sort({ createdAt: -1 });
     res.json(pedidos);
   } catch (err) {
@@ -161,9 +162,15 @@ router.get('/:id', authMiddleware, async (req, res) => {
   try {
     const pedido = await Pedido.findById(req.params.id);
     if (!pedido) return res.status(404).json({ error: 'Pedido não encontrado' });
-    if (req.user.role !== 'admin' && pedido.cliente.email !== req.user.email) {
+
+    const isAdmin = req.user.role === 'admin';
+    const isOwner = pedido.cliente.email === req.user.email;
+    const isSeller = req.user.role === 'seller' && pedido.vendedor_id?.toString() === req.user.id;
+
+    if (!isAdmin && !isOwner && !isSeller) {
       return res.status(403).json({ error: 'Acesso não autorizado.' });
     }
+
     res.json(pedido);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -175,11 +182,21 @@ router.get('/:id', authMiddleware, async (req, res) => {
 // ============================================================
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Ação restrita a administradores.' });
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Ação restrita a administradores.' });
+    }
+
     const { status } = req.body;
     const statusPermitidos = ['pendente', 'confirmado', 'enviado', 'entregue', 'cancelado'];
-    if (!status || !statusPermitidos.includes(status)) return res.status(400).json({ error: 'Status inválido.' });
-    const pedido = await Pedido.findByIdAndUpdate(req.params.id, { status, updatedAt: new Date() }, { new: true });
+    if (!status || !statusPermitidos.includes(status)) {
+      return res.status(400).json({ error: 'Status inválido.' });
+    }
+
+    const pedido = await Pedido.findByIdAndUpdate(
+      req.params.id,
+      { status, updatedAt: new Date() },
+      { new: true }
+    );
     if (!pedido) return res.status(404).json({ error: 'Pedido não encontrado.' });
     res.json(pedido);
   } catch (err) {
