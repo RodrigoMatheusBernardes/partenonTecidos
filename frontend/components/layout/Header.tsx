@@ -105,61 +105,61 @@ export default function Header() {
                 </Link>
               )}
 
-              {/* Dropdown */}
-              {isAuthenticated && dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-card shadow-xl-luxury border border-gray-mid overflow-hidden z-50 animate-fadeInUp">
-                  <div className="px-4 py-3 border-b border-gray-mid bg-light/50">
-                    <p className="font-medium text-dark-light text-sm truncate">{user?.nome}</p>
-                    <p className="text-xs text-text-light">{roleLabel}</p>
-                  </div>
-                  <div className="py-1">
-                    <Link
-                      href="/meu-perfil"
-                      onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-secondary hover:bg-light hover:text-dark-light transition-colors"
-                    >
-                      <User className="w-4 h-4" strokeWidth={2} />
-                      Meu Perfil
-                    </Link>
-                    <Link
-                      href="/meus-pedidos"
-                      onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-secondary hover:bg-light hover:text-dark-light transition-colors"
-                    >
-                      <ShoppingBag className="w-4 h-4" strokeWidth={2} />
-                      Meus Pedidos
-                    </Link>
-                    {isAdmin && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gold hover:bg-light hover:text-gold transition-colors font-medium"
-                      >
-                        <User className="w-4 h-4" strokeWidth={2} />
-                        Painel Administrativo
-                      </Link>
-                    )}
-                    {isSeller && (
-                      <Link
-                        href="/seller"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gold hover:bg-light hover:text-gold transition-colors font-medium"
-                      >
-                        <User className="w-4 h-4" strokeWidth={2} />
-                        Painel do Vendedor
-                      </Link>
-                    )}
-                    <hr className="my-1 border-gray-mid" />
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-error hover:bg-red-50 transition-colors w-full text-left"
-                    >
-                      <User className="w-4 h-4" strokeWidth={2} />
-                      Sair
-                    </button>
-                  </div>
-                </div>
-              )}
+             {/* Dropdown */}
+{isAuthenticated && dropdownOpen && (
+  <div className="absolute right-0 mt-2 w-56 bg-white !bg-white rounded-card shadow-xl-luxury border border-gray-mid overflow-hidden z-[100] animate-fadeInUp">
+    <div className="px-4 py-3 border-b border-gray-mid bg-light/50">
+      <p className="font-medium text-dark-light !text-dark-light text-sm truncate">{user?.nome}</p>
+      <p className="text-xs text-text-light !text-text-light">{roleLabel}</p>
+    </div>
+    <div className="py-1">
+      <Link
+        href="/meu-perfil"
+        onClick={() => setDropdownOpen(false)}
+        className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-secondary !text-text-secondary hover:bg-light hover:text-dark-light transition-colors"
+      >
+        <User className="w-4 h-4" strokeWidth={2} />
+        Meu Perfil
+      </Link>
+      <Link
+        href="/meus-pedidos"
+        onClick={() => setDropdownOpen(false)}
+        className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-secondary !text-text-secondary hover:bg-light hover:text-dark-light transition-colors"
+      >
+        <ShoppingBag className="w-4 h-4" strokeWidth={2} />
+        Meus Pedidos
+      </Link>
+      {isAdmin && (
+        <Link
+          href="/admin"
+          onClick={() => setDropdownOpen(false)}
+          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gold !text-gold hover:bg-light hover:text-gold transition-colors font-medium"
+        >
+          <User className="w-4 h-4" strokeWidth={2} />
+          Painel Administrativo
+        </Link>
+      )}
+      {isSeller && (
+        <Link
+          href="/seller"
+          onClick={() => setDropdownOpen(false)}
+          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gold !text-gold hover:bg-light hover:text-gold transition-colors font-medium"
+        >
+          <User className="w-4 h-4" strokeWidth={2} />
+          Painel do Vendedor
+        </Link>
+      )}
+      <hr className="my-1 border-gray-mid" />
+      <button
+        onClick={handleLogout}
+        className="flex items-center gap-3 px-4 py-2.5 text-sm text-error !text-error hover:bg-red-50 transition-colors w-full text-left"
+      >
+        <User className="w-4 h-4" strokeWidth={2} />
+        Sair
+      </button>
+    </div>
+  </div>
+)}
             </div>
 
             <button onClick={() => setCartOpen(true)} className="text-white hover:text-[#C5A880] transition-colors relative">
