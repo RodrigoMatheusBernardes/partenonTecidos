@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getApiUrl } from '@/lib/api';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface Pedido {
   _id: string;
@@ -16,37 +17,78 @@ interface Pedido {
   createdAt: string;
 }
 
+const getStatusBadge = (status: string) => {
+  const map: Record<string, string> = {
+    pendente: 'bg-yellow-100 text-yellow-800',
+    confirmado: 'bg-blue-100 text-blue-800',
+    enviado: 'bg-purple-100 text-purple-800',
+    entregue: 'bg-green-100 text-green-800',
+    cancelado: 'bg-red-100 text-red-800',
+  };
+  return map[status] || 'bg-gray-100 text-gray-800';
+};
+
 export default function SellerPedidoDetalhesPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
   const [pedido, setPedido] = useState<Pedido | null>(null);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+
+  const fetchPedido = async () => {
+    try {
+      const apiUrl = getApiUrl();
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${apiUrl}/api/pedidos/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPedido(data);
+      } else {
+        router.push('/seller/pedidos');
+      }
+    } catch (err) {
+      console.error('Erro ao carregar pedido:', err);
+      router.push('/seller/pedidos');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPedido = async () => {
-      try {
-        const apiUrl = getApiUrl();
-        const token = localStorage.getItem('token');
-        const res = await fetch(`${apiUrl}/api/pedidos/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setPedido(data);
-        } else {
-          router.push('/seller/pedidos');
-        }
-      } catch (err) {
-        console.error('Erro ao carregar pedido:', err);
-        router.push('/seller/pedidos');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (id) fetchPedido();
   }, [id, router]);
+
+  const handleStatusChange = async (novoStatus: string) => {
+    if (!pedido) return;
+    setUpdating(true);
+    try {
+      const apiUrl = getApiUrl();
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${apiUrl}/api/pedidos/${pedido._id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: novoStatus }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPedido(data.pedido);
+        toast.success('Status atualizado com sucesso!');
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Erro ao atualizar status.');
+      }
+    } catch (err) {
+      toast.error('Erro de conexão.');
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -83,9 +125,26 @@ export default function SellerPedidoDetalhesPage() {
           </div>
           <div>
             <p className="text-xs font-medium uppercase tracking-wider text-text-light">Status</p>
-            <span className={`px-2 py-1 rounded-full text-xs font-medium`}>
-              {pedido.status}
-            </span>
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(pedido.status)}`}>
+                {pedido.status}
+              </span>
+              {user?.role === 'seller' && (
+                <select
+                  value={pedido.status}
+                  onChange={(e) => handleStatusChange(e.target.value)}
+                  disabled={updating}
+                  className="border border-gray-mid rounded-button px-2 py-1 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-gold"
+                >
+                  <option value="pendente">Pendente</option>
+                  <option value="confirmado">Confirmado</option>
+                  <option value="enviado">Enviado</option>
+                  <option value="entregue">Entregue</option>
+                  <option value="cancelado">Cancelado</option>
+                </select>
+              )}
+              {updating && <span className="text-xs text-text-light animate-pulse">Salvando...</span>}
+            </div>
           </div>
           <div>
             <p className="text-xs font-medium uppercase tracking-wider text-text-light">Data</p>
