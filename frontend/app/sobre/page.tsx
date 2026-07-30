@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { MapPin, Mail, Phone } from 'lucide-react'; // só mantém os que funcionam
+import { MapPin, Mail, Phone } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Sobre - Parthenon Tecidos',
@@ -18,7 +18,6 @@ export default function SobrePage() {
     <main className="bg-white">
       {/* ==================== HERO ==================== */}
       <section className="relative py-20 md:py-28 bg-dark-light text-white overflow-hidden">
-        {/* Fundo com textura de tecido */}
         <div
           className="absolute inset-0 opacity-10 pointer-events-none bg-repeat"
           style={{ backgroundImage: "url('/uploads/sobre/texture-linen.png')" }}
@@ -66,6 +65,25 @@ export default function SobrePage() {
         </div>
       </section>
 
+      {/* ==================== VÍDEO INSTITUCIONAL ==================== */}
+      <section className="py-16 md:py-24 border-b border-gray-mid">
+        <div className="main-container">
+          <h2 className="font-serif text-3xl md:text-4xl text-dark-light text-center mb-12">
+            Conheça Nossa Estrutura
+          </h2>
+          <div className="relative aspect-video max-w-4xl mx-auto rounded-card overflow-hidden shadow-lg-luxury">
+            {/* Substitua o src pelo link do seu vídeo institucional */}
+            <iframe
+              className="absolute inset-0 w-full h-full"
+              src="https://www.youtube.com/embed/SEU_VIDEO_ID"
+              title="Vídeo Institucional Parthenon Tecidos"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </section>
+
       {/* ==================== LOCALIZAÇÃO ==================== */}
       <section className="py-16 md:py-24 border-b border-gray-mid">
         <div className="main-container">
@@ -73,7 +91,6 @@ export default function SobrePage() {
             Onde Estamos
           </h2>
           <div className="grid md:grid-cols-2 gap-8 items-stretch">
-            {/* Mapa */}
             <div className="relative h-64 md:h-80 rounded-card overflow-hidden shadow-lg-luxury">
               <iframe
                 className="absolute inset-0 w-full h-full"
@@ -85,7 +102,6 @@ export default function SobrePage() {
               />
             </div>
 
-            {/* Informações de endereço */}
             <div className="flex flex-col justify-center space-y-6 p-6 bg-light rounded-card border border-gray-mid">
               <div className="flex items-start gap-4">
                 <MapPin className="w-6 h-6 text-gold flex-shrink-0 mt-1" strokeWidth={1.5} />
@@ -139,7 +155,6 @@ export default function SobrePage() {
             Falar no WhatsApp
           </a>
 
-          {/* Redes Sociais (SVG inline) */}
           <div className="mt-10">
             <p className="text-text-secondary text-sm mb-4">Siga-nos nas redes sociais</p>
             <div className="flex justify-center gap-6">
