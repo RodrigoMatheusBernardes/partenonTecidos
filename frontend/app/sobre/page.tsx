@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, Mail, Phone, Play } from 'lucide-react';
+import { MapPin, Mail, Phone } from 'lucide-react';
+import ImageWithFallback from '@/components/ImageWithFallback';
 
 export const metadata: Metadata = {
   title: 'Sobre - Parthenon Tecidos',
@@ -57,15 +57,13 @@ export default function SobrePage() {
                 </p>
               </div>
               <div className="relative h-64 md:h-80 rounded-card overflow-hidden shadow-lg-luxury bg-gray-200">
-                <Image
+                <ImageWithFallback
                   src="/uploads/sobre/historia.jpg"
                   alt="Nossa história"
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/placeholder.jpg';
-                  }}
+                  fallbackSrc="/placeholder.jpg"
                 />
               </div>
             </div>
