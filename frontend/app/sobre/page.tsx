@@ -19,14 +19,12 @@ export default function SobrePage() {
       <div
         className="relative min-h-screen bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/uploads/sobre.png')",
-          backgroundColor: '#c2a56c', // cor gold como fallback para você ver que mudou
+          backgroundImage: "url('http://localhost:5000/uploads/sobre.png')",
+          backgroundColor: '#c2a56c',
         }}
       >
-        {/* OVERLAY SUAVE */}
         <div className="absolute inset-0 bg-black/20" />
 
-        {/* CONTEÚDO SOBRE O FUNDO */}
         <div className="relative z-10">
 
           {/* HERO */}
