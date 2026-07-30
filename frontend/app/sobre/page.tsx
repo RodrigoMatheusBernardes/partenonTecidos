@@ -20,11 +20,11 @@ export default function SobrePage() {
         className="relative min-h-screen bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: "url('/uploads/sobre.png')",
-          backgroundColor: '#f5f4f0',
+          backgroundColor: '#c2a56c', // cor gold como fallback para você ver que mudou
         }}
       >
-        {/* OVERLAY MAIS SUAVE (apenas 15% de escurecimento) */}
-        <div className="absolute inset-0 bg-black/15" />
+        {/* OVERLAY SUAVE */}
+        <div className="absolute inset-0 bg-black/20" />
 
         {/* CONTEÚDO SOBRE O FUNDO */}
         <div className="relative z-10">
