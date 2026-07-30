@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, Mail, Phone, Play } from 'lucide-react'; // só mantém os que funcionam
+import { MapPin, Mail, Phone, Play } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Sobre - Parthenon Tecidos',
@@ -17,7 +17,7 @@ export default function SobrePage() {
 
   return (
     <main className="bg-white">
-      {/* Fundo com textura */}
+      {/* Fundo com textura de tecido */}
       <div className="relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-10 pointer-events-none bg-repeat"
@@ -37,11 +37,103 @@ export default function SobrePage() {
           </div>
         </section>
 
-        {/* NOSSA HISTÓRIA (mantido) */}
+        {/* NOSSA HISTÓRIA */}
+        <section className="py-16 md:py-24 border-b border-gray-mid">
+          <div className="main-container">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="font-serif text-3xl md:text-4xl text-dark-light mb-4">
+                  Nossa História
+                </h2>
+                <p className="text-text-secondary text-sm md:text-base leading-relaxed">
+                  Fundada em 2010, a <strong className="text-dark-light">Parthenon Tecidos</strong> nasceu do sonho de oferecer tecidos de 
+                  qualidade por metro, com atendimento personalizado e preços justos. Nossa loja está localizada 
+                  no coração de São Paulo, mas atendemos clientes de todo o Brasil através do nosso e‑commerce.
+                </p>
+                <p className="text-text-secondary text-sm md:text-base leading-relaxed mt-4">
+                  Trabalhamos com uma seleção criteriosa de fornecedores nacionais e importados, garantindo 
+                  produtos que aliam beleza, durabilidade e conforto. Do algodão ao linho, passando por malhas e 
+                  tecidos finos, temos a solução ideal para suas criações.
+                </p>
+              </div>
+              <div className="relative h-64 md:h-80 rounded-card overflow-hidden shadow-lg-luxury bg-gray-200">
+                <Image
+                  src="/uploads/sobre/historia.jpg"
+                  alt="Nossa história"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/placeholder.jpg';
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
 
-        {/* MISSÃO, VISÃO E VALORES (mantido) */}
+        {/* MISSÃO, VISÃO E VALORES */}
+        <section className="py-16 md:py-24 border-b border-gray-mid">
+          <div className="main-container">
+            <h2 className="font-serif text-3xl md:text-4xl text-dark-light text-center mb-12">
+              Missão, Visão e Valores
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-light p-8 rounded-card text-center border border-gray-mid hover:shadow-md-luxury transition-shadow">
+                <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-serif text-gold">🎯</span>
+                </div>
+                <h3 className="font-serif text-xl text-dark-light mb-2">Missão</h3>
+                <p className="text-text-secondary text-sm">
+                  Proporcionar uma experiência de compra excepcional, oferecendo tecidos de alta qualidade 
+                  e inspirando a criatividade de costureiras, artesãos e amantes da moda.
+                </p>
+              </div>
 
-        {/* VÍDEO INSTITUCIONAL (mantido) */}
+              <div className="bg-light p-8 rounded-card text-center border border-gray-mid hover:shadow-md-luxury transition-shadow">
+                <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-serif text-gold">👁️</span>
+                </div>
+                <h3 className="font-serif text-xl text-dark-light mb-2">Visão</h3>
+                <p className="text-text-secondary text-sm">
+                  Ser referência nacional em tecidos premium, reconhecida pela qualidade, inovação e 
+                  atendimento humano, conectando pessoas à arte de criar.
+                </p>
+              </div>
+
+              <div className="bg-light p-8 rounded-card text-center border border-gray-mid hover:shadow-md-luxury transition-shadow">
+                <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-serif text-gold">💎</span>
+                </div>
+                <h3 className="font-serif text-xl text-dark-light mb-2">Valores</h3>
+                <ul className="text-text-secondary text-sm space-y-2">
+                  <li>• Qualidade em cada metro</li>
+                  <li>• Transparência e honestidade</li>
+                  <li>• Atendimento humano e próximo</li>
+                  <li>• Sustentabilidade e responsabilidade social</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* VÍDEO INSTITUCIONAL */}
+        <section className="py-16 md:py-24 border-b border-gray-mid">
+          <div className="main-container">
+            <h2 className="font-serif text-3xl md:text-4xl text-dark-light text-center mb-12">
+              Conheça Nossa Estrutura
+            </h2>
+            <div className="relative aspect-video max-w-4xl mx-auto rounded-card overflow-hidden shadow-lg-luxury">
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src="https://www.youtube.com/embed/SEU_VIDEO_ID"
+                title="Vídeo Institucional Parthenon Tecidos"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </section>
 
         {/* CONTATO E REDES SOCIAIS */}
         <section className="py-16 md:py-24">
@@ -50,14 +142,47 @@ export default function SobrePage() {
               Fale Conosco
             </h2>
             <div className="grid md:grid-cols-2 gap-12">
+              {/* Coluna 1: Contato */}
               <div className="space-y-6">
-                {/* ... informações de contato ... */}
+                <div className="flex items-start gap-4">
+                  <MapPin className="w-6 h-6 text-gold flex-shrink-0 mt-1" strokeWidth={1.5} />
+                  <div>
+                    <p className="font-medium text-dark-light">Endereço</p>
+                    <p className="text-text-secondary text-sm">Rua dos Tecidos, 123 – São Paulo/SP</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Phone className="w-6 h-6 text-gold flex-shrink-0 mt-1" strokeWidth={1.5} />
+                  <div>
+                    <p className="font-medium text-dark-light">Telefone</p>
+                    <p className="text-text-secondary text-sm">(11) 99999-9999</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Mail className="w-6 h-6 text-gold flex-shrink-0 mt-1" strokeWidth={1.5} />
+                  <div>
+                    <p className="font-medium text-dark-light">E-mail</p>
+                    <p className="text-text-secondary text-sm">contato@parthenon.com</p>
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-full hover:bg-[#1ebe5d] transition-colors"
+                  >
+                    <Phone className="w-5 h-5" strokeWidth={2} />
+                    Falar no WhatsApp
+                  </a>
+                </div>
               </div>
 
+              {/* Coluna 2: Redes Sociais */}
               <div className="space-y-6">
                 <p className="font-medium text-dark-light">Nossas Redes Sociais</p>
                 <div className="flex gap-6">
-                  {/* Ícones SVG inline (mesmos do Footer) */}
                   <a
                     href="#"
                     target="_blank"
