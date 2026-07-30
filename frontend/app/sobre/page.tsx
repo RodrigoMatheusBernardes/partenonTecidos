@@ -19,7 +19,7 @@ export default function SobrePage() {
       {/* ==================== FUNDO COM IMAGEM (TELA INTEIRA) ==================== */}
       <div
         className="relative min-h-screen bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/uploads/sobre/bg-sobre.jpg')" }}
+        style={{ backgroundImage: "url('../uploads/sobre.png')" }}
       >
         {/* Overlay escuro para contraste */}
         <div className="absolute inset-0 bg-black/40" />
