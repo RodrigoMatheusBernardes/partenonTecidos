@@ -80,29 +80,29 @@ export default function SobrePage() {
                   <div className="flex items-start gap-4">
                     <MapPin className="w-6 h-6 text-gold flex-shrink-0 mt-1" strokeWidth={1.5} />
                     <div>
-                      <p className="font-medium text-dark-light">Endereço</p>
-                      <p className="text-text-secondary text-sm">Rua dos Tecidos, 123 – São Paulo/SP</p>
-                      <p className="text-text-secondary text-sm">CEP: 01000-000</p>
+                      <p className="font-medium text-white">Endereço</p>
+                      <p className="text-white/80 text-sm">Rua dos Tecidos, 123 – São Paulo/SP</p>
+                      <p className="text-white/80 text-sm">CEP: 01000-000</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
                     <Phone className="w-6 h-6 text-gold flex-shrink-0 mt-1" strokeWidth={1.5} />
                     <div>
-                      <p className="font-medium text-dark-light">Telefone</p>
-                      <p className="text-text-secondary text-sm">(11) 99999-9999</p>
+                      <p className="font-medium text-white">Telefone</p>
+                      <p className="text-white/80 text-sm">(11) 99999-9999</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
                     <Mail className="w-6 h-6 text-gold flex-shrink-0 mt-1" strokeWidth={1.5} />
                     <div>
-                      <p className="font-medium text-dark-light">E-mail</p>
-                      <p className="text-text-secondary text-sm">contato@parthenon.com</p>
+                      <p className="font-medium text-white">E-mail</p>
+                      <p className="text-white/80 text-sm">contato@parthenon.com</p>
                     </div>
                   </div>
-                  <div className="pt-2 border-t border-gray-mid">
-                    <p className="font-medium text-dark-light">Horário de atendimento</p>
-                    <p className="text-text-secondary text-sm">Segunda a Sexta, das 9h às 18h</p>
-                    <p className="text-text-secondary text-sm">Sábado, das 9h às 13h</p>
+                  <div className="pt-2 border-t border-white/20">
+                    <p className="font-medium text-white">Horário de atendimento</p>
+                    <p className="text-white/80 text-sm">Segunda a Sexta, das 9h às 18h</p>
+                    <p className="text-white/80 text-sm">Sábado, das 9h às 13h</p>
                   </div>
                 </div>
               </div>
