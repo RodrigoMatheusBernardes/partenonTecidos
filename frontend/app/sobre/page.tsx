@@ -13,17 +13,23 @@ export default function SobrePage() {
   );
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
+  const imageUrl = 'https://partenontecidos.onrender.com/uploads/sobre.png';
+
   return (
     <main className="bg-white">
-      {/* ==================== FUNDO COM IMAGEM (backend Render) ==================== */}
+      {/* ==================== FUNDO COM IMAGEM ==================== */}
       <div
         className="relative min-h-screen bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('https://partenontecidos.onrender.com/uploads/sobre.png')",
+          backgroundImage: `url('${imageUrl}')`,
           backgroundColor: '#c2a56c',
         }}
       >
-        {/* Overlay suave */}
+        {/* DEBUG: mostra se a imagem carregou (remova depois) */}
+        <div className="absolute top-4 left-4 z-20 bg-black/70 text-white text-xs px-3 py-1 rounded-full">
+          {imageUrl}
+        </div>
+
         <div className="absolute inset-0 bg-black/20" />
 
         <div className="relative z-10">
