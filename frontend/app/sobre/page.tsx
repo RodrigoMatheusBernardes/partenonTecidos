@@ -19,7 +19,7 @@ export default function SobrePage() {
       <div
         className="relative min-h-screen bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/images/img/meio rosto.webp')",
+          backgroundImage: "url('/images/img/sobre.png')",
           backgroundColor: '#c2a56c',
         }}
       >
