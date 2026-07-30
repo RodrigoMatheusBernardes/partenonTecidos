@@ -30,11 +30,17 @@ export default function SobrePage() {
           {/* HERO */}
           <section className="relative py-20 md:py-28 text-white">
             <div className="main-container text-center">
-              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light tracking-wide">
+              <h1
+                className="font-serif text-4xl md:text-5xl lg:text-6xl font-light tracking-wide"
+                style={{ color: 'white' }}
+              >
                 Sobre a Parthenon Tecidos
               </h1>
               <div className="w-20 h-1 bg-gold mx-auto mt-4 mb-6" />
-              <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-light">
+              <p
+                className="text-lg md:text-xl max-w-2xl mx-auto font-light"
+                style={{ color: 'rgba(255,255,255,0.9)' }}
+              >
                 Tradição, qualidade e paixão por tecidos que transformam ideias em realidade.
               </p>
             </div>
@@ -43,7 +49,10 @@ export default function SobrePage() {
           {/* VÍDEO INSTITUCIONAL */}
           <section className="py-16 md:py-24">
             <div className="main-container">
-              <h2 className="font-serif text-3xl md:text-4xl text-white text-center mb-12 drop-shadow-md">
+              <h2
+                className="font-serif text-3xl md:text-4xl text-center mb-12 drop-shadow-md"
+                style={{ color: 'white' }}
+              >
                 Conheça Nossa Estrutura
               </h2>
               <div className="relative aspect-video max-w-4xl mx-auto rounded-card overflow-hidden shadow-lg-luxury">
@@ -61,7 +70,10 @@ export default function SobrePage() {
           {/* LOCALIZAÇÃO */}
           <section className="py-16 md:py-24">
             <div className="main-container">
-              <h2 className="font-serif text-3xl md:text-4xl text-white text-center mb-12 drop-shadow-md">
+              <h2
+                className="font-serif text-3xl md:text-4xl text-center mb-12 drop-shadow-md"
+                style={{ color: 'white' }}
+              >
                 Onde Estamos
               </h2>
               <div className="grid md:grid-cols-2 gap-8 items-stretch">
@@ -112,10 +124,16 @@ export default function SobrePage() {
           {/* CHAMADA PARA CONTATO */}
           <section className="py-16 md:py-24">
             <div className="main-container text-center max-w-3xl mx-auto">
-              <h2 className="font-serif text-3xl md:text-4xl text-white mb-4 drop-shadow-md">
+              <h2
+                className="font-serif text-3xl md:text-4xl mb-4 drop-shadow-md"
+                style={{ color: 'white' }}
+              >
                 Pronto para encontrar o tecido perfeito?
               </h2>
-              <p className="text-white/90 text-sm md:text-base mb-8 drop-shadow-md">
+              <p
+                className="text-sm md:text-base mb-8 drop-shadow-md"
+                style={{ color: 'rgba(255,255,255,0.9)' }}
+              >
                 Nossa equipe está à disposição para ajudar você a escolher os melhores materiais para seus projetos. 
                 Fale conosco pelo WhatsApp ou visite nossa loja física.
               </p>
@@ -130,7 +148,12 @@ export default function SobrePage() {
               </a>
 
               <div className="mt-10">
-                <p className="text-white/80 text-sm mb-4 drop-shadow-md">Siga-nos nas redes sociais</p>
+                <p
+                  className="text-sm mb-4 drop-shadow-md"
+                  style={{ color: 'rgba(255,255,255,0.8)' }}
+                >
+                  Siga-nos nas redes sociais
+                </p>
                 <div className="flex justify-center gap-6">
                   <a href="#" target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-gold transition-colors duration-300">
                     <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
