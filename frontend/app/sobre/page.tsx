@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { MapPin, Mail, Phone } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -16,10 +15,13 @@ export default function SobrePage() {
 
   return (
     <main className="bg-white">
-      {/* ==================== FUNDO COM IMAGEM (TELA INTEIRA) ==================== */}
+      {/* ==================== FUNDO COM IMAGEM ==================== */}
       <div
         className="relative min-h-screen bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('../uploads/sobre.png')" }}
+        style={{
+          backgroundImage: "url('/uploads/sobre.png')",
+          backgroundColor: '#1a1a1a',
+        }}
       >
         {/* Overlay escuro para contraste */}
         <div className="absolute inset-0 bg-black/40" />
@@ -27,7 +29,7 @@ export default function SobrePage() {
         {/* CONTEÚDO SOBRE O FUNDO */}
         <div className="relative z-10">
 
-          {/* ==================== HERO ==================== */}
+          {/* HERO */}
           <section className="relative py-20 md:py-28 text-white">
             <div className="main-container text-center">
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light tracking-wide">
@@ -40,7 +42,7 @@ export default function SobrePage() {
             </div>
           </section>
 
-          {/* ==================== VÍDEO INSTITUCIONAL ==================== */}
+          {/* VÍDEO INSTITUCIONAL */}
           <section className="py-16 md:py-24">
             <div className="main-container">
               <h2 className="font-serif text-3xl md:text-4xl text-white text-center mb-12">
@@ -58,7 +60,7 @@ export default function SobrePage() {
             </div>
           </section>
 
-          {/* ==================== LOCALIZAÇÃO ==================== */}
+          {/* LOCALIZAÇÃO */}
           <section className="py-16 md:py-24">
             <div className="main-container">
               <h2 className="font-serif text-3xl md:text-4xl text-white text-center mb-12">
@@ -109,7 +111,7 @@ export default function SobrePage() {
             </div>
           </section>
 
-          {/* ==================== CHAMADA PARA CONTATO ==================== */}
+          {/* CHAMADA PARA CONTATO */}
           <section className="py-16 md:py-24">
             <div className="main-container text-center max-w-3xl mx-auto">
               <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">
