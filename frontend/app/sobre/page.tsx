@@ -15,15 +15,15 @@ export default function SobrePage() {
 
   return (
     <main className="bg-white">
-      {/* ==================== FUNDO COM IMAGEM (Render) ==================== */}
+      {/* ==================== FUNDO COM IMAGEM (pasta public) ==================== */}
       <div
         className="relative min-h-screen bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('https://partenontecidos.onrender.com/uploads/sobre.png')",
+          backgroundImage: "url('/images/sobre.png')",
           backgroundColor: '#c2a56c',
         }}
       >
-        {/* Overlay suave */}
+        {/* Overlay suave (como no banner) */}
         <div className="absolute inset-0 bg-black/20" />
 
         <div className="relative z-10">
