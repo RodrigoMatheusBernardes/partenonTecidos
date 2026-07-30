@@ -15,11 +15,11 @@ export default function SobrePage() {
 
   return (
     <main className="bg-white">
-      {/* ==================== FUNDO COM IMAGEM (local) ==================== */}
+      {/* ==================== FUNDO COM IMAGEM (mesmo caminho do banner) ==================== */}
       <div
         className="relative min-h-screen bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/images/sobre.png')",
+          backgroundImage: "url('/images/img/meio rosto.webp')",
           backgroundColor: '#c2a56c',
         }}
       >
