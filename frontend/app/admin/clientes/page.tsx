@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { getApiUrl } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { Loader2, Search, User, Mail, Phone, Calendar, ShoppingBag } from 'lucide-react';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';  // ← corrigido
+import Button from '@/components/ui/Button';     // ← este já está ok
 
 interface Cliente {
   _id: string;
