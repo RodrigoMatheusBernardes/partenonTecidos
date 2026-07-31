@@ -27,6 +27,7 @@ export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
+  const [loadingAuth, setLoadingAuth] = useState(true);
 
   const [form, setForm] = useState({
     nome: '',
@@ -52,6 +53,32 @@ export default function CheckoutPage() {
   // ----- CÓDIGO DO VENDEDOR -----
   const [codigoVendedor, setCodigoVendedor] = useState('');
 
+  // ==================== VERIFICAÇÃO DE AUTENTICAÇÃO ====================
+  useEffect(() => {
+    // Verifica se o usuário está autenticado
+    if (!isAuthenticated && !user) {
+      // Salva a URL atual no localStorage para redirecionar depois
+      localStorage.setItem('redirectAfterLogin', '/checkout');
+      
+      // Redireciona para login com parâmetro redirect
+      router.push('/login?redirect=/checkout');
+    } else {
+      setLoadingAuth(false);
+    }
+  }, [isAuthenticated, user, router]);
+
+  // Se não estiver autenticado, mostra loading enquanto redireciona
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
+        <span className="ml-4 text-text-secondary">Redirecionando para login...</span>
+      </div>
+    );
+  }
+
+  // ==================== LÓGICA DO CHECKOUT ====================
+
   // Lê o parâmetro ?vendedor= da URL ao carregar a página
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -64,7 +91,6 @@ export default function CheckoutPage() {
       if (saved) setCodigoVendedor(saved);
     }
   }, []);
-  // -----------------------------
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -218,10 +244,8 @@ export default function CheckoutPage() {
 
   return (
     <main className="min-h-screen bg-white pb-20">
-      {/* ALTERAÇÃO: Substituído container-main por main-container */}
       <div className="main-container py-8 md:py-14">
 
-        {/* HEADER */}
         <div className="mb-8 md:mb-12">
           <h1 className="font-serif font-semibold text-3xl md:text-4xl text-dark-light">
             Finalizar Pedido
@@ -236,10 +260,8 @@ export default function CheckoutPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
 
-          {/* FORMULÁRIO */}
           <form id="checkout-form" onSubmit={handleSubmit} className="lg:col-span-2 space-y-8">
 
-            {/* DADOS DE CONTATO */}
             <div className="bg-white rounded-card border border-gray-mid p-6 md:p-8 space-y-5">
               <h2 className="font-serif font-semibold text-xl text-dark-light">Dados de contato</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -258,7 +280,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* ENDEREÇO */}
             <div className="bg-white rounded-card border border-gray-mid p-6 md:p-8 space-y-5">
               <h2 className="font-serif font-semibold text-xl text-dark-light">Endereço de entrega</h2>
               <div className="grid grid-cols-2 gap-4">
@@ -310,7 +331,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* VENDEDOR & CUPOM */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-white rounded-card border border-gray-mid p-6 space-y-3">
                 <h3 className="font-semibold text-dark-light text-sm uppercase tracking-widest">Código do vendedor</h3>
@@ -351,7 +371,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* SUBMIT MOBILE */}
             <div className="lg:hidden">
               <Button
                 type="submit"
@@ -372,7 +391,6 @@ export default function CheckoutPage() {
             </div>
           </form>
 
-          {/* RESUMO */}
           <aside className="lg:col-span-1">
             <div className="sticky top-8 bg-white rounded-card border border-gray-mid p-6 space-y-5">
               <h2 className="font-serif font-semibold text-xl text-dark-light">Resumo do pedido</h2>
@@ -417,7 +435,6 @@ export default function CheckoutPage() {
                 </span>
               </div>
 
-              {/* SUBMIT DESKTOP */}
               <div className="hidden lg:block">
                 <Button
                   type="submit"
