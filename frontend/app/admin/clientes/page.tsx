@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { getApiUrl } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { Loader2, Search, User, Mail, Phone, Calendar, ShoppingBag } from 'lucide-react';
-import { Input } from '@/components/ui/Input';  // ← corrigido
-import Button from '@/components/ui/Button';     // ← este já está ok
+import { Loader2, Search, User, Mail, Phone, Calendar, ShoppingBag, Eye } from 'lucide-react';
+import { Input } from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
 
 interface Cliente {
   _id: string;
@@ -92,12 +93,13 @@ export default function AdminClientesPage() {
                 <th className="p-4 text-xs font-medium uppercase tracking-wider text-text-light">Cadastro</th>
                 <th className="p-4 text-xs font-medium uppercase tracking-wider text-text-light">Pedidos</th>
                 <th className="p-4 text-xs font-medium uppercase tracking-wider text-text-light">Última compra</th>
+                <th className="p-4 text-xs font-medium uppercase tracking-wider text-text-light">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-mid">
               {clientes.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-6 text-center text-text-light">
+                  <td colSpan={7} className="p-6 text-center text-text-light">
                     Nenhum cliente encontrado.
                   </td>
                 </tr>
@@ -109,7 +111,12 @@ export default function AdminClientesPage() {
                         <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center">
                           <User className="w-4 h-4 text-gold" strokeWidth={1.5} />
                         </div>
-                        <span className="font-medium text-dark-light">{cliente.nome}</span>
+                        <Link
+                          href={`/admin/clientes/${cliente._id}`}
+                          className="font-medium text-dark-light hover:text-gold transition-colors"
+                        >
+                          {cliente.nome}
+                        </Link>
                       </div>
                     </td>
                     <td className="p-4 text-text-secondary">{cliente.email}</td>
@@ -126,6 +133,15 @@ export default function AdminClientesPage() {
                       {cliente.ultimaCompra
                         ? new Date(cliente.ultimaCompra).toLocaleDateString('pt-BR')
                         : '—'}
+                    </td>
+                    <td className="p-4">
+                      <Link
+                        href={`/admin/clientes/${cliente._id}`}
+                        className="inline-flex items-center gap-1 text-gold hover:text-gold/80 transition-colors text-sm font-medium"
+                      >
+                        <Eye className="w-4 h-4" strokeWidth={1.5} />
+                        Ver pedidos
+                      </Link>
                     </td>
                   </tr>
                 ))

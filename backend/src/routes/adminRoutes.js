@@ -576,5 +576,26 @@ router.get('/clientes', authMiddleware, requireRole(['admin', 'seller']), async 
     res.status(500).json({ error: err.message });
   }
 });
+// GET /api/admin/clientes/:id/pedidos – pedidos de um cliente
+router.get('/clientes/:id/pedidos', authMiddleware, requireRole(['admin', 'seller']), async (req, res) => {
+  try {
+    const cliente = await User.findById(req.params.id).select('nome email');
+    if (!cliente) {
+      return res.status(404).json({ error: 'Cliente não encontrado.' });
+    }
 
+    const pedidos = await Pedido.find({ 'cliente.email': cliente.email })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json({
+      cliente: { nome: cliente.nome, email: cliente.email },
+      pedidos,
+      total: pedidos.length,
+    });
+  } catch (err) {
+    console.error('Erro ao buscar pedidos do cliente:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;
