@@ -523,5 +523,58 @@ async function analisarComRegras(p) {
 
   return 'Desculpe, ainda não entendi sua pergunta. Tente perguntar sobre: "produto mais vendido", "estoque baixo", "categoria mais vendida", "faturamento", "preço médio", "melhor frete para CEP", "pedidos pendentes", "comparar preço do [produto]" ou "tendência de [termo]".';
 }
+// GET /api/admin/clientes – lista clientes (admin e seller)
+router.get('/clientes', authMiddleware, requireRole(['admin', 'seller']), async (req, res) => {
+  try {
+    const { busca = '', page = 1, limit = 20 } = req.query;
+    const skip = (page - 1) * limit;
+
+    const filter = {
+      role: 'customer',
+      ...(busca && {
+        $or: [
+          { nome: { $regex: busca, $options: 'i' } },
+          { email: { $regex: busca, $options: 'i' } },
+        ],
+      }),
+    };
+
+    const clientes = await User.find(filter)
+      .select('-password')
+      .skip(Number(skip))
+      .limit(Number(limit))
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const clientesComStats = await Promise.all(
+      clientes.map(async (cliente) => {
+        const pedidos = await Pedido.find({ 'cliente.email': cliente.email });
+        const totalPedidos = pedidos.length;
+        const ultimaCompra = pedidos.length > 0 ? pedidos[pedidos.length - 1].createdAt : null;
+
+        return {
+          ...cliente,
+          totalPedidos,
+          ultimaCompra,
+        };
+      })
+    );
+
+    const total = await User.countDocuments(filter);
+
+    res.json({
+      data: clientesComStats,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    });
+  } catch (err) {
+    console.error('Erro ao listar clientes:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
