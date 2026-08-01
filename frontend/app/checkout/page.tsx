@@ -55,12 +55,8 @@ export default function CheckoutPage() {
 
   // ==================== VERIFICAÇÃO DE AUTENTICAÇÃO ====================
   useEffect(() => {
-    // Verifica se o usuário está autenticado
     if (!isAuthenticated && !user) {
-      // Salva a URL atual no localStorage para redirecionar depois
       localStorage.setItem('redirectAfterLogin', '/checkout');
-      
-      // Redireciona para login com parâmetro redirect
       router.push('/login?redirect=/checkout');
     } else {
       setLoadingAuth(false);
@@ -182,6 +178,7 @@ export default function CheckoutPage() {
   const totalComDesconto = cupomAplicado ? totalPrice - cupomAplicado.desconto : totalPrice;
   const totalFinal = totalComDesconto + (frete.valor || 0);
 
+  // ==================== HANDLE SUBMIT ====================
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (items.length === 0) return;
@@ -210,10 +207,12 @@ export default function CheckoutPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+
+      // Limpa o carrinho
       clearCart();
-      router.push(
-        `/pedido/sucesso?id=${data.pedido_id}&total=${data.total}&desconto=${data.desconto || 0}&cupom=${data.cupom || ''}&frete=${frete.valor || 0}`
-      );
+
+      // ✅ Redireciona para a página de pagamento PIX
+      router.push(`/checkout/pagamento?orderId=${data.pedido_id}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro ao finalizar pedido';
       setErro(message);
@@ -221,6 +220,8 @@ export default function CheckoutPage() {
       setSaving(false);
     }
   };
+
+  // ==================== RENDER ====================
 
   if (items.length === 0) {
     return (
