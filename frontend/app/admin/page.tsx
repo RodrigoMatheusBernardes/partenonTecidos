@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
@@ -11,7 +12,8 @@ import {
   BarChart, Bar
 } from 'recharts';
 import {
-  TrendingUp, Package, ShoppingCart, Ticket, DollarSign
+  TrendingUp, Package, ShoppingCart, Ticket, DollarSign,
+  Clock, AlertCircle, Smartphone // ← NOVOS ÍCONES
 } from 'lucide-react';
 
 interface DashboardData {
@@ -26,6 +28,12 @@ interface DashboardData {
   vendasPorCategoria: { _id: string; total: number }[];
   statusPedidos: { _id: string; quantidade: number }[];
   ultimosPedidos: { _id: string; cliente: { nome: string }; total: number; status: string; createdAt: string }[];
+  // NOVOS CAMPOS FINANCEIROS
+  totalRecebido: number;
+  pagamentosPendentes: number;
+  pagamentosExpirados: number;
+  pagamentosCancelados: number;
+  totalPix: number;
 }
 
 const CORES_PIZZA = ['#c2a56c', '#1a1a1a', '#d4a574', '#8b7355', '#5c4a3d', '#3d2817', '#2a1810'];
@@ -35,6 +43,9 @@ const CORES_STATUS: Record<string, string> = {
   enviado: '#8B5CF6',
   entregue: '#10B981',
   cancelado: '#EF4444',
+  AGUARDANDO_PAGAMENTO: '#FBBF24',
+  PAGO: '#10B981',
+  EXPIRADO: '#EF4444',
 };
 
 const statusBadgeVariant: Record<string, any> = {
@@ -43,6 +54,9 @@ const statusBadgeVariant: Record<string, any> = {
   enviado: 'info',
   entregue: 'success',
   cancelado: 'error',
+  AGUARDANDO_PAGAMENTO: 'warning',
+  PAGO: 'success',
+  EXPIRADO: 'error',
 };
 
 export default function AdminDashboard() {
@@ -73,6 +87,7 @@ export default function AdminDashboard() {
     </div>
   );
 
+  // KPIs existentes
   const kpis = [
     {
       label: 'Faturamento',
@@ -106,13 +121,41 @@ export default function AdminDashboard() {
     },
   ];
 
+  // ✅ NOVOS CARDS FINANCEIROS
+  const financeiroCards = [
+    {
+      label: 'Total Recebido',
+      value: `R$ ${(data.totalRecebido || 0).toFixed(2).replace('.', ',')}`,
+      icon: DollarSign,
+      color: 'bg-green-50 text-green-700',
+    },
+    {
+      label: 'Pagamentos Pendentes',
+      value: data.pagamentosPendentes || 0,
+      icon: Clock,
+      color: 'bg-yellow-50 text-yellow-700',
+    },
+    {
+      label: 'Pagamentos Expirados',
+      value: data.pagamentosExpirados || 0,
+      icon: AlertCircle,
+      color: 'bg-red-50 text-red-700',
+    },
+    {
+      label: 'Total PIX',
+      value: data.totalPix || 0,
+      icon: Smartphone,
+      color: 'bg-blue-50 text-blue-700',
+    },
+  ];
+
   return (
     <div className="space-y-8">
       
       {/* HEADER */}
       <div>
         <h1 className="font-serif text-4xl font-bold text-dark-light mb-1">Dashboard</h1>
-        <p className="text-text-secondary font-light">Visao geral do desempenho da loja</p>
+        <p className="text-text-secondary font-light">Visão geral do desempenho da loja</p>
       </div>
 
       {/* KPI CARDS */}
@@ -140,12 +183,43 @@ export default function AdminDashboard() {
         })}
       </div>
 
+      {/* ✅ CARDS FINANCEIROS */}
+      <div>
+        <h2 className="font-serif text-2xl font-semibold text-dark-light mb-4">
+          Financeiro
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {financeiroCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <Card key={card.label} variant="default" className="border-2">
+                <CardContent>
+                  <div className="flex items-center gap-4">
+                    <div className={`p-3 rounded-full ${card.color}`}>
+                      <Icon className="w-5 h-5" strokeWidth={2} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-text-secondary font-medium uppercase tracking-wider">
+                        {card.label}
+                      </p>
+                      <p className="text-xl font-bold text-dark-light">
+                        {card.value}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+
       {/* CHARTS AND ANALYTICS */}
       <div className="grid lg:grid-cols-2 gap-6">
         
         {/* Sales Last 7 Days */}
         <Card variant="default" className="border-2">
-          <CardHeader title="Vendas nos Ultimos 7 Dias" />
+          <CardHeader title="Vendas nos Últimos 7 Dias" />
           <CardContent>
             {data.vendasDiarias.length > 0 ? (
               <ResponsiveContainer width="100%" height={250}>
@@ -239,7 +313,7 @@ export default function AdminDashboard() {
         {/* Recent Orders */}
         <Card variant="default" className="border-2">
           <CardHeader 
-            title="Ultimos Pedidos"
+            title="Últimos Pedidos"
             icon={<Link href="/admin/pedidos" className="text-gold text-xs font-bold hover:underline">Ver Todos</Link>}
           />
           <CardContent>

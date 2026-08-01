@@ -598,4 +598,45 @@ router.get('/clientes/:id/pedidos', authMiddleware, requireRole(['admin', 'selle
     res.status(500).json({ error: err.message });
   }
 });
+// ========== DASHBOARD CONSOLIDADO ==========
+router.get('/dashboard', authMiddleware, requireRole(['admin']), async (req, res) => {
+  try {
+    // ... código existente ...
+
+    // ✅ NOVAS ESTATÍSTICAS FINANCEIRAS
+    const Pagamento = require('../models/Pagamento');
+
+    // Total recebido (pagamentos confirmados)
+    const totalRecebidoResult = await Pagamento.aggregate([
+      { $match: { status: 'PAID' } },
+      { $group: { _id: null, total: { $sum: '$finalAmount' } } }
+    ]);
+    const totalRecebido = totalRecebidoResult[0]?.total || 0;
+
+    // Pagamentos pendentes
+    const pagamentosPendentes = await Pagamento.countDocuments({ status: 'PENDING' });
+
+    // Pagamentos expirados
+    const pagamentosExpirados = await Pagamento.countDocuments({ status: 'EXPIRED' });
+
+    // Pagamentos cancelados
+    const pagamentosCancelados = await Pagamento.countDocuments({ status: 'CANCELED' });
+
+    // Quantidade de pagamentos PIX
+    const totalPix = await Pagamento.countDocuments({ paymentMethod: 'pix' });
+
+    // Adicionar ao objeto de resposta
+    res.json({
+      // ... dados existentes ...
+      totalRecebido,
+      pagamentosPendentes,
+      pagamentosExpirados,
+      pagamentosCancelados,
+      totalPix,
+    });
+  } catch (err) {
+    console.error('Erro no dashboard:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;
