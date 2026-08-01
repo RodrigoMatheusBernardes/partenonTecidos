@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
@@ -10,6 +11,8 @@ interface Pedido {
   cliente: { nome: string; email: string };
   total: number;
   status: string;
+  paymentStatus: string; // ← NOVO
+  paymentMethod: string; // ← NOVO
   createdAt: string;
 }
 
@@ -28,18 +31,41 @@ export default function AdminPedidosPage() {
       .finally(() => setCarregando(false));
   }, []);
 
-  const getBadge = (status: string) => {
+  const getStatusBadge = (status: string) => {
     const map: Record<string, string> = {
+      AGUARDANDO_PAGAMENTO: 'bg-yellow-100 text-yellow-800',
+      PAGO: 'bg-green-100 text-green-800',
       pendente: 'bg-yellow-100 text-yellow-800',
       confirmado: 'bg-blue-100 text-blue-800',
       enviado: 'bg-purple-100 text-purple-800',
       entregue: 'bg-green-100 text-green-800',
       cancelado: 'bg-red-100 text-red-800',
+      EXPIRADO: 'bg-red-100 text-red-800',
     };
     return map[status] || 'bg-gray-100 text-gray-800';
   };
 
-  if (carregando) return <p className="p-6 text-gray-500">Carregando...</p>;
+  const getPaymentStatusBadge = (paymentStatus: string) => {
+    const map: Record<string, string> = {
+      PAGO: 'bg-green-100 text-green-800',
+      AGUARDANDO_PAGAMENTO: 'bg-yellow-100 text-yellow-800',
+      EXPIRADO: 'bg-red-100 text-red-800',
+      CANCELADO: 'bg-red-100 text-red-800',
+    };
+    return map[paymentStatus] || 'bg-gray-100 text-gray-800';
+  };
+
+  const getPaymentStatusLabel = (paymentStatus: string) => {
+    const map: Record<string, string> = {
+      PAGO: '✅ Pago',
+      AGUARDANDO_PAGAMENTO: '⏳ Aguardando',
+      EXPIRADO: '❌ Expirado',
+      CANCELADO: '🚫 Cancelado',
+    };
+    return map[paymentStatus] || paymentStatus || '⏳ Aguardando';
+  };
+
+  if (carregando) return <p className="p-6 text-text-secondary">Carregando...</p>;
 
   return (
     <div>
@@ -52,6 +78,7 @@ export default function AdminPedidosPage() {
               <th className="p-3">Cliente</th>
               <th className="p-3">Total</th>
               <th className="p-3">Status</th>
+              <th className="p-3">Pagamento</th> {/* ← NOVO */}
               <th className="p-3">Data</th>
               <th className="p-3 text-center">Ações</th>
             </tr>
@@ -63,8 +90,13 @@ export default function AdminPedidosPage() {
                 <td className="p-3">{ped.cliente?.nome}</td>
                 <td className="p-3">R$ {ped.total?.toFixed(2)}</td>
                 <td className="p-3">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getBadge(ped.status)}`}>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(ped.status)}`}>
                     {ped.status}
+                  </span>
+                </td>
+                <td className="p-3">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentStatusBadge(ped.paymentStatus)}`}>
+                    {getPaymentStatusLabel(ped.paymentStatus)}
                   </span>
                 </td>
                 <td className="p-3 text-sm">{new Date(ped.createdAt).toLocaleDateString('pt-BR')}</td>
@@ -80,7 +112,9 @@ export default function AdminPedidosPage() {
             ))}
             {pedidos.length === 0 && (
               <tr>
-                <td colSpan={6} className="p-6 text-center text-gray-400">Nenhum pedido.</td>
+                <td colSpan={7} className="p-6 text-center text-gray-400">
+                  Nenhum pedido.
+                </td>
               </tr>
             )}
           </tbody>
