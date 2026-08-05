@@ -118,25 +118,29 @@ export default function ProductCard({ produto }: { produto?: any }) {
             <p className="text-xs text-error font-medium">⚠️ Últimas unidades!</p>
           )}
 
-          <Button
-  variant="secondary"
-  size="lg"
-  onClick={handleAddToCart}
-  disabled={estoque <= 0}
-  className={`
-    mt-auto w-full text-sm font-medium
-    transition-all duration-300
-    hover:bg-dark-light hover:text-white
-    ${estoque > 0 ? '' : '!border-gray-200 !text-gray-400'}
-    hover:opacity-100 group-hover:opacity-100
-    hover:text-white group-hover:text-white
-  `}
->
-  <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
-  <span className="inline-block hover:text-white group-hover:text-white">
-    {estoque > 0 ? 'Adicionar' : 'Esgotado'}
-  </span>
-</Button>
+          {/* ✅ BOTÃO ISOLADO DO LINK */}
+          <div className="mt-auto w-full" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={handleAddToCart}
+              disabled={estoque <= 0}
+              className={`
+                w-full text-sm font-medium
+                transition-all duration-300
+                hover:bg-dark-light hover:text-white
+                ${estoque > 0 ? '' : '!border-gray-200 !text-gray-400'}
+                hover:opacity-100 group-hover:opacity-100
+                hover:text-white group-hover:text-white
+                relative z-10
+              `}
+            >
+              <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
+              <span className="inline-block hover:text-white group-hover:text-white">
+                {estoque > 0 ? 'Adicionar' : 'Esgotado'}
+              </span>
+            </Button>
+          </div>
         </div>
       </Link>
     </div>
