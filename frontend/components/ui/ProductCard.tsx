@@ -123,14 +123,19 @@ export default function ProductCard({ produto }: { produto?: any }) {
             size="lg"
             onClick={handleAddToCart}
             disabled={estoque <= 0}
-            className={`mt-auto w-full text-sm ${
-              estoque > 0
-                ? ''
-                : '!border-gray-200 !text-gray-400'
-            }`}
+            className={`
+              mt-auto w-full text-sm font-medium
+              transition-all duration-300
+              hover:bg-dark-light hover:text-white
+              ${estoque > 0 ? '' : '!border-gray-200 !text-gray-400'}
+              group-hover:opacity-100 group-hover:visible
+              hover:opacity-100 hover:visible
+            `}
           >
             <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
-            {estoque > 0 ? 'Adicionar' : 'Esgotado'}
+            <span className="inline-block">
+              {estoque > 0 ? 'Adicionar' : 'Esgotado'}
+            </span>
           </Button>
         </div>
       </Link>
