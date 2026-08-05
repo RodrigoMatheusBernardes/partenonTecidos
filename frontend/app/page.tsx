@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
 import SearchBar from '@/components/SearchBar';
@@ -9,7 +10,7 @@ import FiltersSidebar from '@/components/FiltersSidebar';
 import ProductCard from '@/components/ui/ProductCard';
 import HomeBanner from '@/components/HomeBanner';
 import TrendingBar from '@/components/TrendingBar';
-import { SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal, Tag, Sparkles, Star } from 'lucide-react';
 
 interface Categoria { _id: string; nome: string; }
 interface Produto {
@@ -135,25 +136,99 @@ export default function Home() {
         <div className="main-container">
           <div className="flex flex-col md:flex-row gap-8">
             <aside className="hidden md:block w-64 flex-shrink-0">
-              <FiltersSidebar
-                precoMin={precoMin}
-                precoMax={precoMax}
-                precoMaxGlobal={precoMaxGlobal}
-                categorias={categorias}
-                categoriasSelecionadas={categoriasSelecionadas}
-                onPrecoChange={(min, max) => {
-                  setPrecoMin(min);
-                  setPrecoMax(max);
-                  setPagina(1);
-                }}
-                onCategoriaChange={catId => {
-                  setCategoriasSelecionadas(prev =>
-                    prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]
-                  );
-                  setPagina(1);
-                }}
-                limparFiltros={limparFiltros}
-              />
+              <div className="sticky top-8 bg-white rounded-card shadow-sm-luxury border border-gray-mid p-6">
+                <FiltersSidebar
+                  precoMin={precoMin}
+                  precoMax={precoMax}
+                  precoMaxGlobal={precoMaxGlobal}
+                  categorias={categorias}
+                  categoriasSelecionadas={categoriasSelecionadas}
+                  onPrecoChange={(min, max) => {
+                    setPrecoMin(min);
+                    setPrecoMax(max);
+                    setPagina(1);
+                  }}
+                  onCategoriaChange={catId => {
+                    setCategoriasSelecionadas(prev =>
+                      prev.includes(catId) ? prev.filter(c => c !== catId) : [...prev, catId]
+                    );
+                    setPagina(1);
+                  }}
+                  limparFiltros={limparFiltros}
+                />
+
+                {/* ✅ CONTEÚDO ABAIXO DO FILTRO – preenche o espaço vazio */}
+                <div className="mt-8 pt-6 border-t border-gray-mid space-y-6">
+                  
+                  {/* Categorias Populares */}
+                  {categorias.length > 0 && (
+                    <div>
+                      <h4 className="text-xs font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
+                        <Tag className="w-3.5 h-3.5" strokeWidth={2} />
+                        Categorias em Destaque
+                      </h4>
+                      <ul className="space-y-1.5">
+                        {categorias.slice(0, 5).map((cat) => (
+                          <li key={cat._id}>
+                            <Link
+                              href={`/categoria/${cat._id}`}
+                              className="text-sm text-text-secondary hover:text-gold transition-colors font-light"
+                            >
+                              {cat.nome}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Produtos em Alta (mini versão) */}
+                  <div>
+                    <h4 className="text-xs font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5" strokeWidth={2} />
+                      Mais Vendidos
+                    </h4>
+                    <div className="space-y-2">
+                      {produtos.slice(0, 3).map((prod) => (
+                        <Link
+                          key={prod._id}
+                          href={`/produto/${prod._id}`}
+                          className="flex items-center gap-3 p-2 rounded-button hover:bg-light transition-colors group"
+                        >
+                          <div className="w-10 h-10 rounded overflow-hidden bg-gray-mid flex-shrink-0">
+                            {prod.fotos?.[0] && (
+                              <img
+                                src={prod.fotos[0].replace('http://localhost:5000', 'https://partenontecidos.onrender.com')}
+                                alt={prod.nome}
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-dark-light truncate group-hover:text-gold transition-colors">
+                              {prod.nome}
+                            </p>
+                            <p className="text-xs text-text-light">R$ {prod.preco.toFixed(2)}</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                    <Link
+                      href="/loja?ordenacao=mais-vendidos"
+                      className="text-xs text-gold hover:underline font-medium mt-2 inline-block"
+                    >
+                      Ver todos →
+                    </Link>
+                  </div>
+
+                  {/* Selo de qualidade */}
+                  <div className="bg-gold/5 border border-gold/20 rounded-card p-4 text-center">
+                    <Star className="w-5 h-5 text-gold mx-auto mb-1" strokeWidth={2} />
+                    <p className="text-xs font-medium text-dark-light">Qualidade Premium</p>
+                    <p className="text-[10px] text-text-light">Tecidos selecionados</p>
+                  </div>
+                </div>
+              </div>
             </aside>
 
             <div className="flex-1">
