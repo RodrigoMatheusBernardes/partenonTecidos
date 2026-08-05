@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Check, X, Star } from 'lucide-react';
+import Button from '@/components/ui/Button';
 
 interface Categoria {
   _id: string;
@@ -18,7 +20,41 @@ interface FiltersSidebarProps {
   limparFiltros: () => void;
   isMobile?: boolean;
   onClose?: () => void;
+  // Novos filtros
+  avaliacao?: number;
+  onAvaliacaoChange?: (avaliacao: number) => void;
+  disponibilidade?: string[];
+  onDisponibilidadeChange?: (opcao: string) => void;
+  composicao?: string[];
+  onComposicaoChange?: (comp: string) => void;
+  somentePromocoes?: boolean;
+  onPromocoesChange?: (value: boolean) => void;
 }
+
+const opcoesDisponibilidade = [
+  { value: 'em_estoque', label: 'Em estoque' },
+  { value: 'sob_encomenda', label: 'Sob encomenda' },
+  { value: 'esgotado', label: 'Esgotado' },
+];
+
+const opcoesComposicao = [
+  'Algodão',
+  'Linho',
+  'Poliéster',
+  'Seda',
+  'Lã',
+  'Viscose',
+  'Tencel',
+  'Ramí',
+  'Cânhamo',
+];
+
+const avaliacoes = [
+  { value: 4, label: '★★★★☆ e acima' },
+  { value: 3, label: '★★★☆☆ e acima' },
+  { value: 2, label: '★★☆☆☆ e acima' },
+  { value: 1, label: '★☆☆☆☆ e acima' },
+];
 
 export default function FiltersSidebar({
   precoMin,
@@ -31,6 +67,14 @@ export default function FiltersSidebar({
   limparFiltros,
   isMobile = false,
   onClose,
+  avaliacao = 0,
+  onAvaliacaoChange,
+  disponibilidade = [],
+  onDisponibilidadeChange,
+  composicao = [],
+  onComposicaoChange,
+  somentePromocoes = false,
+  onPromocoesChange,
 }: FiltersSidebarProps) {
   const [minInput, setMinInput] = useState(precoMin.toString());
   const [maxInput, setMaxInput] = useState(precoMax.toString());
@@ -56,17 +100,28 @@ export default function FiltersSidebar({
     onPrecoChange(min, max);
   };
 
+  const hasActiveFilters =
+    precoMin > 0 ||
+    precoMax < precoMaxGlobal ||
+    categoriasSelecionadas.length > 0 ||
+    avaliacao > 0 ||
+    disponibilidade.length > 0 ||
+    composicao.length > 0 ||
+    somentePromocoes;
+
   return (
-    <aside className="w-full flex flex-col gap-8">
+    <div className="flex flex-col w-full gap-8">
       
       {/* HEADER */}
-      <div className="flex items-center justify-between pb-4 border-b border-[#e8e3dc]">
-        <h2 className="font-serif font-light text-xl text-[#1a1a1a] tracking-wide">Filtros</h2>
+      <div className="flex items-center justify-between pb-4 border-b border-gray-mid">
+        <h2 className="font-serif font-light text-2xl text-dark-light tracking-tight">
+          Filtros
+        </h2>
         <div className="flex items-center gap-3">
-          {(precoMin > 0 || precoMax < precoMaxGlobal || categoriasSelecionadas.length > 0) && (
+          {hasActiveFilters && (
             <button
               onClick={limparFiltros}
-              className="text-xs text-[#8a7a6a] hover:text-[#1a1a1a] transition-colors"
+              className="text-xs text-text-light hover:text-dark-light transition-colors"
             >
               Limpar
             </button>
@@ -74,134 +129,253 @@ export default function FiltersSidebar({
           {isMobile && onClose && (
             <button
               onClick={onClose}
-              className="text-[#1a1a1a] hover:text-[#C5A880] transition-colors"
+              className="text-dark-light hover:text-gold transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="w-5 h-5" strokeWidth={1.5} />
             </button>
           )}
         </div>
       </div>
 
-      {/* PREÇO SECTION */}
+      {/* ===== PREÇO ===== */}
       <div>
-        <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">Preço</h3>
+        <h3 className="text-xs font-medium uppercase tracking-widest text-text-light mb-4">
+          Preço
+        </h3>
         <div className="flex items-center gap-2 mb-4">
           <input
             type="number"
             value={minInput}
             onChange={(e) => setMinInput(e.target.value)}
             placeholder="Mín"
-            className="w-14 border border-[#e8e3dc] rounded bg-transparent px-2 py-1.5 text-xs text-center text-[#4a4a4a] placeholder:text-[#d4cec4] focus:outline-none focus:border-[#C5A880] transition-colors"
+            className="w-16 border border-gray-mid rounded-button bg-transparent px-2 py-1.5 text-xs text-center text-dark-light placeholder:text-text-light focus:outline-none focus:border-gold transition-colors"
           />
-          <span className="text-[#d4cec4] text-xs">—</span>
+          <span className="text-text-light text-xs">—</span>
           <input
             type="number"
             value={maxInput}
             onChange={(e) => setMaxInput(e.target.value)}
             placeholder="Máx"
-            className="w-14 border border-[#e8e3dc] rounded bg-transparent px-2 py-1.5 text-xs text-center text-[#4a4a4a] placeholder:text-[#d4cec4] focus:outline-none focus:border-[#C5A880] transition-colors"
+            className="w-16 border border-gray-mid rounded-button bg-transparent px-2 py-1.5 text-xs text-center text-dark-light placeholder:text-text-light focus:outline-none focus:border-gold transition-colors"
           />
-          <button
+          <Button
+            variant="primary"
+            size="sm"
             onClick={handlePrecoManual}
-            className="bg-[#1a1a1a] text-white text-[10px] font-medium px-4 py-1.5 rounded hover:bg-[#2d2d2d] transition-colors"
+            className="text-xs"
           >
             OK
-          </button>
+          </Button>
         </div>
 
         <div className="flex flex-col gap-2">
           {faixasPreco.map((faixa) => (
             <label
               key={faixa.label}
-              className="flex items-center gap-2 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]"
+              className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group"
             >
               <input
                 type="radio"
                 name="faixa-preco"
                 checked={precoMin === faixa.min && precoMax === faixa.max}
                 onChange={() => onPrecoChange(faixa.min, faixa.max)}
-                className="w-4 h-4 accent-[#C5A880] focus:ring-[#C5A880]"
+                className="hidden peer"
               />
-              <span className="text-sm font-light group-hover:font-normal transition-all">{faixa.label}</span>
+              <span className="relative w-4 h-4 border border-gray-mid rounded-full bg-white flex items-center justify-center peer-checked:border-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
+                <span className="w-2 h-2 rounded-full bg-gold opacity-0 peer-checked:opacity-100 transition-opacity duration-200" />
+              </span>
+              <span className="text-sm font-light group-hover:font-normal transition-all">
+                {faixa.label}
+              </span>
             </label>
           ))}
-          <label className="flex items-center gap-2 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]">
+          <label className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group">
             <input
               type="radio"
               name="faixa-preco"
               checked={precoMin === 0 && precoMax === precoMaxGlobal}
               onChange={() => onPrecoChange(0, precoMaxGlobal)}
-              className="w-4 h-4 accent-[#C5A880] focus:ring-[#C5A880]"
+              className="hidden peer"
             />
-            <span className="text-sm font-light group-hover:font-normal transition-all">Todos os preços</span>
+            <span className="relative w-4 h-4 border border-gray-mid rounded-full bg-white flex items-center justify-center peer-checked:border-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
+              <span className="w-2 h-2 rounded-full bg-gold opacity-0 peer-checked:opacity-100 transition-opacity duration-200" />
+            </span>
+            <span className="text-sm font-light group-hover:font-normal transition-all">
+              Todos os preços
+            </span>
           </label>
         </div>
       </div>
 
-      <div className="border-b border-[#e8e3dc] my-1" />
-
-      {/* CATEGORIAS SECTION */}
-      {categorias.length > 0 && (
-        <div>
-          <h3 className="text-[10px] font-medium uppercase tracking-widest text-[#8a7a6a] mb-4">
-            Categorias
+      {/* ===== AVALIAÇÃO ===== */}
+      {onAvaliacaoChange && (
+        <div className="border-t border-gray-mid pt-4">
+          <h3 className="text-xs font-medium uppercase tracking-widest text-text-light mb-4">
+            Avaliação dos clientes
           </h3>
-          <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-2">
-            {categorias.map((cat) => (
+          <div className="flex flex-col gap-2">
+            {avaliacoes.map((item) => (
               <label
-                key={cat._id}
-                className="flex items-center gap-2 text-sm text-[#4a4a4a] cursor-pointer group transition-colors hover:text-[#1a1a1a]"
+                key={item.value}
+                className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group"
               >
                 <input
-                  type="checkbox"
-                  checked={categoriasSelecionadas.includes(cat._id)}
-                  onChange={() => onCategoriaChange(cat._id)}
-                  className="w-4 h-4 accent-[#C5A880] focus:ring-[#C5A880] rounded"
+                  type="radio"
+                  name="avaliacao"
+                  checked={avaliacao === item.value}
+                  onChange={() => onAvaliacaoChange(item.value)}
+                  className="hidden peer"
                 />
-                <span className="text-sm font-light group-hover:font-normal transition-all">{cat.nome}</span>
+                <span className="relative w-4 h-4 border border-gray-mid rounded-full bg-white flex items-center justify-center peer-checked:border-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
+                  <span className="w-2 h-2 rounded-full bg-gold opacity-0 peer-checked:opacity-100 transition-opacity duration-200" />
+                </span>
+                <span className="text-sm font-light group-hover:font-normal transition-all flex items-center gap-1">
+                  {item.label}
+                </span>
               </label>
             ))}
           </div>
         </div>
       )}
 
-      {/* ============================================================
-         BLOCO INSTITUCIONAL – ABAIXO DOS FILTROS (Desktop)
-         ============================================================ */}
-      <div className="mt-auto pt-6 border-t border-[#e8e3dc]">
-        {/* Selo de Confiança */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-[#0B1F33] text-white flex items-center justify-center flex-shrink-0">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+      {/* ===== DISPONIBILIDADE ===== */}
+      {onDisponibilidadeChange && (
+        <div className="border-t border-gray-mid pt-4">
+          <h3 className="text-xs font-medium uppercase tracking-widest text-text-light mb-4">
+            Disponibilidade
+          </h3>
+          <div className="flex flex-col gap-2">
+            {opcoesDisponibilidade.map((opcao) => (
+              <label
+                key={opcao.value}
+                className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group"
+              >
+                <input
+                  type="checkbox"
+                  checked={disponibilidade.includes(opcao.value)}
+                  onChange={() => onDisponibilidadeChange(opcao.value)}
+                  className="hidden peer"
+                />
+                <span className="w-4 h-4 border border-gray-mid rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
+                  <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
+                </span>
+                <span className="text-sm font-light group-hover:font-normal transition-all">
+                  {opcao.label}
+                </span>
+              </label>
+            ))}
           </div>
-          <div>
-            <p className="text-sm font-medium text-[#1a1a1a]">Compra Segura</p>
-            <p className="text-xs text-[#8a7a6a]">Ambiente protegido e criptografado</p>
+        </div>
+      )}
+
+      {/* ===== COMPOSIÇÃO ===== */}
+      {onComposicaoChange && (
+        <div className="border-t border-gray-mid pt-4">
+          <h3 className="text-xs font-medium uppercase tracking-widest text-text-light mb-4">
+            Composição
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {opcoesComposicao.map((comp) => (
+              <button
+                key={comp}
+                onClick={() => onComposicaoChange(comp)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
+                  composicao.includes(comp)
+                    ? 'bg-gold text-white'
+                    : 'bg-light text-text-secondary hover:bg-gray-mid'
+                }`}
+              >
+                {comp}
+              </button>
+            ))}
           </div>
+        </div>
+      )}
+
+      {/* ===== PROMOÇÕES ===== */}
+      {onPromocoesChange && (
+        <div className="border-t border-gray-mid pt-4">
+          <label className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={somentePromocoes}
+              onChange={(e) => onPromocoesChange(e.target.checked)}
+              className="hidden peer"
+            />
+            <span className="w-4 h-4 border border-gray-mid rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
+              <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
+            </span>
+            <span className="text-sm font-light group-hover:font-normal transition-all flex items-center gap-1">
+              🏷️ Ofertas e descontos
+            </span>
+          </label>
+        </div>
+      )}
+
+      {/* ===== CATEGORIAS ===== */}
+      {categorias.length > 0 && (
+        <div className="border-t border-gray-mid pt-4">
+          <h3 className="text-xs font-medium uppercase tracking-widest text-text-light mb-4">
+            Categorias
+          </h3>
+          <div className="flex flex-col gap-2.5 max-h-60 overflow-y-auto pr-2">
+            {categorias.map((cat) => (
+              <label
+                key={cat._id}
+                className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group"
+              >
+                <input
+                  type="checkbox"
+                  checked={categoriasSelecionadas.includes(cat._id)}
+                  onChange={() => onCategoriaChange(cat._id)}
+                  className="hidden peer"
+                />
+                <span className="w-4 h-4 border border-gray-mid rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
+                  <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
+                </span>
+                <span className="text-sm font-light group-hover:font-normal transition-all">
+                  {cat.nome}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ===== SEÇÃO INFORMATIVA ABAIXO DOS FILTROS ===== */}
+      <div className="border-t border-gray-mid pt-6 mt-2 space-y-4">
+        <div className="bg-light/50 rounded-card p-4 text-center">
+          <p className="text-xs text-text-light font-light uppercase tracking-wider">
+            Precisa de ajuda?
+          </p>
+          <p className="text-xs text-text-secondary mt-1">
+            Consulte nossa <a href="/faq" className="text-gold hover:underline">seção de ajuda</a> ou entre em contato conosco
+          </p>
         </div>
 
-        {/* Links de Atendimento */}
-        <div className="flex flex-col gap-2 text-sm text-[#8a7a6a]">
-          <div className="flex items-center gap-2">
-            <svg className="w-4 h-4 text-[#C5A880]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-            </svg>
-            <a href="tel:5511999999999" className="hover:text-[#1a1a1a] transition-colors">(11) 99999-9999</a>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg className="w-4 h-4 text-[#C5A880]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            <a href="mailto:contato@parthenon.com.br" className="hover:text-[#1a1a1a] transition-colors">contato@parthenon.com.br</a>
-          </div>
+        <div className="bg-gold/5 rounded-card p-4 text-center border border-gold/20">
+          <p className="text-xs text-text-light font-light uppercase tracking-wider">
+            Parcele em até 12x sem juros
+          </p>
+          <p className="text-xs text-text-secondary mt-1">
+            Sem anuidade. Peça o seu.
+          </p>
         </div>
+
+        {!isMobile && (
+          <div className="bg-light/30 rounded-card p-4">
+            <p className="text-xs text-text-light font-light uppercase tracking-wider mb-2">
+              Os clientes que viram os produtos também viram
+            </p>
+            <div className="flex flex-col gap-1 text-xs text-text-secondary">
+              <span>• Tecidos de linho</span>
+              <span>• Algodão egípcio</span>
+              <span>• Seda natural</span>
+              <span>• Malha fria</span>
+            </div>
+          </div>
+        )}
       </div>
-      {/* ============================================================ */}
-
-    </aside>
+    </div>
   );
 }
