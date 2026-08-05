@@ -119,24 +119,24 @@ export default function ProductCard({ produto }: { produto?: any }) {
           )}
 
           <Button
-            variant="secondary"
-            size="lg"
-            onClick={handleAddToCart}
-            disabled={estoque <= 0}
-            className={`
-              mt-auto w-full text-sm font-medium
-              transition-all duration-300
-              hover:bg-dark-light hover:text-white
-              ${estoque > 0 ? '' : '!border-gray-200 !text-gray-400'}
-              group-hover:opacity-100 group-hover:visible
-              hover:opacity-100 hover:visible
-            `}
-          >
-            <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
-            <span className="inline-block">
-              {estoque > 0 ? 'Adicionar' : 'Esgotado'}
-            </span>
-          </Button>
+  variant="secondary"
+  size="lg"
+  onClick={handleAddToCart}
+  disabled={estoque <= 0}
+  className={`
+    mt-auto w-full text-sm font-medium
+    transition-all duration-300
+    hover:bg-dark-light hover:text-white
+    ${estoque > 0 ? '' : '!border-gray-200 !text-gray-400'}
+    hover:opacity-100 group-hover:opacity-100
+    hover:text-white group-hover:text-white
+  `}
+>
+  <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
+  <span className="inline-block hover:text-white group-hover:text-white">
+    {estoque > 0 ? 'Adicionar' : 'Esgotado'}
+  </span>
+</Button>
         </div>
       </Link>
     </div>
