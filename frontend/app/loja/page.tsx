@@ -7,7 +7,9 @@ import { getApiUrl } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import FiltersSidebar from '@/components/FiltersSidebar';
 import SearchBar from '@/components/SearchBar';
-import { SlidersHorizontal } from 'lucide-react';
+import TrendingBar from '@/components/TrendingBar';
+import { SlidersHorizontal, Tag, Sparkles, Star } from 'lucide-react';
+import Link from 'next/link';
 
 interface Produto {
   _id: string;
@@ -26,7 +28,6 @@ interface Categoria {
   nome: string;
 }
 
-// Componente interno que usa useSearchParams (precisa de Suspense)
 function LojaContent() {
   const searchParams = useSearchParams();
   const buscaInicial = searchParams.get('busca') || '';
@@ -63,7 +64,6 @@ function LojaContent() {
       .finally(() => setCarregando(false));
   }, []);
 
-  // Filtro com base na busca (e outros filtros)
   const produtosFiltrados = produtos
     .filter(p => {
       if (busca.trim() && !p.nome.toLowerCase().includes(busca.toLowerCase())) return false;
@@ -101,6 +101,9 @@ function LojaContent() {
 
   const activeFilters = categoriasSelecionadas.length + (precoMin > 0 || precoMax < precoMaxGlobal ? 1 : 0);
 
+  // Categorias populares (exemplo – as 5 primeiras)
+  const categoriasPopulares = categorias.slice(0, 5);
+
   return (
     <main className="min-h-screen bg-white pb-24">
       {/* HERO DA LOJA */}
@@ -115,9 +118,9 @@ function LojaContent() {
         </div>
       </div>
 
-      {/* CONTEÚDO PRINCIPAL – padding padronizado */}
       <div className="main-container py-16 md:py-20">
         <div className="flex gap-8 lg:gap-12">
+          {/* SIDEBAR – com conteúdo extra abaixo dos filtros */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-8 bg-white rounded-card shadow-sm-luxury border border-gray-mid p-6">
               <FiltersSidebar
@@ -130,10 +133,84 @@ function LojaContent() {
                 onCategoriaChange={handleCategoriaChange}
                 limparFiltros={limparFiltros}
               />
+
+              {/* ✅ CONTEÚDO ABAIXO DO FILTRO – preenche o espaço vazio */}
+              <div className="mt-8 pt-6 border-t border-gray-mid space-y-6">
+                
+                {/* Categorias Populares */}
+                {categoriasPopulares.length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
+                      <Tag className="w-3.5 h-3.5" strokeWidth={2} />
+                      Categorias em Destaque
+                    </h4>
+                    <ul className="space-y-1.5">
+                      {categoriasPopulares.map((cat) => (
+                        <li key={cat._id}>
+                          <Link
+                            href={`/categoria/${cat._id}`}
+                            className="text-sm text-text-secondary hover:text-gold transition-colors font-light"
+                          >
+                            {cat.nome}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Produtos em Alta (mini versão) */}
+                <div>
+                  <h4 className="text-xs font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5" strokeWidth={2} />
+                    Mais Vendidos
+                  </h4>
+                  <div className="space-y-2">
+                    {produtos.slice(0, 3).map((prod) => (
+                      <Link
+                        key={prod._id}
+                        href={`/produto/${prod._id}`}
+                        className="flex items-center gap-3 p-2 rounded-button hover:bg-light transition-colors group"
+                      >
+                        <div className="w-10 h-10 rounded overflow-hidden bg-gray-mid flex-shrink-0">
+                          {prod.fotos?.[0] && (
+                            <img
+                              src={prod.fotos[0].replace('http://localhost:5000', 'https://partenontecidos.onrender.com')}
+                              alt={prod.nome}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-dark-light truncate group-hover:text-gold transition-colors">
+                            {prod.nome}
+                          </p>
+                          <p className="text-xs text-text-light">R$ {prod.preco.toFixed(2)}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                  <Link
+                    href="/loja?ordenacao=mais-vendidos"
+                    className="text-xs text-gold hover:underline font-medium mt-2 inline-block"
+                  >
+                    Ver todos →
+                  </Link>
+                </div>
+
+                {/* Selo de qualidade */}
+                <div className="bg-gold/5 border border-gold/20 rounded-card p-4 text-center">
+                  <Star className="w-5 h-5 text-gold mx-auto mb-1" strokeWidth={2} />
+                  <p className="text-xs font-medium text-dark-light">Qualidade Premium</p>
+                  <p className="text-[10px] text-text-light">Tecidos selecionados</p>
+                </div>
+              </div>
             </div>
           </aside>
 
+          {/* CONTEÚDO PRINCIPAL – lista de produtos */}
           <div className="flex-1 min-w-0">
+            {/* Barra de controles (busca, ordenação, contador) */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12">
               <div className="w-full sm:max-w-xs">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
@@ -141,7 +218,7 @@ function LojaContent() {
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <button
                   onClick={() => setSidebarAberta(true)}
-                  className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-mid rounded-button text-sm font-medium text-dark-light hover:bg-light hover:border-[#0B1F33] transition-all focus:outline-none focus:ring-2 focus:ring-[#0B1F33]"
+                  className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-mid rounded-button text-sm font-medium text-dark-light hover:bg-light hover:border-[#0B1F33] transition-all"
                 >
                   <SlidersHorizontal className="w-4 h-4" strokeWidth={2} />
                   Filtros
@@ -157,7 +234,7 @@ function LojaContent() {
                 <select
                   value={ordenacao}
                   onChange={e => { setOrdenacao(e.target.value); setPagina(1); }}
-                  className="border border-gray-mid rounded-button px-4 py-2.5 text-sm font-medium bg-white text-dark-light focus:outline-none focus:ring-2 focus:ring-[#0B1F33] transition"
+                  className="border border-gray-mid rounded-button px-4 py-2.5 text-sm font-medium bg-white text-dark-light focus:outline-none focus:ring-2 focus:ring-gold transition"
                 >
                   <option value="">Mais relevantes</option>
                   <option value="menor-preco">Menor Preço</option>
@@ -167,58 +244,67 @@ function LojaContent() {
               </div>
             </div>
 
-            {!carregando && produtosFiltrados.length === 0 && (
+            {/* Grid de produtos */}
+            {carregando ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="aspect-[3/4] bg-gray-200 rounded-card" />
+                    <div className="mt-3 h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="mt-2 h-5 bg-gray-200 rounded w-1/2" />
+                  </div>
+                ))}
+              </div>
+            ) : produtosFiltrados.length === 0 ? (
               <div className="text-center py-20 bg-light rounded-card">
                 <p className="text-text-secondary font-medium text-lg mb-4">
                   Nenhum produto encontrado.
                 </p>
-                <button onClick={limparFiltros} className="text-sm font-semibold text-dark-light underline-offset-4 hover:text-[#0B1F33] hover:underline transition-colors">
+                <button onClick={limparFiltros} className="text-sm font-semibold text-dark-light underline-offset-4 hover:text-gold hover:underline transition-colors">
                   Limpar filtros
                 </button>
               </div>
-            )}
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
-              {carregando ? (
-                <div className="col-span-full flex justify-center items-center min-h-[50vh] py-12">
-                  <div className="w-12 h-12 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
+            ) : (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+                  {paginaAtual.map(p => (
+                    <ProductCard key={p._id} produto={p} />
+                  ))}
                 </div>
-              ) : (
-                paginaAtual.map(p => <ProductCard key={p._id} produto={p} />)
-              )}
-            </div>
 
-            {!carregando && totalPaginas > 1 && (
-              <div className="mt-16 flex flex-wrap items-center justify-center gap-2">
-                <button
-                  onClick={() => { setPagina(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  disabled={pagina === 1}
-                  className="px-5 py-2.5 text-sm font-medium text-dark-light border border-gray-mid rounded-button hover:bg-dark-light hover:text-white disabled:opacity-40 transition-all"
-                >
-                  ← Anterior
-                </button>
-                {Array.from({ length: totalPaginas }, (_, i) => i + 1)
-                  .filter(n => totalPaginas <= 7 || n === 1 || n === totalPaginas || Math.abs(n - pagina) <= 2)
-                  .map((num, idx, arr) => (
-                    <span key={num} className="flex items-center">
-                      {idx > 0 && arr[idx - 1] !== num - 1 && <span className="px-2 text-text-light">…</span>}
-                      <button
-                        onClick={() => { setPagina(num); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        className={`w-10 h-10 rounded-button text-sm font-medium transition-all ${num === pagina ? 'bg-dark-light text-white' : 'text-text-secondary hover:bg-light hover:text-dark-light'}`}
-                      >
-                        {num}
-                      </button>
-                    </span>
-                  ))
-                }
-                <button
-                  onClick={() => { setPagina(p => Math.min(totalPaginas, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  disabled={pagina === totalPaginas}
-                  className="px-5 py-2.5 text-sm font-medium text-dark-light border border-gray-mid rounded-button hover:bg-dark-light hover:text-white disabled:opacity-40 transition-all"
-                >
-                  Próximo →
-                </button>
-              </div>
+                {totalPaginas > 1 && (
+                  <div className="mt-16 flex flex-wrap items-center justify-center gap-2">
+                    <button
+                      onClick={() => { setPagina(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      disabled={pagina === 1}
+                      className="px-5 py-2.5 text-sm font-medium text-dark-light border border-gray-mid rounded-button hover:bg-dark-light hover:text-white disabled:opacity-40 transition-all"
+                    >
+                      ← Anterior
+                    </button>
+                    {Array.from({ length: totalPaginas }, (_, i) => i + 1)
+                      .filter(n => totalPaginas <= 7 || n === 1 || n === totalPaginas || Math.abs(n - pagina) <= 2)
+                      .map((num, idx, arr) => (
+                        <span key={num} className="flex items-center">
+                          {idx > 0 && arr[idx - 1] !== num - 1 && <span className="px-2 text-text-light">…</span>}
+                          <button
+                            onClick={() => { setPagina(num); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                            className={`w-10 h-10 rounded-button text-sm font-medium transition-all ${num === pagina ? 'bg-dark-light text-white' : 'text-text-secondary hover:bg-light hover:text-dark-light'}`}
+                          >
+                            {num}
+                          </button>
+                        </span>
+                      ))
+                    }
+                    <button
+                      onClick={() => { setPagina(p => Math.min(totalPaginas, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      disabled={pagina === totalPaginas}
+                      className="px-5 py-2.5 text-sm font-medium text-dark-light border border-gray-mid rounded-button hover:bg-dark-light hover:text-white disabled:opacity-40 transition-all"
+                    >
+                      Próximo →
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -244,7 +330,7 @@ function LojaContent() {
               />
             </div>
             <div className="p-6 border-t border-gray-mid">
-              <button onClick={() => setSidebarAberta(false)} className="w-full py-3 bg-dark-light text-white rounded-button font-medium text-sm hover:bg-metallic-navy hover:text-white transition-all">
+              <button onClick={() => setSidebarAberta(false)} className="w-full py-3 bg-dark-light text-white rounded-button font-medium text-sm hover:bg-metallic-navy transition-all">
                 Ver {produtosFiltrados.length} produto{produtosFiltrados.length !== 1 ? 's' : ''}
               </button>
             </div>
