@@ -26,6 +26,18 @@ interface Produto {
   destaque?: boolean;
 }
 
+function parseVitrineResponse(payload: unknown): Produto[] {
+  if (Array.isArray(payload)) {
+    return payload as Produto[];
+  }
+
+  if (payload && typeof payload === 'object' && Array.isArray((payload as { data?: unknown }).data)) {
+    return (payload as { data: Produto[] }).data;
+  }
+
+  return [];
+}
+
 export default function Home() {
   const router = useRouter();
 
@@ -52,7 +64,7 @@ export default function Home() {
     axios
       .get(`${apiUrl}/api/produtos/vitrine`)
       .then(res => {
-        const data = res.data;
+        const data = parseVitrineResponse(res.data);
         setProdutos(data);
         const maxPreco = Math.max(...data.map((p: Produto) => p.preco), 100);
         setPrecoMaxGlobal(maxPreco);

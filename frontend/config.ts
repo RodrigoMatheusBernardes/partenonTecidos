@@ -6,7 +6,13 @@
   }
 };
 
+const envApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/$/, '');
+
 export const getApiUrl = (): string => {
+  if (envApiUrl) {
+    return envApiUrl;
+  }
+
   if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
     return config.api.development;
   }
