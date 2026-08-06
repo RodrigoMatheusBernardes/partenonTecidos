@@ -36,7 +36,8 @@ export default function Button({
     `,
     secondary: `
       bg-transparent text-metallic-navy border-2 border-[#0B1F33]
-      hover:bg-metallic-navy hover:text-white
+      hover:bg-metallic-navy hover:text-white hover:!text-white
+      group-hover:bg-metallic-navy group-hover:text-white group-hover:!text-white
       active:scale-[0.97]
     `,
     ghost: `
