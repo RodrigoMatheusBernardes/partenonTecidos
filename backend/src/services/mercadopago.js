@@ -1,4 +1,5 @@
-const { mercadopago } = require('../config/mercadopago');
+const { Preference, Payment } = require('mercadopago');
+const { mercadopagoClient } = require('../config/mercadopago');
 
 /**
  * Cria um pagamento PIX no Mercado Pago
@@ -6,8 +7,10 @@ const { mercadopago } = require('../config/mercadopago');
 async function createPixPayment({ orderId, customerId, amount, description, email, nome }) {
   try {
     const expirationMinutes = parseInt(process.env.MERCADO_PAGO_EXPIRATION_MINUTES) || 30;
+    const preferenceClient = new Preference(mercadopagoClient);
+    const paymentClient = new Payment(mercadopagoClient);
 
-    const preference = {
+    const preferenceBody = {
       items: [
         {
           id: orderId.toString(),
@@ -48,23 +51,22 @@ async function createPixPayment({ orderId, customerId, amount, description, emai
       },
     };
 
-    const response = await mercadopago.preferences.create(preference);
-    const preferenceData = response.body;
+    const preferenceData = await preferenceClient.create({ body: preferenceBody });
 
     // Gerar QR Code para PIX
-    const paymentResponse = await mercadopago.payment.create({
-      transaction_amount: amount,
-      description: description || `Pedido #${orderId}`,
-      payment_method_id: 'pix',
-      payer: {
-        email: email || 'cliente@parthenon.com',
-        first_name: nome || 'Cliente',
+    const paymentData = await paymentClient.create({
+      body: {
+        transaction_amount: amount,
+        description: description || `Pedido #${orderId}`,
+        payment_method_id: 'pix',
+        payer: {
+          email: email || 'cliente@parthenon.com',
+          first_name: nome || 'Cliente',
+        },
+        external_reference: orderId.toString(),
+        notification_url: `${process.env.API_BASE_URL}/api/webhooks/mercadopago`,
       },
-      external_reference: orderId.toString(),
-      notification_url: `${process.env.API_BASE_URL}/api/webhooks/mercadopago`,
     });
-
-    const paymentData = paymentResponse.body;
 
     return {
       success: true,
@@ -92,11 +94,12 @@ async function createPixPayment({ orderId, customerId, amount, description, emai
  */
 async function getPaymentStatus(paymentId) {
   try {
-    const response = await mercadopago.payment.get(paymentId);
+    const paymentClient = new Payment(mercadopagoClient);
+    const response = await paymentClient.get({ id: paymentId });
     return {
       success: true,
-      status: response.body.status,
-      payment: response.body,
+      status: response.status,
+      payment: response,
     };
   } catch (error) {
     console.error('Erro ao consultar pagamento:', error.response?.data || error.message);

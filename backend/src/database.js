@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+mongoose.set('sanitizeFilter', true);
+mongoose.set('strictQuery', true);
+
 const connectDB = async () => {
   // Verifica se a variável de ambiente está definida
   if (!process.env.MONGODB_URI) {

@@ -2,17 +2,16 @@ const express = require('express');
 const router = express.Router();
 const Concorrente = require('../models/Concorrente');
 const authMiddleware = require('../middleware/auth');
+const { requireRole } = require('../middleware/role');
 
 // Admin: listar todos
-router.get('/admin', authMiddleware, async (req, res) => {
-  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
+router.get('/admin', authMiddleware, requireRole(['admin']), async (req, res) => {
   const concorrentes = await Concorrente.find().sort({ data_coleta: -1 });
   res.json(concorrentes);
 });
 
 // Admin: criar
-router.post('/admin', authMiddleware, async (req, res) => {
-  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
+router.post('/admin', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
     const conc = new Concorrente(req.body);
     await conc.save();
@@ -23,8 +22,7 @@ router.post('/admin', authMiddleware, async (req, res) => {
 });
 
 // Admin: excluir
-router.delete('/admin/:id', authMiddleware, async (req, res) => {
-  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
+router.delete('/admin/:id', authMiddleware, requireRole(['admin']), async (req, res) => {
   await Concorrente.findByIdAndDelete(req.params.id);
   res.json({ message: 'Excluído.' });
 });

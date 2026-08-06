@@ -1,18 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
-const { requireRole } = require('../middleware/role');
 const Pagamento = require('../models/Pagamento');
 const Pedido = require('../models/Pedido');
-const User = require('../models/User');
 const { createPixPayment, getPaymentStatus } = require('../services/mercadopago');
+const { sanitizeObject, sanitizeText, validateObjectId } = require('../utils/validation');
 
 // POST /api/pagamentos/pix - Criar pagamento PIX
 router.post('/pix', authMiddleware, async (req, res) => {
   try {
-    const { orderId, description } = req.body;
+    const payload = sanitizeObject(req.body);
+    const { orderId } = payload;
+    const description = sanitizeText(payload.description, 180);
 
-    if (!orderId) {
+    if (!validateObjectId(orderId)) {
       return res.status(400).json({ error: 'ID do pedido é obrigatório.' });
     }
 
@@ -25,6 +26,9 @@ router.post('/pix', authMiddleware, async (req, res) => {
     // Verificar se o pedido pertence ao cliente
     if (pedido.cliente.email !== req.user.email) {
       return res.status(403).json({ error: 'Este pedido não pertence a você.' });
+    }
+    if (pedido.paymentStatus === 'PAGO') {
+      return res.status(400).json({ error: 'Este pedido já foi pago.' });
     }
 
     // Verificar se já existe pagamento pendente
@@ -108,14 +112,16 @@ router.post('/pix', authMiddleware, async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('Erro ao criar pagamento PIX:', err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Erro ao criar pagamento PIX.' });
   }
 });
 
 // GET /api/pagamentos/:id - Consultar status do pagamento
 router.get('/:id', authMiddleware, async (req, res) => {
   try {
+    if (!validateObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Pagamento inválido.' });
+    }
     const pagamento = await Pagamento.findById(req.params.id);
     if (!pagamento) {
       return res.status(404).json({ error: 'Pagamento não encontrado.' });
@@ -170,8 +176,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
       pixCode: pagamento.pixCode,
     });
   } catch (err) {
-    console.error('Erro ao consultar pagamento:', err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Erro ao consultar pagamento.' });
   }
 });
 
@@ -179,6 +184,9 @@ router.get('/:id', authMiddleware, async (req, res) => {
 router.get('/pedido/:orderId', authMiddleware, async (req, res) => {
   try {
     const { orderId } = req.params;
+    if (!validateObjectId(orderId)) {
+      return res.status(400).json({ error: 'Pedido inválido.' });
+    }
 
     const pagamento = await Pagamento.findOne({ orderId }).sort({ createdAt: -1 });
     if (!pagamento) {
@@ -207,8 +215,7 @@ router.get('/pedido/:orderId', authMiddleware, async (req, res) => {
       pixCode: pagamento.pixCode,
     });
   } catch (err) {
-    console.error('Erro ao buscar pagamento:', err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Erro ao buscar pagamento.' });
   }
 });
 
