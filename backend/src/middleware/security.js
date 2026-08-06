@@ -17,6 +17,7 @@ function getAllowedOrigins() {
   const trustedProductionOrigins = [
     'https://partenon-tecidos.vercel.app',
     'https://partenontecidos.onrender.com',
+    'https://partenon-tecidos-nb3r.vercel.app',
   ];
 
   return [...new Set([...defaults, ...trustedProductionOrigins, ...configured])];
