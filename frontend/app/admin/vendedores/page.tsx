@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getApiUrl } from '@/lib/api';
+import { authFetch } from '@/lib/auth';
 import toast from 'react-hot-toast';
 import Button from '@/components/ui/Button';
 import { Loader2 } from 'lucide-react';
@@ -33,14 +33,9 @@ export default function AdminVendedoresPage() {
   });
   const [saving, setSaving] = useState(false);
 
-  const apiUrl = getApiUrl();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
-
   const carregarVendedores = async () => {
     try {
-      const res = await fetch(`${apiUrl}/api/vendedores/admin`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authFetch(`/api/vendedores/admin`);
       const data = await res.json();
       setVendedores(data.data || []);
     } catch (err) {
@@ -115,11 +110,10 @@ export default function AdminVendedoresPage() {
     try {
       if (editando) {
         // Atualizar vendedor (coleção Vendedor)
-        const res = await fetch(`${apiUrl}/api/vendedores/admin/${editando._id}`, {
+        const res = await authFetch(`/api/vendedores/admin/${editando._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             nome: form.nome,
@@ -134,11 +128,10 @@ export default function AdminVendedoresPage() {
         toast.success('Vendedor atualizado!');
       } else {
         // Criar vendedor (User com role seller)
-        const resUser = await fetch(`${apiUrl}/api/auth/criar-vendedor`, {
+        const resUser = await authFetch(`/api/auth/criar-vendedor`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             nome: form.nome,
@@ -153,11 +146,10 @@ export default function AdminVendedoresPage() {
         const userData = await resUser.json();
 
         // Criar registro na coleção Vendedor (com código e comissão)
-        const resVendedor = await fetch(`${apiUrl}/api/vendedores/admin`, {
+        const resVendedor = await authFetch(`/api/vendedores/admin`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             codigo: form.codigo.toUpperCase() || userData.user.id.slice(-6).toUpperCase(),
@@ -183,9 +175,8 @@ export default function AdminVendedoresPage() {
   const excluir = async (id: string) => {
     if (!confirm('Excluir este vendedor?')) return;
     try {
-      await fetch(`${apiUrl}/api/vendedores/admin/${id}`, {
+      await authFetch(`/api/vendedores/admin/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Vendedor excluído');
       carregarVendedores();

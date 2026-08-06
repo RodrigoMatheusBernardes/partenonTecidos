@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getApiUrl } from '@/lib/api';
+import { authFetch } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 interface Cupom {
@@ -32,14 +32,9 @@ export default function AdminCuponsPage() {
     ativo: true,
   });
 
-  const apiUrl = getApiUrl();
-
   const carregarCupons = async () => {
-    const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`${apiUrl}/api/cupons/admin`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authFetch(`/api/cupons/admin`);
       if (!res.ok) throw new Error('Erro ao carregar');
       const data = await res.json();
       setCupons(data);
@@ -62,13 +57,11 @@ export default function AdminCuponsPage() {
 
   const criarCupom = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`${apiUrl}/api/cupons/admin`, {
+      const res = await authFetch(`/api/cupons/admin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           codigo: form.codigo.toUpperCase(),
@@ -102,12 +95,10 @@ export default function AdminCuponsPage() {
 
   const deletarCupom = async (id: string) => {
     if (!confirm('Excluir este cupom?')) return;
-    const token = localStorage.getItem('token');
     try {
       // Ajuste: rota DELETE também precisa de /admin
-      await fetch(`${apiUrl}/api/cupons/admin/${id}`, {
+      await authFetch(`/api/cupons/admin/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Cupom excluído');
       carregarCupons();

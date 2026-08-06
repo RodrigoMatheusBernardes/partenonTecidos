@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authGet } from '@/lib/auth';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
@@ -19,9 +18,6 @@ export default function AdminRelatoriosPage() {
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
 
-  const apiUrl = getApiUrl();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
-
   const carregar = async () => {
     setCarregando(true);
     try {
@@ -29,10 +25,8 @@ export default function AdminRelatoriosPage() {
       if (dataInicio) params.inicio = dataInicio;
       if (dataFim) params.fim = dataFim;
 
-      const res = await axios.get(`${apiUrl}/api/admin/relatorios/comissoes`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params,
-      });
+      const query = new URLSearchParams(params).toString();
+      const res = await authGet(`/api/admin/relatorios/comissoes${query ? `?${query}` : ''}`);
       setDados(res.data);
     } catch (err) {
       toast.error('Erro ao carregar relatório');

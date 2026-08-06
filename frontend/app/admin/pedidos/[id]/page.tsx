@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authGet, authPut } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 interface ItemPedido {
@@ -36,15 +35,13 @@ export default function DetalhesPedidoPage() {
 
   const carregarPedido = async () => {
     try {
-      const apiUrl = getApiUrl();
-      const token = localStorage.getItem('token');
-      if (!token) { toast.error('Login necessário'); router.push('/login'); return; }
-      const res = await axios.get(`${apiUrl}/api/pedidos/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await authGet(`/api/pedidos/${id}`);
       setPedido(res.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      if (err?.response?.status === 401 || err?.response?.status === 403) {
+        router.push('/login');
+      }
       toast.error('Erro ao carregar pedido.');
     } finally {
       setCarregando(false);
@@ -60,12 +57,7 @@ export default function DetalhesPedidoPage() {
     if (!pedido || novoStatus === pedido.status) return;
     setSalvandoStatus(true);
     try {
-      const apiUrl = getApiUrl();
-      const token = localStorage.getItem('token');
-      await axios.put(`${apiUrl}/api/pedidos/${id}`, 
-        { status: novoStatus },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await authPut(`/api/pedidos/${id}`, { status: novoStatus });
       setPedido(prev => prev ? { ...prev, status: novoStatus } : null);
       toast.success(`Status atualizado para "${novoStatus}"!`);
     } catch (err: any) {

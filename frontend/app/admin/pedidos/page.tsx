@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authGet } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 interface Pedido {
@@ -21,11 +20,7 @@ export default function AdminPedidosPage() {
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    const apiUrl = getApiUrl();
-    const token = localStorage.getItem('token');
-    axios.get(`${apiUrl}/api/pedidos/admin`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    authGet(`/api/pedidos/admin`)
       .then(res => setPedidos(res.data))
       .catch(() => toast.error('Erro ao carregar'))
       .finally(() => setCarregando(false));

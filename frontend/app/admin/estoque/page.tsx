@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getApiUrl } from '@/lib/api';
+import { authFetch } from '@/lib/auth';
 
 interface Produto {
   _id: string;
@@ -16,13 +16,8 @@ export default function AdminEstoquePage() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
 
-  const apiUrl = getApiUrl();
-
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    fetch(`${apiUrl}/api/produtos`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    authFetch(`/api/produtos`)
       .then(res => {
         if (!res.ok) throw new Error('Falha ao carregar');
         return res.json();
@@ -42,7 +37,7 @@ export default function AdminEstoquePage() {
         setErro(err.message);
         setCarregando(false);
       });
-  }, [apiUrl]);
+  }, []);
 
   if (carregando) {
     return <p className="text-center py-12">Carregando...</p>;

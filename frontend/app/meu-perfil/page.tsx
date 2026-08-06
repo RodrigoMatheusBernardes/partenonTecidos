@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authPut } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 export default function MeuPerfilPage() {
-  const { user, isAuthenticated, login } = useAuth();
+  const { user, isAuthenticated, login, token } = useAuth();
   const router = useRouter();
 
   const [nome, setNome] = useState('');
@@ -28,18 +27,14 @@ export default function MeuPerfilPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      const apiUrl = getApiUrl();
-      const token = localStorage.getItem('token');
-      const res = await axios.put(`${apiUrl}/api/auth/perfil`, {
+      await authPut(`/api/auth/perfil`, {
         nome: nome || undefined,
         currentPassword: currentPassword || undefined,
         newPassword: newPassword || undefined,
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       // Atualizar o contexto com os novos dados
-      login({ ...user!, nome: nome || user!.nome }, token!);
+      login({ ...user!, nome: nome || user!.nome }, token || undefined);
       toast.success('Perfil atualizado!');
       setCurrentPassword('');
       setNewPassword('');

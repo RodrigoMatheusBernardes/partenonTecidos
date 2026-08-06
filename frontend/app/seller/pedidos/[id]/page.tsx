@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { getApiUrl } from '@/lib/api';
+import { authFetch } from '@/lib/auth';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -38,11 +38,7 @@ export default function SellerPedidoDetalhesPage() {
 
   const fetchPedido = async () => {
     try {
-      const apiUrl = getApiUrl();
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${apiUrl}/api/pedidos/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authFetch(`/api/pedidos/${id}`);
       if (res.ok) {
         const data = await res.json();
         setPedido(data);
@@ -65,13 +61,10 @@ export default function SellerPedidoDetalhesPage() {
     if (!pedido) return;
     setUpdating(true);
     try {
-      const apiUrl = getApiUrl();
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${apiUrl}/api/pedidos/${pedido._id}/status`, {
+      const res = await authFetch(`/api/pedidos/${pedido._id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ status: novoStatus }),
       });

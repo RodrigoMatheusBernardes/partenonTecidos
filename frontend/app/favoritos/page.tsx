@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authGet, authPost } from '@/lib/auth';
 import ProductCard from '@/components/ui/ProductCard';
 import FavoritoButton from '@/components/FavoritoButton';
 import toast from 'react-hot-toast';
@@ -22,14 +21,13 @@ interface ProdutoFavorito {
 }
 
 export default function FavoritosPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, token } = useAuth();
   const [favoritos, setFavoritos] = useState<ProdutoFavorito[]>([]);
   const [carregando, setCarregando] = useState(true);
 
   const carregarFavoritos = () => {
-    if (!isAuthenticated || !user?.id) return;
-    const apiUrl = getApiUrl();
-    axios.get(`${apiUrl}/api/produtos/favoritos/${user.id}`)
+    if (!isAuthenticated || !user?.id || !token) return;
+    authGet(`/api/produtos/favoritos/${user.id}`)
       .then(res => setFavoritos(res.data))
       .catch(console.error)
       .finally(() => setCarregando(false));
@@ -37,7 +35,7 @@ export default function FavoritosPage() {
 
   useEffect(() => {
     carregarFavoritos();
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, token]);
 
   const removerFavorito = async (produtoId: string) => {
     if (!user) {
@@ -45,9 +43,7 @@ export default function FavoritosPage() {
       return;
     }
     try {
-      const apiUrl = getApiUrl();
-      await axios.post(`${apiUrl}/api/produtos/favoritos`, {
-        cliente_id: user.id,
+      await authPost(`/api/produtos/favoritos`, {
         produto_id: produtoId,
       });
       setFavoritos(prev => prev.filter(fav => fav.produto_id._id !== produtoId));

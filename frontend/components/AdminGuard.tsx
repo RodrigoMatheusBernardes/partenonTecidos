@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 interface AdminGuardProps {
   children: React.ReactNode;
@@ -8,34 +9,9 @@ interface AdminGuardProps {
 }
 
 export default function AdminGuard({ children, allowedRoles = ['admin'] }: AdminGuardProps) {
-  const [status, setStatus] = useState<'loading' | 'authorized' | 'denied'>('loading');
-  const [userRole, setUserRole] = useState<string | null>(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.log('AdminGuard: token não encontrado');
-      setStatus('denied');
-      return;
-    }
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log('AdminGuard: payload decodificado', payload);
-      setUserRole(payload.role || null);
-
-      if (allowedRoles.includes(payload.role)) {
-        setStatus('authorized');
-      } else {
-        console.log(`AdminGuard: role "${payload.role}" não está em allowedRoles:`, allowedRoles);
-        setStatus('denied');
-      }
-    } catch (e) {
-      console.error('AdminGuard: token inválido', e);
-      localStorage.removeItem('token');
-      setStatus('denied');
-    }
-  }, [allowedRoles]);
+  const { user, loading, token } = useAuth();
+  const userRole = user?.role || null;
+  const status = loading ? 'loading' : token && userRole && allowedRoles.includes(userRole) ? 'authorized' : 'denied';
 
   if (status === 'loading') {
     return (
@@ -51,7 +27,7 @@ export default function AdminGuard({ children, allowedRoles = ['admin'] }: Admin
       <div className="flex flex-col items-center justify-center min-h-[200px] text-center">
         <p className="text-red-600 text-lg mb-4">Acesso negado.</p>
         {userRole && <p className="text-gray-500 mb-2">Seu perfil: {userRole}</p>}
-        <a href="/login" className="text-blue-600 hover:underline">Fazer login como administrador</a>
+        <Link href="/login" className="text-blue-600 hover:underline">Fazer login como administrador</Link>
       </div>
     );
   }

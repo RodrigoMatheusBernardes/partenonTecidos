@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getApiUrl } from '@/lib/api';
+import { authFetch } from '@/lib/auth';
 import { useAuth } from '@/context/AuthContext';
 import { Loader2, Search, User, Mail, Phone, Calendar, ShoppingBag, Eye } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
@@ -26,9 +26,6 @@ export default function AdminClientesPage() {
   const [pagination, setPagination] = useState({ page: 1, total: 0, pages: 1 });
   const [debouncedBusca, setDebouncedBusca] = useState('');
 
-  const apiUrl = getApiUrl();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
-
   // Debounce para busca
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedBusca(busca), 500);
@@ -38,12 +35,11 @@ export default function AdminClientesPage() {
   const carregarClientes = async (page = 1) => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `${apiUrl}/api/admin/clientes?busca=${encodeURIComponent(debouncedBusca)}&page=${page}&limit=20`,
-        { headers: { Authorization: `Bearer ${token}` } }
+      const response = await authFetch(
+        `/api/admin/clientes?busca=${encodeURIComponent(debouncedBusca)}&page=${page}&limit=20`
       );
-      if (!res.ok) throw new Error('Erro ao carregar clientes');
-      const data = await res.json();
+      if (!response.ok) throw new Error('Erro ao carregar clientes');
+      const data = await response.json();
       setClientes(data.data);
       setPagination(data.pagination);
     } catch (err) {

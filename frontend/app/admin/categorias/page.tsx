@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authDelete, authGet, authPost, authPut } from '@/lib/auth';
 
 interface Categoria {
   _id?: string;
@@ -21,15 +20,10 @@ export default function AdminCategorias() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
 
-  const apiUrl = getApiUrl(); // ✅ usa a mesma lógica de produção
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
-
   const carregarCategorias = async () => {
     try {
       setCarregando(true);
-      const res = await axios.get(`${apiUrl}/api/categorias/admin`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await authGet(`/api/categorias/admin`);
       setCategorias(res.data);
     } catch (err: any) {
       console.error(err);
@@ -47,13 +41,9 @@ export default function AdminCategorias() {
     e.preventDefault();
     try {
       if (editando) {
-        await axios.put(`${apiUrl}/api/categorias/admin/${editando}`, form, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await authPut(`/api/categorias/admin/${editando}`, form);
       } else {
-        await axios.post(`${apiUrl}/api/categorias/admin`, form, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await authPost(`/api/categorias/admin`, form);
       }
       setForm({ nome: '', descricao: '', imagem: '', ordem: 0, ativo: true });
       setEditando(null);
@@ -71,9 +61,7 @@ export default function AdminCategorias() {
 
   const handleExcluir = async (id: string) => {
     if (confirm('Excluir esta categoria?')) {
-      await axios.delete(`${apiUrl}/api/categorias/admin/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await authDelete(`/api/categorias/admin/${id}`);
       carregarCategorias();
     }
   };

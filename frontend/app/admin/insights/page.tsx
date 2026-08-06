@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authGet, authPost } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 interface SugestaoReposicao {
@@ -41,19 +40,8 @@ export default function AdminInsightsPage() {
   const [respostaIA, setRespostaIA] = useState('');
   const [enviandoPerguntaIA, setEnviandoPerguntaIA] = useState(false);
 
-  const apiUrl = getApiUrl();
-
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
-    if (!token) {
-      setLoading(false);
-      toast.error('Faça login como administrador.');
-      return;
-    }
-
-    axios.get(`${apiUrl}/api/admin/insights`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    authGet(`/api/admin/insights`)
       .then(res => setData(res.data))
       .catch(err => {
         console.error(err);
@@ -64,13 +52,9 @@ export default function AdminInsightsPage() {
 
   const handlePergunta = async () => {
     if (!pergunta.trim()) return;
-    const token = localStorage.getItem('token');
-    if (!token) { toast.error('Autenticação necessária.'); return; }
     setEnviandoPergunta(true);
     try {
-      const res = await axios.post(`${apiUrl}/api/admin/insights/assistente`, { pergunta }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authPost(`/api/admin/insights/assistente`, { pergunta });
       setResposta(res.data.resposta);
     } catch (err) {
       setResposta('Erro ao consultar assistente.');
@@ -81,13 +65,9 @@ export default function AdminInsightsPage() {
 
   const handlePerguntaIA = async () => {
     if (!perguntaIA.trim()) return;
-    const token = localStorage.getItem('token');
-    if (!token) { toast.error('Autenticação necessária.'); return; }
     setEnviandoPerguntaIA(true);
     try {
-      const res = await axios.post(`${apiUrl}/api/admin/insights/ia`, { pergunta: perguntaIA }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authPost(`/api/admin/insights/ia`, { pergunta: perguntaIA });
       setRespostaIA(res.data.resposta);
     } catch (err: any) {
       const msg = err.response?.data?.resposta || 'Erro ao consultar IA.';

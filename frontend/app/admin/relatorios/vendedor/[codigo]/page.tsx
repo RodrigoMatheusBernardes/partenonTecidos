@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authGet } from '@/lib/auth';
 import Link from 'next/link';
 
 interface PedidoDetalhe {
@@ -24,9 +23,6 @@ export default function VendasVendedorPage() {
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
 
-  const apiUrl = getApiUrl();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
-
   const carregar = async () => {
     setCarregando(true);
     try {
@@ -34,10 +30,8 @@ export default function VendasVendedorPage() {
       if (dataInicio) params.inicio = dataInicio;
       if (dataFim) params.fim = dataFim;
 
-      const res = await axios.get(`${apiUrl}/api/admin/relatorios/vendas-por-vendedor/${codigo}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params,
-      });
+      const query = new URLSearchParams(params).toString();
+      const res = await authGet(`/api/admin/relatorios/vendas-por-vendedor/${codigo}${query ? `?${query}` : ''}`);
       setPedidos(res.data.pedidos);
       setTotalVendas(res.data.totalVendas);
       setTotalComissao(res.data.totalComissao);

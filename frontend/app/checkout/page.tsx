@@ -190,8 +190,8 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(isAuthenticated ? { Authorization: `Bearer ${localStorage.getItem('token')}` } : {}),
         },
+        credentials: 'include',
         body: JSON.stringify({
           cliente: form,
           itens: items.map(item => ({

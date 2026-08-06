@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authGet } from '@/lib/auth';
 import Link from 'next/link';
 
 interface ItemPedido {
@@ -28,16 +27,7 @@ export default function MeusPedidosPage() {
 
   useEffect(() => {
     if (!user?.email) return;
-    const apiUrl = getApiUrl();
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setErro('Você precisa estar logado.');
-      setCarregando(false);
-      return;
-    }
-    axios.get(`${apiUrl}/api/pedidos`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    authGet(`/api/pedidos`)
       .then(res => setPedidos(res.data))
       .catch(err => {
         console.error(err);

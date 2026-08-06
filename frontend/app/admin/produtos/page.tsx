@@ -1,8 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authDelete, authGet } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 interface Produto {
@@ -20,11 +19,7 @@ export default function AdminProdutosPage() {
 
   const carregar = async () => {
     try {
-      const api = getApiUrl();
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${api}/api/produtos`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authGet(`/api/produtos`);
       setProdutos(res.data);
     } catch (err) {
       toast.error('Erro ao carregar produtos');
@@ -36,11 +31,7 @@ export default function AdminProdutosPage() {
   const deletar = async (id: string) => {
     if (!confirm('Excluir este produto?')) return;
     try {
-      const api = getApiUrl();
-      const token = localStorage.getItem('token');
-      await axios.delete(`${api}/api/produtos/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await authDelete(`/api/produtos/${id}`);
       toast.success('Produto excluído');
       carregar();
     } catch (err) {

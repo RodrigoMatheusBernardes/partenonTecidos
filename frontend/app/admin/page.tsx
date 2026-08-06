@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authGet } from '@/lib/auth';
 import Link from 'next/link';
 import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -64,13 +63,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const apiUrl = getApiUrl();
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    axios.get(`${apiUrl}/api/admin/dashboard`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    authGet(`/api/admin/dashboard`)
       .then(res => setData(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
