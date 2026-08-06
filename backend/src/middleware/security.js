@@ -14,7 +14,12 @@ function getAllowedOrigins() {
     .filter(Boolean);
 
   const defaults = ['http://localhost:3000', 'http://127.0.0.1:3000'];
-  return [...new Set(configured.length ? configured : defaults)];
+  const trustedProductionOrigins = [
+    'https://partenon-tecidos.vercel.app',
+    'https://partenontecidos.onrender.com',
+  ];
+
+  return [...new Set([...defaults, ...trustedProductionOrigins, ...configured])];
 }
 
 function buildCorsOptions() {
