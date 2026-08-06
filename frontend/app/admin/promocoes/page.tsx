@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { extractDataArray } from '@/lib/api';
+import { authGet, authPut } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 interface Produto {
@@ -25,14 +25,12 @@ export default function AdminPromocoesPage() {
   const [valorDesconto, setValorDesconto] = useState('');
   const [salvando, setSalvando] = useState(false);
 
-  const apiUrl = getApiUrl();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
-
   const carregar = async () => {
     setCarregando(true);
     try {
-      const res = await axios.get(`${apiUrl}/api/produtos/vitrine`);
-      const promos = res.data.filter((p: Produto) => p.preco_original && p.preco_original > p.preco);
+      const res = await authGet(`/api/produtos/vitrine`);
+      const vitrine = extractDataArray<Produto>(res.data);
+      const promos = vitrine.filter((p) => p.preco_original && p.preco_original > p.preco);
       setProdutos(promos);
     } catch (err) {
       toast.error('Erro ao carregar promoções. Verifique sua conexão e autenticação.');
@@ -51,9 +49,7 @@ export default function AdminPromocoesPage() {
     setTipoDesconto('percentual');
     try {
       // Busca todos os produtos ativos (não apenas os da vitrine)
-      const res = await axios.get(`${apiUrl}/api/produtos`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await authGet(`/api/produtos`);
       setResultadosBusca(res.data);
     } catch (err) {
       toast.error('Erro ao buscar produtos. Verifique se você é administrador.');
@@ -86,20 +82,14 @@ export default function AdminPromocoesPage() {
       return;
     }
 
-    if (!token) {
-      toast.error('Token de autenticação não encontrado. Faça login novamente.');
-      return;
-    }
-
     setSalvando(true);
     try {
-      await axios.put(
-        `${apiUrl}/api/produtos/${produtoSelecionado._id}`,
+      await authPut(
+        `/api/produtos/${produtoSelecionado._id}`,
         {
           preco: novoPreco,
           preco_original: produtoSelecionado.preco
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        }
       );
       toast.success('Promoção aplicada!');
       setShowModal(false);
@@ -114,19 +104,14 @@ export default function AdminPromocoesPage() {
 
   const removerPromocao = async (produto: Produto) => {
     if (!confirm(`Remover promoção de "${produto.nome}" e restaurar preço original?`)) return;
-    if (!token) {
-      toast.error('Token não encontrado. Faça login novamente.');
-      return;
-    }
     try {
       const precoRestaurado = produto.preco_original || produto.preco;
-      await axios.put(
-        `${apiUrl}/api/produtos/${produto._id}`,
+      await authPut(
+        `/api/produtos/${produto._id}`,
         {
           preco: precoRestaurado,
           preco_original: null
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        }
       );
       toast.success('Promoção removida.');
       carregar();
