@@ -7,65 +7,58 @@ module.exports = {
   ],
   theme: {
     extend: {
-      /* Design System Premium */
-      colors: {
-        /* Paleta Parthenon - MANUAL DE DESIGN */
-        /* Cor Principal: Terra Bruciata */
-        'parthenon-brown': '#6B5344',       /* Terra Bruciata Premium - cor principal */
-        'parthenon-brown-dark': '#4A3A2E',  /* Terra Bruciata Escura - hover states */
-        
-        /* Cor Secundária: Bege Linho */
-        'parthenon-beige': '#E8DCC8',       /* Linho Premium - backgrounds */
-        
-        /* Cor Terciária: Azul Cinza */
-        'parthenon-navy': '#3D4E5C',        /* Azul Cinza Profundo - navegação */
-        'parthenon-navy-light': '#556B7F',  /* Azul Cinza Claro - hover states */
-        
-        /* Neutros Principais */
-        'dark': '#0a1628',          /* Navy profundo (compatibilidade) */
-        'dark-light': '#1a1a1a',    /* Preto sofisticado */
-        'light': '#f5f4f0',         /* Bege claro */
-        'light-mid': '#ede9e3',     /* Bege médio */
-        'gray-mid': '#dcd9d4',      /* Cinza médio */
-        'gray-premium': '#9B9B9B',  /* Cinza Premium */
-        'text-primary': '#1a1a1a',  /* Texto principal */
-        'text-secondary': '#5c5c5c',/* Texto secundário */
-        'text-light': '#9B9B9B',    /* Texto claro */
-        
-        /* Acentos Funcionais */
-        'success': '#6B9B6B',       /* Verde natural */
-        'error': '#C85C5C',         /* Vermelho mornado */
-        'warning': '#D4A574',       /* Ocre quente */
-        
-        /* Legacy (manter compatibilidade) */
-        'gold': '#c2a56c',          /* Dourado genérico (deprecado) */
-        'gold-light': '#e5d9c4',    /* Dourado claro (deprecado) */
-        
-        /* Cores Funcionais */
-        'primary': '#2c5f2d',       /* Verde (manter compatibilidade) */
-        'secondary': '#d4a373',     /* Ouro secundário */
-        'accent': '#e76f51',        /* Coral (alerta/destaque) */
-        'success': '#10b981',       /* Verde (sucesso) */
-        'warning': '#f59e0b',       /* Laranja (aviso) */
-        'error': '#ef4444',         /* Vermelho (erro) */
-      },
-      
+      /* ════════════════════════════════════════════════════════
+         NOVAS FONTES (identidade visual)
+         ════════════════════════════════════════════════════════ */
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        serif: ['"Playfair Display"', 'Georgia', 'serif'],
-        product: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        primary: ['Gotham Ultra', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+        secondary: ['Asap', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
-      
-      /* Espaçamento consistente */
+
+      /* ════════════════════════════════════════════════════════
+         CORES – mantidas + novas do manual da marca
+         ════════════════════════════════════════════════════════ */
+      colors: {
+        // ═══ CORES EXISTENTES (mantidas) ═══
+        'parthenon-brown': '#6B5344',
+        'parthenon-brown-dark': '#4A3A2E',
+        'parthenon-beige': '#E8DCC8',
+        'parthenon-navy': '#3D4E5C',
+        'parthenon-navy-light': '#556B7F',
+        'dark': '#0a1628',
+        'dark-light': '#1a1a1a',
+        'light': '#f5f4f0',
+        'light-mid': '#ede9e3',
+        'gray-mid': '#dcd9d4',
+        'gray-premium': '#9B9B9B',
+        'text-primary': '#1a1a1a',
+        'text-secondary': '#5c5c5c',
+        'text-light': '#9B9B9B',
+        'success': '#6B9B6B',
+        'error': '#C85C5C',
+        'warning': '#D4A574',
+        'gold': '#c2a56c',
+        'gold-light': '#e5d9c4',
+        'primary': '#2c5f2d',
+        'secondary': '#d4a373',
+        'accent': '#e76f51',
+
+        // ═══ NOVAS CORES (manual da marca) ═══
+        'primary-dark': '#0B1742',    // Azul escuro institucional
+        'secondary-gray': '#A9ABAE',  // Cinza institucional
+      },
+
+      /* ════════════════════════════════════════════════════════
+         ESPAÇAMENTO, SHADOWS E DEMAIS TOKENS (mantidos)
+         ════════════════════════════════════════════════════════ */
       spacing: {
-        'section-xs': '1.25rem',    /* 20px - mobile */
-        'section-sm': '1.5rem',     /* 24px */
-        'section-md': '2.5rem',     /* 40px */
-        'section-lg': '3.5rem',     /* 56px */
-        'section-xl': '5rem',       /* 80px - desktop */
+        'section-xs': '1.25rem',
+        'section-sm': '1.5rem',
+        'section-md': '2.5rem',
+        'section-lg': '3.5rem',
+        'section-xl': '5rem',
       },
-      
-      /* Sombras refinadas */
+
       boxShadow: {
         'sm-luxury': '0 2px 8px rgba(0, 0, 0, 0.04)',
         'md-luxury': '0 4px 16px rgba(0, 0, 0, 0.06)',
@@ -73,30 +66,28 @@ module.exports = {
         'xl-luxury': '0 12px 48px rgba(0, 0, 0, 0.1)',
         'hover': '0 20px 40px rgba(0, 0, 0, 0.06)',
       },
-      
-      /* Border radius consistente */
+
       borderRadius: {
-        'button': '0.375rem',       /* 6px - botões */
-        'card': '0.5rem',           /* 8px - cards */
-        'large': '0.75rem',         /* 12px */
-        'full-soft': '1.25rem',     /* 20px - soft pills */
+        'button': '0.375rem',
+        'card': '0.5rem',
+        'large': '0.75rem',
+        'full-soft': '1.25rem',
       },
-      
-      /* Transições suaves */
+
       transitionDuration: {
         'fast': '150ms',
         'base': '300ms',
         'slow': '500ms',
       },
-      
-      /* Animações sutis */
+
       animation: {
         'fade-in': 'fadeIn 0.3s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'scale-up': 'scaleUp 0.3s ease-out',
         'bounce-light': 'bounceLight 0.4s ease-in-out',
+        'shimmer': 'shimmer 1.5s infinite',
       },
-      
+
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },
@@ -121,6 +112,6 @@ module.exports = {
       },
     },
   },
-  
+
   plugins: [],
 };
