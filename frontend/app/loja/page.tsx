@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { extractDataArray, getApiUrl } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import FiltersSidebar from '@/components/FiltersSidebar';
 import SearchBar from '@/components/SearchBar';
@@ -52,7 +52,7 @@ function LojaContent() {
       axios.get(`${apiUrl}/api/categorias`),
     ])
       .then(([resProdutos, resCategorias]) => {
-        const prods = Array.isArray(resProdutos.data) ? resProdutos.data : [];
+        const prods = extractDataArray<Produto>(resProdutos.data);
         const cats = Array.isArray(resCategorias.data) ? resCategorias.data : [];
         setProdutos(prods);
         setCategorias(cats);

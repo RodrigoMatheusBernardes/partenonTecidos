@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import ProductCard from '@/components/ui/ProductCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { extractDataArray, getApiUrl } from '@/lib/api';
 
 interface ProdutoDestaque {
   _id: string;
@@ -26,7 +26,7 @@ export default function TrendingBar() {
     const apiUrl = getApiUrl();
     axios.get(`${apiUrl}/api/produtos/destaques`)
       .then(res => {
-        const dados = Array.isArray(res.data) ? res.data.slice(0, 8) : [];
+        const dados = extractDataArray<ProdutoDestaque>(res.data).slice(0, 8);
         setProdutos(dados);
       })
       .catch(err => console.error('Erro ao carregar destaques:', err))
@@ -51,15 +51,17 @@ export default function TrendingBar() {
 
   if (loading) {
     return (
-      <div className="w-full py-12 md:py-16">
-        <div className="text-center mb-10 md:mb-12">
-          <h2 className="text-2xl md:text-4xl font-serif font-light text-metallic-navy">
-            Produtos em Alta
-          </h2>
-          <p className="text-[#8a7a6a] font-light text-sm mt-2">Os favoritos da nossa comunidade</p>
-        </div>
-        <div className="flex justify-center py-12">
-          <div className="w-10 h-10 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
+      <div className="w-full py-16 md:py-20">
+        <div className="main-container">
+          <div className="text-center mb-10 md:mb-12">
+            <h2 className="text-2xl md:text-4xl font-serif font-light text-gray-800">
+              Produtos em Alta
+            </h2>
+            <p className="text-text-secondary font-light text-sm mt-2">Os favoritos da nossa comunidade</p>
+          </div>
+          <div className="flex justify-center py-12">
+            <div className="w-10 h-10 border-4 border-gray-mid border-t-gold rounded-full animate-spin" />
+          </div>
         </div>
       </div>
     );
@@ -71,70 +73,72 @@ export default function TrendingBar() {
   const produtosVisiveis = produtos.slice(currentIndex, currentIndex + itemsPerView);
 
   return (
-    <div className="w-full py-12 md:py-16">
-      <div className="text-center mb-10 md:mb-12">
-        <h2 className="text-2xl md:text-4xl font-serif font-light text-metallic-navy">
-          Produtos em Alta
-        </h2>
-        <p className="text-[#8a7a6a] font-light text-sm mt-2">Os favoritos da nossa comunidade</p>
-      </div>
+    <div className="w-full py-16 md:py-20">
+      <div className="main-container">
+        <div className="text-center mb-10 md:mb-12">
+          <h2 className="text-2xl md:text-4xl font-serif font-light text-gray-800">
+            Produtos em Alta
+          </h2>
+          <p className="text-text-secondary font-light text-sm mt-2">Os favoritos da nossa comunidade</p>
+        </div>
 
-      <div className="relative">
-        {/* Setas de navegação (agora mais adaptáveis ao mobile) */}
-        {produtos.length > itemsPerView && (
-          <>
-            <button
-              onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
-              disabled={currentIndex === 0}
-              className="
-                absolute left-1 md:left-2 top-1/2 -translate-y-1/2 z-10
-                p-2 md:p-3 bg-white/90 backdrop-blur-sm
-                border border-[#e8e3dc] rounded-full shadow-sm
-                hover:border-[#0B1F33] hover:shadow-md hover:scale-105
-                disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc]
-                transition-all duration-300
-              "
-            >
-              <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-[#1a1a1a]" />
-            </button>
-            <button
-              onClick={() => setCurrentIndex(Math.min(maxIndex, currentIndex + 1))}
-              disabled={currentIndex >= maxIndex}
-              className="
-                absolute right-1 md:right-2 top-1/2 -translate-y-1/2 z-10
-                p-2 md:p-3 bg-white/90 backdrop-blur-sm
-                border border-[#e8e3dc] rounded-full shadow-sm
-                hover:border-[#0B1F33] hover:shadow-md hover:scale-105
-                disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-[#e8e3dc]
-                transition-all duration-300
-              "
-            >
-              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-[#1a1a1a]" />
-            </button>
-          </>
+        <div className="relative">
+          {/* Setas de navegação */}
+          {produtos.length > itemsPerView && (
+            <>
+              <button
+                onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
+                disabled={currentIndex === 0}
+                className="
+                  absolute left-1 md:left-2 top-1/2 -translate-y-1/2 z-10
+                  p-2 md:p-3 bg-white/90 backdrop-blur-sm
+                  border border-gray-mid rounded-full shadow-sm
+                  hover:border-dark-light hover:shadow-md hover:scale-105
+                  disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-gray-mid
+                  transition-all duration-300
+                "
+              >
+                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-dark-light" />
+              </button>
+              <button
+                onClick={() => setCurrentIndex(Math.min(maxIndex, currentIndex + 1))}
+                disabled={currentIndex >= maxIndex}
+                className="
+                  absolute right-1 md:right-2 top-1/2 -translate-y-1/2 z-10
+                  p-2 md:p-3 bg-white/90 backdrop-blur-sm
+                  border border-gray-mid rounded-full shadow-sm
+                  hover:border-dark-light hover:shadow-md hover:scale-105
+                  disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-gray-mid
+                  transition-all duration-300
+                "
+              >
+                <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-dark-light" />
+              </button>
+            </>
+          )}
+
+          {/* Grid de produtos */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+            {produtosVisiveis.map((produto) => (
+              <ProductCard key={produto._id} produto={produto} />
+            ))}
+          </div>
+        </div>
+
+        {maxIndex > 0 && (
+          <div className="flex justify-center mt-8 gap-2">
+            {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentIndex(i)}
+                className={`h-1 rounded-full transition-all ${
+                  i === currentIndex ? 'w-8 bg-dark-light' : 'w-4 bg-gray-mid'
+                }`}
+              />
+            ))}
+          </div>
         )}
-
-        {/* Grid de produtos – mais adaptável ao mobile */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-          {produtosVisiveis.map((produto) => (
-            <ProductCard key={produto._id} produto={produto} />
-          ))}
-        </div>
       </div>
-
-      {maxIndex > 0 && (
-        <div className="flex justify-center mt-8 gap-2">
-          {Array.from({ length: maxIndex + 1 }).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentIndex(i)}
-              className={`h-1 rounded-full transition-all ${
-                i === currentIndex ? 'w-8 bg-[#1a1a1a]' : 'w-4 bg-[#d4cec4]'
-              }`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }

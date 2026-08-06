@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { extractDataArray, getApiUrl } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 
 interface Produto {
@@ -23,8 +23,9 @@ export default function ProdutosRelacionados({ produtoAtualId }: { produtoAtualI
     const apiUrl = getApiUrl();
     axios.get(`${apiUrl}/api/produtos/vitrine`)
       .then(res => {
-        const relacionados = res.data
-          .filter((p: any) => p._id !== produtoAtualId)
+        const vitrine = extractDataArray<Produto>(res.data);
+        const relacionados = vitrine
+          .filter((p) => p._id !== produtoAtualId)
           .slice(0, 4);
         setProdutos(relacionados);
       })

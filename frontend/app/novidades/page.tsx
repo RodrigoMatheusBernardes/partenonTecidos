@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { extractDataArray, getApiUrl } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 
 interface Produto {
@@ -25,7 +25,8 @@ export default function NovidadesPage() {
     const apiUrl = getApiUrl();
     axios.get(`${apiUrl}/api/produtos/vitrine`)
       .then(res => {
-        const ordenados = res.data.sort(
+        const vitrine = extractDataArray<Produto>(res.data);
+        const ordenados = vitrine.sort(
           (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
         setProdutos(ordenados.slice(0, 12));

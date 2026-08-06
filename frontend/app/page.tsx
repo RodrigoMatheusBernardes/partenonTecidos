@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { extractDataArray, getApiUrl } from '@/lib/api';
 import SearchBar from '@/components/SearchBar';
 import FiltersSidebar from '@/components/FiltersSidebar';
 import ProductCard from '@/components/ui/ProductCard';
@@ -24,18 +24,6 @@ interface Produto {
   preco_original?: number;
   vendas?: number;
   destaque?: boolean;
-}
-
-function parseVitrineResponse(payload: unknown): Produto[] {
-  if (Array.isArray(payload)) {
-    return payload as Produto[];
-  }
-
-  if (payload && typeof payload === 'object' && Array.isArray((payload as { data?: unknown }).data)) {
-    return (payload as { data: Produto[] }).data;
-  }
-
-  return [];
 }
 
 export default function Home() {
@@ -64,7 +52,7 @@ export default function Home() {
     axios
       .get(`${apiUrl}/api/produtos/vitrine`)
       .then(res => {
-        const data = parseVitrineResponse(res.data);
+        const data = extractDataArray<Produto>(res.data);
         setProdutos(data);
         const maxPreco = Math.max(...data.map((p: Produto) => p.preco), 100);
         setPrecoMaxGlobal(maxPreco);

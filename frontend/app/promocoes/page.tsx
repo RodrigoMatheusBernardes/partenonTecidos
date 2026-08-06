@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { extractDataArray, getApiUrl } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 
 interface Produto {
@@ -24,7 +24,8 @@ export default function PromocoesPage() {
     const apiUrl = getApiUrl();
     axios.get(`${apiUrl}/api/produtos/vitrine`)
       .then(res => {
-        const promos = res.data.filter((p: any) => p.preco_original && p.preco_original > p.preco);
+        const vitrine = extractDataArray<Produto>(res.data);
+        const promos = vitrine.filter((p) => p.preco_original && p.preco_original > p.preco);
         setProdutos(promos);
       })
       .catch(console.error)

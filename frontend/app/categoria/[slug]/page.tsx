@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 import ProductCard from '@/components/ui/ProductCard';
-import { getApiUrl } from '@/lib/api';
+import { extractDataArray, getApiUrl } from '@/lib/api';
 import { Home, ChevronRight } from 'lucide-react';
 
 interface Produto {
@@ -38,7 +38,8 @@ export default function CategoriaPage() {
         return axios.get(`${apiUrl}/api/produtos/vitrine`);
       })
       .then(res => {
-        const filtrados = res.data.filter((p: any) => {
+        const vitrine = extractDataArray<Produto & { categoria?: { _id?: string } | string }>(res.data);
+        const filtrados = vitrine.filter((p) => {
           const idCategoria = typeof p.categoria === 'object' ? p.categoria?._id : p.categoria;
           return idCategoria === catId;
         });
