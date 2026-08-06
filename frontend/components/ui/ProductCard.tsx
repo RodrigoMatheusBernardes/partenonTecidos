@@ -117,7 +117,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
             <p className="text-xs text-error font-medium">⚠️ Últimas unidades!</p>
           )}
 
-          {/* ✅ BOTÃO NATIVO – sem interferência do componente Button */}
+          {/* BOTÃO CORRIGIDO – forçando hover com !important */}
           <div className="mt-auto w-full" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={handleAddToCart}
@@ -127,7 +127,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
                 py-3 px-4 rounded-button
                 border-2 border-dark-light
                 bg-transparent text-dark-light
-                hover:bg-dark-light hover:text-white
+                hover:bg-dark-light hover:text-white hover:!text-white
                 transition-all duration-300
                 flex items-center justify-center gap-2
                 ${estoque <= 0 ? '!border-gray-200 !text-gray-400 cursor-not-allowed' : ''}
@@ -135,7 +135,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
               `}
             >
               <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
-              <span className="hover:text-white">
+              <span className="hover:!text-white">
                 {estoque > 0 ? 'Adicionar' : 'Esgotado'}
               </span>
             </button>
