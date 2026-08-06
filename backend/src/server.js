@@ -4,30 +4,27 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const path = require('path');
 const compression = require('compression');
 const connectDB = require('./database');
+const { getJwtSecret } = require('./utils/jwt');
+const { apiLimiter, buildCorsOptions, securityHeaders } = require('./middleware/security');
 
 const app = express();
 
-// Configuração CORS
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: false
-}));
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  next();
-});
+getJwtSecret();
+
+app.use(securityHeaders());
+
+const corsOptions = buildCorsOptions();
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+app.use(apiLimiter);
 
 // ✅ Compression middleware para reduzir tamanho de respostas (até 90%)
 app.use(compression({
@@ -35,7 +32,8 @@ app.use(compression({
   threshold: 1024  // Apenas comprimir respostas > 1KB
 }));
 
-app.use(express.json());
+app.use(cookieParser());
+app.use(express.json({ limit: '1mb' }));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Rotas da API
@@ -53,6 +51,13 @@ app.use('/api/pagamentos', require('./routes/pagamentoRoutes'));
 app.use('/api/webhooks', require('./routes/webhookRoutes'));
 app.get('/api/health', (req, res) => {
   res.json({ message: 'Servidor OK' });
+});
+
+app.use((err, req, res, next) => {
+  if (err && err.message === 'Origem não autorizada pelo CORS.') {
+    return res.status(403).json({ error: 'Origem não autorizada.' });
+  }
+  return res.status(500).json({ error: 'Erro interno do servidor.' });
 });
 
 // Conecta ao banco e só então inicia o servidor

@@ -6,6 +6,20 @@ const path = require('path');
 const fs = require('fs');
 const Produto = require('../models/Produto');
 const authMiddleware = require('../middleware/auth');
+const { requireRole } = require('../middleware/role');
+const { uploadLimiter } = require('../middleware/security');
+const {
+  escapeRegex,
+  parsePositiveInteger,
+  pick,
+  sanitizeObject,
+  sanitizeText,
+  validateObjectId,
+} = require('../utils/validation');
+
+function getFavoritoProdutoId(payload) {
+  return payload.produto_id || payload.produtoId || payload.id || '';
+}
 
 const noCache = (req, res, next) => {
   res.set('Cache-Control', 'no-store');
@@ -30,11 +44,18 @@ console.log('🌩️ Cloudinary configurado:', cloudinary.config().cloud_name ||
 const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
+    if (!allowedMimeTypes.has(file.mimetype)) {
+      return cb(new Error('Tipo de arquivo não permitido.'));
+    }
+    return cb(null, true);
+  }
 });
 
 // ================= UPLOAD DE IMAGEM (PROTEGIDO, VIA CLOUDINARY) =================
-router.post('/upload', authMiddleware, upload.single('imagem'), async (req, res) => {
+router.post('/upload', authMiddleware, requireRole(['admin']), uploadLimiter, upload.single('imagem'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'Nenhuma imagem enviada' });
@@ -52,17 +73,25 @@ router.post('/upload', authMiddleware, upload.single('imagem'), async (req, res)
     // Retorna a URL segura do Cloudinary (HTTPS)
     res.json({ url: result.secure_url });
   } catch (err) {
-    console.error('Erro no upload:', err);
-    res.status(500).json({ error: 'Falha no upload da imagem', details: err.message });
+    res.status(500).json({ error: 'Falha no upload da imagem' });
 }
 });
 
 // ================= ROTAS FIXAS (ANTES DE :ID) =================
 
 // POST /api/produtos - criar produto (admin)
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
-    const produtoData = { ...req.body };
+    const payload = sanitizeObject(req.body);
+    const produtoData = pick(payload, [
+      'nome', 'preco', 'preco_original', 'parcelas', 'descricao', 'fotos',
+      'estoque', 'reservado', 'alerta_minimo', 'categoria', 'ativo'
+    ]);
+    if (payload.atributos && typeof payload.atributos === 'object') {
+      produtoData.atributos = pick(payload.atributos, ['composicao', 'largura_metro', 'gramatura', 'vendas']);
+    }
+    produtoData.nome = sanitizeText(produtoData.nome, 150);
+    produtoData.descricao = sanitizeText(produtoData.descricao, 4000);
     if (produtoData.categoria === '' || produtoData.categoria === null) {
       delete produtoData.categoria;
     }
@@ -70,7 +99,7 @@ router.post('/', authMiddleware, async (req, res) => {
     await produto.save();
     res.status(201).json(produto);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ error: 'Dados de produto inválidos.' });
   }
 });
 
@@ -149,7 +178,7 @@ router.get('/busca', noCache, async (req, res) => {
     if (!q || q.trim().length < 2) {
       return res.json([]);
     }
-    const regex = new RegExp(q.trim(), 'i');
+    const regex = new RegExp(escapeRegex(q), 'i');
     const produtos = await Produto.find({
       ativo: true,
       nome: { $regex: regex }
@@ -166,61 +195,77 @@ router.get('/busca', noCache, async (req, res) => {
     }));
     res.json(resultado);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });
 
 // ================= FAVORITOS =================
-router.get('/favoritos/check/:clienteId/:produtoId', async (req, res) => {
+router.get('/favoritos/check/:clienteId/:produtoId', authMiddleware, async (req, res) => {
   try {
     const Favorito = require('../models/Favorito');
+    const canAccess = req.user.role === 'admin' || req.params.clienteId === req.user.id;
+    if (!canAccess) {
+      return res.status(403).json({ error: 'Acesso não autorizado.' });
+    }
+    if (!validateObjectId(req.params.produtoId)) {
+      return res.status(400).json({ error: 'Produto inválido.' });
+    }
     const fav = await Favorito.findOne({
-      cliente_id: req.params.clienteId,
+      cliente_id: req.user.id,
       produto_id: req.params.produtoId
     });
     res.json({ isFavorito: !!fav });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { res.status(500).json({ error: 'Erro interno do servidor.' }); }
 });
 
-router.post('/favoritos', async (req, res) => {
+router.post('/favoritos', authMiddleware, async (req, res) => {
   try {
     const Favorito = require('../models/Favorito');
-    const { cliente_id, produto_id } = req.body;
-    if (!cliente_id || !produto_id)
-      return res.status(400).json({ error: 'cliente_id e produto_id são obrigatórios.' });
+    const payload = sanitizeObject(req.body);
+    const produto_id = getFavoritoProdutoId(payload);
+    if (!validateObjectId(produto_id)) {
+      return res.status(400).json({ error: 'produto_id inválido.' });
+    }
 
-    const existente = await Favorito.findOne({ cliente_id, produto_id });
+    const existente = await Favorito.findOne({ cliente_id: req.user.id, produto_id });
     if (existente) {
       await Favorito.findByIdAndDelete(existente._id);
       return res.json({ isFavorito: false, message: 'Removido dos favoritos' });
     }
-    const novo = new Favorito({ cliente_id, produto_id });
+    const novo = new Favorito({ cliente_id: req.user.id, produto_id });
     await novo.save();
     res.status(201).json({ isFavorito: true, message: 'Adicionado aos favoritos' });
   } catch (err) {
     if (err.code === 11000) return res.status(400).json({ error: 'Operação inválida.' });
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ error: 'Não foi possível atualizar favorito.' });
   }
 });
 
-router.delete('/favoritos', async (req, res) => {
+router.delete('/favoritos', authMiddleware, async (req, res) => {
   try {
     const Favorito = require('../models/Favorito');
-    const { cliente_id, produto_id } = req.body;
-    if (!cliente_id || !produto_id)
-      return res.status(400).json({ error: 'cliente_id e produto_id são obrigatórios.' });
-    await Favorito.findOneAndDelete({ cliente_id, produto_id });
+    const payload = sanitizeObject(req.body);
+    const produto_id = getFavoritoProdutoId(payload);
+    if (!validateObjectId(produto_id)) {
+      return res.status(400).json({ error: 'produto_id inválido.' });
+    }
+    await Favorito.findOneAndDelete({ cliente_id: req.user.id, produto_id });
     res.json({ message: 'Removido dos favoritos' });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { res.status(500).json({ error: 'Erro interno do servidor.' }); }
 });
 
-router.get('/favoritos/:clienteId', async (req, res) => {
+router.get('/favoritos/:clienteId', authMiddleware, async (req, res) => {
   try {
     const Favorito = require('../models/Favorito');
-    const favoritos = await Favorito.find({ cliente_id: req.params.clienteId })
+    const canAccess = req.user.role === 'admin' || req.params.clienteId === req.user.id;
+    if (!canAccess) {
+      return res.status(403).json({ error: 'Acesso não autorizado.' });
+    }
+    const clienteId = req.user.role === 'admin' ? req.params.clienteId : req.user.id;
+    const favoritos = await Favorito.find({ cliente_id: clienteId })
       .populate('produto_id');
     res.json(favoritos);
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { res.status(500).json({ error: 'Erro interno do servidor.' }); }
 });
 
 // ================= AVALIAÇÕES =================
@@ -288,32 +333,49 @@ router.get('/:id', noCache, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
+    if (!validateObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Produto inválido.' });
+    }
+    const payload = sanitizeObject(req.body);
+    const update = pick(payload, [
+      'nome', 'preco', 'preco_original', 'parcelas', 'descricao', 'fotos',
+      'estoque', 'reservado', 'alerta_minimo', 'categoria', 'ativo'
+    ]);
+    if (payload.atributos && typeof payload.atributos === 'object') {
+      update.atributos = pick(payload.atributos, ['composicao', 'largura_metro', 'gramatura', 'vendas']);
+    }
     const produto = await Produto.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      update,
       { new: true, runValidators: true }
     );
     if (!produto) return res.status(404).json({ error: 'Produto não encontrado' });
     res.json(produto);
-  } catch (err) { res.status(400).json({ error: err.message }); }
+  } catch (err) { res.status(400).json({ error: 'Dados de produto inválidos.' }); }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
+    if (!validateObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Produto inválido.' });
+    }
     const produto = await Produto.findByIdAndDelete(req.params.id);
     if (!produto) return res.status(404).json({ error: 'Produto não encontrado' });
     res.json({ message: 'Produto excluído' });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { res.status(500).json({ error: 'Erro interno do servidor.' }); }
 });
 
 // POST /api/produtos/:id/reservar
 router.post('/:id/reservar', async (req, res) => {
   try {
+    if (!validateObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Produto inválido.' });
+    }
     const produto = await Produto.findById(req.params.id);
     if (!produto) return res.status(404).json({ error: 'Produto não encontrado' });
-    const qtd = parseInt(req.body.quantidade) || 1;
+    const qtd = parsePositiveInteger(req.body.quantidade, 1, 100);
 
     const disponivel = (produto.estoque || 0) - (produto.reservado || 0);
     if (qtd > disponivel) throw new Error('Estoque insuficiente');
@@ -327,9 +389,12 @@ router.post('/:id/reservar', async (req, res) => {
 // POST /api/produtos/:id/cancelar-reserva
 router.post('/:id/cancelar-reserva', async (req, res) => {
   try {
+    if (!validateObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Produto inválido.' });
+    }
     const produto = await Produto.findById(req.params.id);
     if (!produto) return res.status(404).json({ error: 'Produto não encontrado' });
-    const qtd = parseInt(req.body.quantidade) || 1;
+    const qtd = parsePositiveInteger(req.body.quantidade, 1, 100);
 
     produto.reservado = Math.max(0, (produto.reservado || 0) - qtd);
     await produto.save();
@@ -338,11 +403,14 @@ router.post('/:id/cancelar-reserva', async (req, res) => {
 });
 
 // POST /api/produtos/:id/confirmar
-router.post('/:id/confirmar', async (req, res) => {
+router.post('/:id/confirmar', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
+    if (!validateObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Produto inválido.' });
+    }
     const produto = await Produto.findById(req.params.id);
     if (!produto) return res.status(404).json({ error: 'Produto não encontrado' });
-    const qtd = parseInt(req.body.quantidade) || 1;
+    const qtd = parsePositiveInteger(req.body.quantidade, 1, 100);
 
     produto.estoque = Math.max(0, (produto.estoque || 0) - qtd);
     produto.reservado = Math.max(0, (produto.reservado || 0) - qtd);
@@ -353,11 +421,11 @@ router.post('/:id/confirmar', async (req, res) => {
 });
 
 // ================= MIGRAÇÃO DE IMAGENS (FERRAMENTA ADMINISTRATIVA) =================
-router.post('/migrar-imagens', authMiddleware, async (req, res) => {
+router.post('/migrar-imagens', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
-
-    const { origem, destino } = req.body;
+    const payload = sanitizeObject(req.body);
+    const origem = sanitizeText(payload.origem, 255);
+    const destino = sanitizeText(payload.destino, 255);
     const oldBase = origem || 'http://localhost:5000';
     const newBase = destino || 'https://res.cloudinary.com/dzwarbmzt/image/upload/v1/parthenon-produtos';
 

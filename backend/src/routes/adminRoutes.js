@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
+const { requireRole } = require('../middleware/role');
+const User = require('../models/User');
 const Produto = require('../models/Produto');
 const Pedido = require('../models/Pedido');
 const Cupom = require('../models/Cupom');
 const Categoria = require('../models/Categoria');
 const Concorrente = require('../models/Concorrente');
+const { escapeRegex, sanitizeText, validateObjectId } = require('../utils/validation');
 
 // ========== DASHBOARD CONSOLIDADO ==========
 router.get('/dashboard', authMiddleware, async (req, res) => {
@@ -524,17 +527,19 @@ async function analisarComRegras(p) {
   return 'Desculpe, ainda não entendi sua pergunta. Tente perguntar sobre: "produto mais vendido", "estoque baixo", "categoria mais vendida", "faturamento", "preço médio", "melhor frete para CEP", "pedidos pendentes", "comparar preço do [produto]" ou "tendência de [termo]".';
 }
 // GET /api/admin/clientes – lista clientes (admin e seller)
-router.get('/clientes', authMiddleware, requireRole(['admin', 'seller']), async (req, res) => {
+router.get('/clientes', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
-    const { busca = '', page = 1, limit = 20 } = req.query;
+    const busca = sanitizeText(String(req.query.busca || ''), 120);
+    const page = Math.max(1, Number.parseInt(String(req.query.page || '1'), 10));
+    const limit = Math.min(100, Math.max(1, Number.parseInt(String(req.query.limit || '20'), 10)));
     const skip = (page - 1) * limit;
 
     const filter = {
       role: 'customer',
       ...(busca && {
         $or: [
-          { nome: { $regex: busca, $options: 'i' } },
-          { email: { $regex: busca, $options: 'i' } },
+          { nome: { $regex: escapeRegex(busca), $options: 'i' } },
+          { email: { $regex: escapeRegex(busca), $options: 'i' } },
         ],
       }),
     };
@@ -577,8 +582,11 @@ router.get('/clientes', authMiddleware, requireRole(['admin', 'seller']), async 
   }
 });
 // GET /api/admin/clientes/:id/pedidos – pedidos de um cliente
-router.get('/clientes/:id/pedidos', authMiddleware, requireRole(['admin', 'seller']), async (req, res) => {
+router.get('/clientes/:id/pedidos', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
+    if (!validateObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Cliente inválido.' });
+    }
     const cliente = await User.findById(req.params.id).select('nome email');
     if (!cliente) {
       return res.status(404).json({ error: 'Cliente não encontrado.' });
@@ -595,47 +603,6 @@ router.get('/clientes/:id/pedidos', authMiddleware, requireRole(['admin', 'selle
     });
   } catch (err) {
     console.error('Erro ao buscar pedidos do cliente:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-// ========== DASHBOARD CONSOLIDADO ==========
-router.get('/dashboard', authMiddleware, requireRole(['admin']), async (req, res) => {
-  try {
-    // ... código existente ...
-
-    // ✅ NOVAS ESTATÍSTICAS FINANCEIRAS
-    const Pagamento = require('../models/Pagamento');
-
-    // Total recebido (pagamentos confirmados)
-    const totalRecebidoResult = await Pagamento.aggregate([
-      { $match: { status: 'PAID' } },
-      { $group: { _id: null, total: { $sum: '$finalAmount' } } }
-    ]);
-    const totalRecebido = totalRecebidoResult[0]?.total || 0;
-
-    // Pagamentos pendentes
-    const pagamentosPendentes = await Pagamento.countDocuments({ status: 'PENDING' });
-
-    // Pagamentos expirados
-    const pagamentosExpirados = await Pagamento.countDocuments({ status: 'EXPIRED' });
-
-    // Pagamentos cancelados
-    const pagamentosCancelados = await Pagamento.countDocuments({ status: 'CANCELED' });
-
-    // Quantidade de pagamentos PIX
-    const totalPix = await Pagamento.countDocuments({ paymentMethod: 'pix' });
-
-    // Adicionar ao objeto de resposta
-    res.json({
-      // ... dados existentes ...
-      totalRecebido,
-      pagamentosPendentes,
-      pagamentosExpirados,
-      pagamentosCancelados,
-      totalPix,
-    });
-  } catch (err) {
-    console.error('Erro no dashboard:', err);
     res.status(500).json({ error: err.message });
   }
 });

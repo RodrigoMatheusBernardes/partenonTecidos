@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Cupom = require('../models/Cupom');
 const authMiddleware = require('../middleware/auth');
+const { requireRole } = require('../middleware/role');
 
 // Pública – validação de cupom
 router.post('/validar', async (req, res) => {
@@ -39,10 +40,8 @@ router.post('/validar', async (req, res) => {
 });
 
 // Admin – listar todos COM PAGINAÇÃO
-router.get('/admin', authMiddleware, async (req, res) => {
+router.get('/admin', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
-
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, parseInt(req.query.limit) || 20);
     const skip = (page - 1) * limit;
@@ -62,9 +61,8 @@ router.get('/admin', authMiddleware, async (req, res) => {
 });
 
 // Admin – criar
-router.post('/admin', authMiddleware, async (req, res) => {
+router.post('/admin', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
     const cupom = new Cupom(req.body);
     await cupom.save();
     res.status(201).json(cupom);
@@ -74,9 +72,8 @@ router.post('/admin', authMiddleware, async (req, res) => {
 });
 
 // Admin – excluir
-router.delete('/admin/:id', authMiddleware, async (req, res) => {
+router.delete('/admin/:id', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
     const cupom = await Cupom.findByIdAndDelete(req.params.id);
     if (!cupom) return res.status(404).json({ error: 'Cupom não encontrado.' });
     res.json({ message: 'Cupom excluído.' });
