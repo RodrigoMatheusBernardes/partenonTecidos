@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { getApiUrl } from '@/lib/api';
+import { authGet } from '@/lib/auth';
 import Link from 'next/link';
 
 interface Pedido {
@@ -22,15 +22,8 @@ export default function SellerPedidosPage() {
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
-        const apiUrl = getApiUrl();
-        const token = localStorage.getItem('token');
-        const res = await fetch(`${apiUrl}/api/pedidos`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setPedidos(data);
-        }
+        const res = await authGet(`/api/pedidos`);
+        setPedidos(res.data);
       } catch (err) {
         console.error('Erro ao carregar pedidos:', err);
       } finally {

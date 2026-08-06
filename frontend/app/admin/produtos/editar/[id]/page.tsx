@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getApiUrl } from '@/lib/api';
+import { authFetch } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 export default function EditarProdutoPage() {
@@ -60,10 +61,8 @@ export default function EditarProdutoPage() {
     formData.append('imagem', file);
     setUploading(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${getApiUrl()}/api/produtos/upload`, {
+      const res = await authFetch(`/api/produtos/upload`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
       if (!res.ok) throw new Error('Falha no upload');
@@ -90,7 +89,6 @@ export default function EditarProdutoPage() {
     }
     setSaving(true);
     try {
-      const token = localStorage.getItem('token');
       const body = {
         nome: form.nome,
         preco: parseFloat(form.preco),
@@ -104,11 +102,10 @@ export default function EditarProdutoPage() {
           cuidados: form.cuidados || undefined,
         },
       };
-      const res = await fetch(`${getApiUrl()}/api/produtos/${id}`, {
+      const res = await authFetch(`/api/produtos/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(body),
       });

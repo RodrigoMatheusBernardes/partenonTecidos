@@ -120,26 +120,27 @@ export default function ProductCard({ produto }: { produto?: any }) {
           {/* BOTÃO COM GRADIENTE METÁLICO DA COLEÇÃO */}
           <div className="mt-auto w-full" onClick={(e) => e.stopPropagation()}>
             <button
-              onClick={handleAddToCart}
-              disabled={estoque <= 0}
-              className={`
-                w-full text-sm font-medium
-                py-3 px-4 rounded-button
-                border-2 border-dark-light
-                bg-transparent text-dark-light
-                hover:bg-metallic-navy hover:!bg-metallic-navy
-                hover:text-white hover:!text-white
-                transition-all duration-300
-                flex items-center justify-center gap-2
-                ${estoque <= 0 ? '!border-gray-200 !text-gray-400 cursor-not-allowed' : ''}
-                relative z-10
-              `}
-            >
-              <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
-              <span className="hover:text-white hover:!text-white">
-                {estoque > 0 ? 'Adicionar' : 'Esgotado'}
-              </span>
-            </button>
+  onClick={handleAddToCart}
+  disabled={estoque <= 0}
+  className={`
+    w-full text-sm font-medium tracking-wide
+    py-3.5 px-5 rounded-full
+    border-2 border-dark-light
+    bg-transparent text-dark-light
+    hover:bg-[#0B1F33] hover:!bg-[#0B1F33]
+    hover:text-white hover:!text-white
+    hover:-translate-y-0.5 hover:shadow-md
+    transition-all duration-300 ease-out
+    flex items-center justify-center gap-2.5
+    ${estoque <= 0 ? '!border-gray-200 !text-gray-400 cursor-not-allowed hover:!translate-y-0 hover:!shadow-none' : ''}
+    relative z-10
+  `}
+>
+  <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
+  <span className="hover:text-white hover:!text-white">
+    {estoque > 0 ? 'Adicionar' : 'Esgotado'}
+  </span>
+</button>
           </div>
         </div>
       </Link>

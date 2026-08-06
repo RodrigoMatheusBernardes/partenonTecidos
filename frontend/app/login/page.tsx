@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
+import { authGet } from '@/lib/auth';
 import toast from 'react-hot-toast';
 import Button from '@/components/ui/Button';
 import { Loader2 } from 'lucide-react';
@@ -51,9 +52,13 @@ export default function LoginPage() {
 
       const { token, user } = res.data;
 
-      // Salva token e atualiza contexto
-      localStorage.setItem('token', token);
       login(user, token);
+
+      try {
+        await authGet('/api/auth/me');
+      } catch {
+        // compatibilidade: backend já terá definido cookies, mas não bloquear login visual
+      }
 
       toast.success('Login realizado!');
 

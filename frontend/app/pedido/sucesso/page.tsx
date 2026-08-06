@@ -3,8 +3,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { getApiUrl } from '@/lib/api';
-import axios from 'axios';
+import { authGet } from '@/lib/auth';
 
 // Essa diretiva força a página a ser dinâmica (não tenta pré-renderizar)
 export const dynamic = 'force-dynamic';
@@ -25,8 +24,7 @@ function PedidoSucessoContent() {
       return;
     }
 
-    const apiUrl = getApiUrl();
-    axios.get(`${apiUrl}/api/pedidos/${orderId}`)
+    authGet(`/api/pedidos/${orderId}`)
       .then(res => setPedido(res.data))
       .catch(err => {
         console.error(err);

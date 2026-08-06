@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authDelete, authGet, authPost } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 interface Concorrente {
@@ -19,14 +18,9 @@ export default function AdminConcorrentesPage() {
   const [form, setForm] = useState({ nome: '', link: '', produto: '', preco: '' });
   const [carregando, setCarregando] = useState(true);
 
-  const apiUrl = getApiUrl();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
-
   const carregar = async () => {
     try {
-      const res = await axios.get(`${apiUrl}/api/concorrentes/admin`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authGet(`/api/concorrentes/admin`);
       setLista(res.data);
     } catch (err) {
       toast.error('Erro ao carregar');
@@ -39,12 +33,12 @@ export default function AdminConcorrentesPage() {
     e.preventDefault();
     if (!form.nome || !form.produto || !form.preco) return;
     try {
-      await axios.post(`${apiUrl}/api/concorrentes/admin`, {
+      await authPost(`/api/concorrentes/admin`, {
         nome: form.nome,
         link: form.link,
         produto: form.produto,
         preco: parseFloat(form.preco),
-      }, { headers: { Authorization: `Bearer ${token}` } });
+      });
       toast.success('Concorrente adicionado!');
       setForm({ nome: '', link: '', produto: '', preco: '' });
       carregar();
@@ -56,9 +50,7 @@ export default function AdminConcorrentesPage() {
   const excluir = async (id: string) => {
     if (!confirm('Excluir?')) return;
     try {
-      await axios.delete(`${apiUrl}/api/concorrentes/admin/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await authDelete(`/api/concorrentes/admin/${id}`);
       toast.success('Excluído!');
       carregar();
     } catch (err) {

@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getApiUrl } from '@/lib/api';
+import { authGet, authPost } from '@/lib/auth';
 import { Loader2, Copy, Check, Clock, AlertCircle, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
@@ -53,32 +54,22 @@ export default function PagamentoPixPage() {
 
     const buscarOuCriarPagamento = async () => {
       try {
-        const token = localStorage.getItem('token');
-        
         // Verificar se já existe pagamento para este pedido
-        let res = await fetch(`${apiUrl}/api/pagamentos/pedido/${orderId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        let pagamentoResponse;
 
-        if (res.status === 404) {
+        try {
+          pagamentoResponse = await authGet(`/api/pagamentos/pedido/${orderId}`);
+        } catch (error: any) {
+          if (error?.response?.status !== 404) throw error;
+        }
+
+        if (!pagamentoResponse) {
           // Criar novo pagamento
           setCreating(true);
-          res = await fetch(`${apiUrl}/api/pagamentos/pix`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ orderId }),
-          });
+          pagamentoResponse = await authPost(`/api/pagamentos/pix`, { orderId });
         }
 
-        if (!res.ok) {
-          const error = await res.json();
-          throw new Error(error.error || 'Erro ao carregar pagamento');
-        }
-
-        const data = await res.json();
+        const data = pagamentoResponse.data;
         const pagamentoData = data.pagamento || data;
         setPagamento(pagamentoData);
         setStatus(pagamentoData.status);
@@ -129,21 +120,15 @@ export default function PagamentoPixPage() {
 
     pollIntervalRef.current = setInterval(async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await fetch(`${apiUrl}/api/pagamentos/${pagamento?.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.status !== status) {
-            setStatus(data.status);
-            if (data.status === 'PAID') {
-              toast.success('✅ Pagamento confirmado!');
-              // Redirecionar para página de sucesso após 3 segundos
-              setTimeout(() => {
-                router.push(`/pedido/sucesso?id=${orderId}`);
-              }, 3000);
-            }
+        const res = await authGet(`/api/pagamentos/${pagamento?.id}`);
+        const data = res.data;
+        if (data.status !== status) {
+          setStatus(data.status);
+          if (data.status === 'PAID') {
+            toast.success('✅ Pagamento confirmado!');
+            setTimeout(() => {
+              router.push(`/pedido/sucesso?id=${orderId}`);
+            }, 3000);
           }
         }
       } catch (err) {

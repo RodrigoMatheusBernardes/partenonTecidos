@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import { getApiUrl } from '@/lib/api';
+import { authGet, authPost } from '@/lib/auth';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import { Heart } from 'lucide-react';
@@ -24,20 +23,19 @@ export default function FavoritoButton({
   size = 'md',
   variant = 'icon',
 }: FavoritoButtonProps) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, token } = useAuth();
   const [isFavorito, setIsFavorito] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const checkFavorito = useCallback(async () => {
-    if (!isAuthenticated || !user?.id) return;
+    if (!isAuthenticated || !user?.id || !token) return;
     try {
-      const apiUrl = getApiUrl();
-      const res = await axios.get(`${apiUrl}/api/produtos/favoritos/check/${user.id}/${produtoId}`);
+      const res = await authGet(`/api/produtos/favoritos/check/${user.id}/${produtoId}`);
       setIsFavorito(res.data.isFavorito);
     } catch (err) {
       console.error('Erro ao verificar favorito:', err);
     }
-  }, [isAuthenticated, user?.id, produtoId]);
+  }, [isAuthenticated, user?.id, produtoId, token]);
 
   useEffect(() => {
     checkFavorito();
@@ -55,9 +53,7 @@ export default function FavoritoButton({
     setIsFavorito(novoEstado);
 
     try {
-      const apiUrl = getApiUrl();
-      await axios.post(`${apiUrl}/api/produtos/favoritos`, {
-        cliente_id: user.id,
+      await authPost(`/api/produtos/favoritos`, {
         produto_id: produtoId,
       });
       setTimeout(() => {

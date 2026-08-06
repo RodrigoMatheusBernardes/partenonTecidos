@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { authGet, logoutSession, refreshSession, setupAuthInterceptors } from '@/lib/auth';
 
 export interface User {
   id: string;
@@ -12,10 +13,11 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  loading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isSeller: boolean;
-  login: (userData: User, token: string) => void;
+  login: (userData: User, token?: string) => void;
   logout: () => void;
 }
 
@@ -27,34 +29,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedToken = localStorage.getItem('token');
-    if (savedToken) {
+    setupAuthInterceptors();
+
+    const syncSession = async () => {
       try {
-        const payload = JSON.parse(atob(savedToken.split('.')[1]));
-        const userData: User = {
-          id: payload.id,
-          nome: payload.nome || 'Usuário',
-          email: payload.email,
-          role: payload.role || 'customer',
-        };
-        setToken(savedToken);
-        setUser(userData);
-      } catch (e) {
-        console.error('Token inválido no localStorage, removendo.');
-        localStorage.removeItem('token');
+        const response = await authGet(`/api/auth/me`);
+        setToken('cookie-session');
+        setUser(response.data);
+      } catch {
+        try {
+          await refreshSession();
+          const me = await authGet(`/api/auth/me`);
+          setToken('cookie-session');
+          setUser(me.data);
+        } catch {
+          setToken(null);
+          setUser(null);
+        }
+      } finally {
+        setLoading(false);
       }
-    }
-    setLoading(false);
+    };
+
+    syncSession();
   }, []);
 
-  const login = (userData: User, newToken: string) => {
-    localStorage.setItem('token', newToken);
-    setToken(newToken);
+  const login = (userData: User, newToken?: string) => {
+    setToken(newToken || 'cookie-session');
     setUser(userData);
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
+  const logout = async () => {
+    await logoutSession();
     setToken(null);
     setUser(null);
   };
@@ -68,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated, isAdmin, isSeller, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, isAuthenticated, isAdmin, isSeller, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

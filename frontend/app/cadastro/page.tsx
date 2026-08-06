@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import axios from 'axios';
 import { getApiUrl } from '@/lib/api';
+import { authGet } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 export default function CadastroPage() {
@@ -32,6 +33,11 @@ export default function CadastroPage() {
       const res = await axios.post(`${apiUrl}/api/auth/registrar`, { nome, email, password });
       const { token, user } = res.data;
       login(user, token);
+      try {
+        await authGet('/api/auth/me');
+      } catch {
+        // compatibilidade gradual
+      }
       toast.success('Conta criada com sucesso!');
       router.push('/meus-pedidos');
     } catch (err: any) {

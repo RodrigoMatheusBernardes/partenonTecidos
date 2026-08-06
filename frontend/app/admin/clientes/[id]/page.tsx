@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getApiUrl } from '@/lib/api';
+import { authFetch } from '@/lib/auth';
 import { ArrowLeft, Loader2, ShoppingBag, Calendar } from 'lucide-react';
 import Link from 'next/link';
 
@@ -22,15 +22,10 @@ export default function ClienteDetalhesPage() {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const apiUrl = getApiUrl();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
-
   useEffect(() => {
     const carregarDados = async () => {
       try {
-        const res = await fetch(`${apiUrl}/api/admin/clientes/${id}/pedidos`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await authFetch(`/api/admin/clientes/${id}/pedidos`);
         if (!res.ok) throw new Error('Erro ao carregar dados');
         const data = await res.json();
         setCliente(data.cliente);
@@ -43,7 +38,7 @@ export default function ClienteDetalhesPage() {
     };
 
     if (id) carregarDados();
-  }, [id, apiUrl, token]);
+  }, [id]);
 
   const getStatusBadge = (status: string) => {
     const map: Record<string, string> = {

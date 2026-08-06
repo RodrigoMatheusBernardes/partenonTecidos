@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { getApiUrl } from '@/lib/api';
+import { authGet } from '@/lib/auth';
 import { ShoppingBag, Users, DollarSign } from 'lucide-react';
 
 interface Stats {
@@ -25,15 +25,8 @@ export default function SellerDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const apiUrl = getApiUrl();
-        const token = localStorage.getItem('token');
-        const res = await fetch(`${apiUrl}/api/seller/stats`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setStats(data);
-        }
+        const res = await authGet(`/api/seller/stats`);
+        setStats(res.data);
       } catch (err) {
         console.error('Erro ao carregar estatísticas:', err);
       } finally {

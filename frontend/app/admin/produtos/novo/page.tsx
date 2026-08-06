@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getApiUrl } from '@/lib/api';
+import { authFetch } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 interface Categoria {
@@ -51,11 +52,8 @@ export default function NovoProdutoPage() {
     formData.append('imagem', file);
     setUploading(true);
     try {
-      const apiUrl = getApiUrl();
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${apiUrl}/api/produtos/upload`, {
+      const res = await authFetch(`/api/produtos/upload`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
       if (!res.ok) throw new Error('Falha no upload');
@@ -84,13 +82,10 @@ export default function NovoProdutoPage() {
       return;
     }
     try {
-      const token = localStorage.getItem('token');
-      const apiUrl = getApiUrl();
-      const res = await fetch(`${apiUrl}/api/categorias/admin`, {
+      const res = await authFetch(`/api/categorias/admin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ nome: novaCategoriaNome.trim() }),
       });
@@ -114,8 +109,6 @@ export default function NovoProdutoPage() {
     }
     setSaving(true);
     try {
-      const apiUrl = getApiUrl();
-      const token = localStorage.getItem('token');
       const produto = {
         nome: form.nome,
         preco: parseFloat(form.preco),
@@ -133,11 +126,10 @@ export default function NovoProdutoPage() {
         },
         ativo: true,
       };
-      const res = await fetch(`${apiUrl}/api/produtos`, {
+      const res = await authFetch(`/api/produtos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(produto),
       });
