@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import toast from 'react-hot-toast';
 import FavoritoButton from '@/components/FavoritoButton';
-import Button from '@/components/ui/Button';
 
 const DEFAULT_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400"%3E%3Crect width="300" height="400" fill="%23fcfcfc"/%3E%3Ctext x="150" y="200" font-family="Inter, sans-serif" font-size="20" fill="%23999" text-anchor="middle"%3EProduto%3C/text%3E%3C/svg%3E';
 
@@ -118,28 +117,28 @@ export default function ProductCard({ produto }: { produto?: any }) {
             <p className="text-xs text-error font-medium">⚠️ Últimas unidades!</p>
           )}
 
-          {/* ✅ BOTÃO ISOLADO DO LINK */}
+          {/* ✅ BOTÃO NATIVO – sem interferência do componente Button */}
           <div className="mt-auto w-full" onClick={(e) => e.stopPropagation()}>
-            <Button
-              variant="secondary"
-              size="lg"
+            <button
               onClick={handleAddToCart}
               disabled={estoque <= 0}
               className={`
                 w-full text-sm font-medium
-                transition-all duration-300
+                py-3 px-4 rounded-button
+                border-2 border-dark-light
+                bg-transparent text-dark-light
                 hover:bg-dark-light hover:text-white
-                ${estoque > 0 ? '' : '!border-gray-200 !text-gray-400'}
-                hover:opacity-100 group-hover:opacity-100
-                hover:text-white group-hover:text-white
+                transition-all duration-300
+                flex items-center justify-center gap-2
+                ${estoque <= 0 ? '!border-gray-200 !text-gray-400 cursor-not-allowed' : ''}
                 relative z-10
               `}
             >
               <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
-              <span className="inline-block hover:text-white group-hover:text-white">
+              <span className="hover:text-white">
                 {estoque > 0 ? 'Adicionar' : 'Esgotado'}
               </span>
-            </Button>
+            </button>
           </div>
         </div>
       </Link>
