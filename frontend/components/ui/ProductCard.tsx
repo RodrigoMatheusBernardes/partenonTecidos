@@ -117,7 +117,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
             <p className="text-xs text-error font-medium">⚠️ Últimas unidades!</p>
           )}
 
-          {/* BOTÃO CORRIGIDO – fundo escuro e texto branco no hover */}
+          {/* BOTÃO COM GRADIENTE METÁLICO DA COLEÇÃO */}
           <div className="mt-auto w-full" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={handleAddToCart}
@@ -127,7 +127,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
                 py-3 px-4 rounded-button
                 border-2 border-dark-light
                 bg-transparent text-dark-light
-                hover:bg-[#0B1F33] hover:!bg-[#0B1F33]
+                hover:bg-metallic-navy hover:!bg-metallic-navy
                 hover:text-white hover:!text-white
                 transition-all duration-300
                 flex items-center justify-center gap-2
