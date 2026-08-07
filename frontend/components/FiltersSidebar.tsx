@@ -58,9 +58,9 @@ export default function FiltersSidebar({
   };
 
   return (
-    <div className="w-full flex flex-col gap-6">
+    <div className="w-full flex flex-col gap-8">
       
-      {/* HEADER - Filtros */}
+      {/* HEADER */}
       <div className="flex items-center justify-between pb-4 border-b border-gray-mid/30">
         <h2 className="font-primary font-bold text-base text-primary-dark flex items-center gap-2">
           <SlidersHorizontal className="w-4 h-4 text-text-light" strokeWidth={1.5} />
@@ -88,7 +88,7 @@ export default function FiltersSidebar({
 
       {/* PREÇO */}
       <div className="flex flex-col gap-2">
-        <h3 className="font-primary font-medium text-sm text-primary-dark tracking-wide flex items-center gap-2">
+        <h3 className="font-primary font-bold text-base text-primary-dark tracking-wide flex items-center gap-2">
           <DollarSign className="w-3.5 h-3.5 text-text-light" strokeWidth={1.5} />
           Preço
         </h3>
@@ -119,7 +119,7 @@ export default function FiltersSidebar({
 
         <div className="flex flex-col gap-2 pl-1">
           {faixasPreco.map((faixa) => (
-            <label key={faixa.label} className="flex items-center gap-2.5 text-sm text-dark-light/80 font-secondary font-normal cursor-pointer group transition-all duration-200">
+            <label key={faixa.label} className="flex items-center gap-2.5 text-sm text-text-secondary font-secondary font-normal cursor-pointer group transition-all duration-200">
               <input
                 type="radio"
                 name="faixa-preco"
@@ -133,7 +133,7 @@ export default function FiltersSidebar({
               <span className="text-sm font-secondary font-normal group-hover:text-primary-dark transition-colors">{faixa.label}</span>
             </label>
           ))}
-          <label className="flex items-center gap-2.5 text-sm text-dark-light/80 font-secondary font-normal cursor-pointer group transition-all duration-200">
+          <label className="flex items-center gap-2.5 text-sm text-text-secondary font-secondary font-normal cursor-pointer group transition-all duration-200">
             <input
               type="radio"
               name="faixa-preco"
@@ -154,13 +154,13 @@ export default function FiltersSidebar({
 
       {/* CATEGORIAS */}
       <div className="flex flex-col gap-2">
-        <h3 className="font-primary font-medium text-sm text-primary-dark tracking-wide flex items-center gap-2">
+        <h3 className="font-primary font-bold text-base text-primary-dark tracking-wide flex items-center gap-2">
           <Layers className="w-3.5 h-3.5 text-text-light" strokeWidth={1.5} />
           Categorias
         </h3>
         <div className="flex flex-col gap-1.5 max-h-60 overflow-y-auto pr-1 pl-1">
           {categorias.map((cat) => (
-            <label key={cat._id} className="flex items-center gap-2.5 text-sm text-dark-light/80 font-secondary font-normal cursor-pointer group transition-all duration-200">
+            <label key={cat._id} className="flex items-center gap-2.5 text-sm text-text-secondary font-secondary font-normal cursor-pointer group transition-all duration-200">
               <input
                 type="checkbox"
                 checked={categoriasSelecionadas.includes(cat._id)}
@@ -181,19 +181,19 @@ export default function FiltersSidebar({
 
       {/* COLEÇÕES */}
       <div className="flex flex-col gap-2">
-        <h3 className="font-primary font-medium text-sm text-primary-dark tracking-wide flex items-center gap-2">
+        <h3 className="font-primary font-bold text-base text-primary-dark tracking-wide flex items-center gap-2">
           <Tag className="w-3.5 h-3.5 text-text-light" strokeWidth={1.5} />
           Coleções
         </h3>
         <div className="flex flex-col gap-1.5 pl-1">
-          <label className="flex items-center gap-2.5 text-sm text-dark-light/80 font-secondary font-normal cursor-pointer group transition-all duration-200">
+          <label className="flex items-center gap-2.5 text-sm text-text-secondary font-secondary font-normal cursor-pointer group transition-all duration-200">
             <input type="checkbox" className="hidden peer" />
             <span className="w-4 h-4 border border-gray-mid/70 rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
               <Check className="w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
             </span>
             <span className="text-sm font-secondary font-normal group-hover:text-primary-dark transition-colors">Premium</span>
           </label>
-          <label className="flex items-center gap-2.5 text-sm text-dark-light/80 font-secondary font-normal cursor-pointer group transition-all duration-200">
+          <label className="flex items-center gap-2.5 text-sm text-text-secondary font-secondary font-normal cursor-pointer group transition-all duration-200">
             <input type="checkbox" className="hidden peer" />
             <span className="w-4 h-4 border border-gray-mid/70 rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
               <Check className="w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
