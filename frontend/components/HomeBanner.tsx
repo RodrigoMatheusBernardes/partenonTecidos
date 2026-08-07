@@ -51,7 +51,7 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
   }, [current]);
 
   return (
-    <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-zinc-900 group">
+    <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
       
       {/* Slides de fundo */}
       <div className="absolute inset-0 w-full h-full">
@@ -74,42 +74,32 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
         ))}
       </div>
 
-      <div className="absolute inset-0 bg-black/20 z-20" />
+      <div className="absolute inset-0 bg-primary-dark/20 z-20" />
 
       <div className="relative z-30 flex items-center justify-center h-full px-6">
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
           
-          {/* 
-            CORREÇÃO 1: 
-            "Nova Coleção 2026" – mudado de font-normal para font-medium
-          */}
-          <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-medium font-sans text-white">
+          {/* Label - Nova Coleção */}
+          <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-secondary font-medium text-white">
             Nova Coleção 2026
           </p>
 
-          {/* 
-            CORREÇÃO 2: 
-            "Parthenon" – mudado de font-light para font-normal.
-            "Tecidos" mantém font-medium para ancorar o título.
-          */}
-          <h1 className="text-4xl md:text-7xl lg:text-8xl font-normal tracking-[0.15em] leading-[1.1] font-serif text-white">
+          {/* Título Principal - Parthenon */}
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
             Parthenon <br />
-            <span className="font-medium tracking-[0.05em] text-white">Tecidos</span>
+            <span className="font-primary font-medium tracking-[0.05em] text-white">Tecidos</span>
           </h1>
           
-          {/* 
-            CORREÇÃO 3: 
-            "A elegância que tece histórias" – mudado de text-[#EAEAEB] para text-white
-          */}
-          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-normal font-sans text-white">
+          {/* Subtítulo */}
+          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">
             A elegância que tece histórias
           </p>
 
-          {/* CTA (inalterado) */}
+          {/* CTA - Botão */}
           <div className="pt-2">
             <Link
               href="/loja"
-              className="inline-block border border-[#C5A880] text-[#C5A880] px-10 py-4 text-xs tracking-[0.2em] uppercase font-light hover:bg-[#C5A880] hover:text-[#0B0C10] transition-all duration-500"
+              className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500"
             >
               Conhecer a coleção
             </Link>
@@ -117,7 +107,7 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
         </div>
       </div>
 
-      {/* Controles (inalterados) */}
+      {/* Controles de Navegação */}
       {total > 1 && (
         <>
           <button
@@ -141,7 +131,7 @@ export default function HomeBanner({ slides = DEFAULT_SLIDES }: HomeBannerProps)
                 key={index}
                 onClick={() => setCurrent(index)}
                 className={`h-1 rounded-full transition-all ${
-                  index === current ? 'w-8 bg-white' : 'w-4 bg-white/50'
+                  index === current ? 'w-8 bg-gold' : 'w-4 bg-white/50'
                 }`}
               />
             ))}
