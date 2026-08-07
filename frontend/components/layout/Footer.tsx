@@ -36,8 +36,7 @@ export default function Footer() {
             </button>
           </div>
 
-          {/* Botão Criar Conta - ALINHADO NO TOPO DO ESPAÇO DISPONÍVEL */}
-          {/* justifyContent: flex-start alinha no topo; marginTop reduzido para 0.5rem */}
+          {/* Botão Criar Conta - CORRIGIDO E POSICIONADO NO TOPO */}
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '0.5rem' }}>
             <Link
               href="/cadastro"
