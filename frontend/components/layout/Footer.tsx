@@ -21,7 +21,7 @@ export default function Footer() {
             Cadastre-se para receber novidades, lançamentos e ofertas especiais.
           </p>
 
-          {/* Input e Botão de Envio (Centralizado) */}
+          {/* Input e Botão de Envio */}
           <div className="w-full max-w-2xl relative mt-4">
             <input
               type="email"
@@ -36,11 +36,11 @@ export default function Footer() {
             </button>
           </div>
 
-          {/* Botão Criar Conta - CORRIGIDO E REFINADO */}
-          <div className="mt-2">
+          {/* Botão Criar Conta - POSICIONADO E CORRIGIDO */}
+          <div className="flex justify-center w-full mt-8">
             <Link
               href="/cadastro"
-              className="inline-block border-2 border-metallic-navy text-metallic-navy px-12 py-4 rounded-full text-lg font-secondary font-bold hover:bg-metallic-navy hover:text-white transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg"
+              className="inline-block border-2 border-transparent bg-gradient-to-r from-[#0A1420] via-[#1A3A5C] to-[#0A1420] bg-[length:200%_100%] text-white px-12 py-4 rounded-full text-lg font-secondary font-bold transition-all duration-500 hover:bg-[length:100%_100%] hover:shadow-lg hover:scale-105"
             >
               Criar sua conta
             </Link>
