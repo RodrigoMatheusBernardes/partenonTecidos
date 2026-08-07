@@ -61,7 +61,7 @@ export default function FiltersSidebar({
     <div className="w-full flex flex-col gap-8">
       
       {/* HEADER */}
-      <div className="flex items-center justify-between pb-4 border-b border-gray-mid/40">
+      <div className="flex items-center justify-between pb-4 border-b border-gray-mid/30">
         <h2 className="font-primary font-bold text-sm text-primary-dark flex items-center gap-2">
           <SlidersHorizontal className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Filtros
@@ -150,7 +150,7 @@ export default function FiltersSidebar({
       </div>
 
       {/* DIVISOR SUTIL */}
-      <div className="border-b border-gray-mid/40" />
+      <div className="border-b border-gray-mid/30" />
 
       {/* CATEGORIAS - Sem Card */}
       <div className="flex flex-col gap-3">
@@ -177,7 +177,7 @@ export default function FiltersSidebar({
       </div>
 
       {/* DIVISOR SUTIL */}
-      <div className="border-b border-gray-mid/40" />
+      <div className="border-b border-gray-mid/30" />
 
       {/* COLEÇÕES - Sem Card */}
       <div className="flex flex-col gap-3">
