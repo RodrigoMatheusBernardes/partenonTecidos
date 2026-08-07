@@ -7,18 +7,19 @@ export default function Footer() {
   return (
     <footer className="bg-primary-dark border-t border-white/20 text-white">
       
-      {/* NEWSLETTER - REFINADA */}
-      <div className="border-y border-white/20 py-14 md:py-18">
-        <div className="main-container flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
-          <div className="text-center md:text-left max-w-lg">
+      {/* NEWSLETTER - CORRIGIDA */}
+      <div className="border-y border-white/20 py-12 md:py-16">
+        <div className="main-container flex flex-col items-center justify-center text-center gap-6 md:gap-8">
+          <div className="space-y-2">
             <h2 className="font-primary font-bold text-3xl md:text-4xl tracking-wide text-white">
               Receba informações exclusivas
             </h2>
-            <p className="font-secondary text-base md:text-lg text-white/80 mt-2">
+            <p className="font-secondary text-base md:text-lg text-white/80">
               Cadastre-se para receber novidades, lançamentos e ofertas especiais.
             </p>
           </div>
-          <div className="w-full md:w-auto flex-1 max-w-md relative">
+          
+          <div className="w-full max-w-md relative">
             <input
               type="email"
               placeholder="Seu melhor e-mail"
