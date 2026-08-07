@@ -61,8 +61,8 @@ export default function FiltersSidebar({
     <div className="w-full flex flex-col gap-6">
       
       {/* HEADER */}
-      <div className="flex items-center justify-between pb-4 border-b border-gray-mid">
-        <h2 className="font-serif text-xl font-light text-dark-light tracking-wide flex items-center gap-2">
+      <div className="flex items-center justify-between pb-4 border-b border-gray-mid/30">
+        <h2 className="font-primary font-bold text-sm text-primary-dark flex items-center gap-2">
           <SlidersHorizontal className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Filtros
         </h2>
@@ -70,7 +70,7 @@ export default function FiltersSidebar({
           {(precoMin > 0 || precoMax < precoMaxGlobal || categoriasSelecionadas.length > 0) && (
             <button
               onClick={limparFiltros}
-              className="text-xs text-text-light hover:text-dark-light transition-colors font-light tracking-wider uppercase"
+              className="text-xs text-text-light hover:text-gold transition-colors font-secondary font-normal tracking-wide"
             >
               Limpar
             </button>
@@ -86,10 +86,10 @@ export default function FiltersSidebar({
         </div>
       </div>
 
-      {/* PREÇO */}
-      <div className="space-y-4">
-        <h3 className="text-[10px] font-medium uppercase tracking-widest text-text-light flex items-center gap-2">
-          <DollarSign className="w-3.5 h-3.5" strokeWidth={2} />
+      {/* PREÇO - Card Style */}
+      <div className="bg-white border border-[#f0f0f0] rounded-card p-5 shadow-sm-luxury space-y-4">
+        <h3 className="font-primary font-bold text-sm text-primary-dark flex items-center gap-2">
+          <DollarSign className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Preço
         </h3>
         
@@ -99,7 +99,7 @@ export default function FiltersSidebar({
             value={minInput}
             onChange={(e) => setMinInput(e.target.value)}
             placeholder="Mín"
-            className="w-16 border border-gray-mid rounded-button bg-transparent px-3 py-2 text-sm text-dark-light placeholder:text-text-light focus:outline-none focus:border-gold transition-colors"
+            className="w-14 border border-gray-mid rounded-button bg-transparent px-2 py-2 text-sm text-dark-light placeholder:text-text-light focus:outline-none focus:border-gold transition-colors"
           />
           <span className="text-text-light text-xs">—</span>
           <input
@@ -107,19 +107,19 @@ export default function FiltersSidebar({
             value={maxInput}
             onChange={(e) => setMaxInput(e.target.value)}
             placeholder="Máx"
-            className="w-16 border border-gray-mid rounded-button bg-transparent px-3 py-2 text-sm text-dark-light placeholder:text-text-light focus:outline-none focus:border-gold transition-colors"
+            className="w-14 border border-gray-mid rounded-button bg-transparent px-2 py-2 text-sm text-dark-light placeholder:text-text-light focus:outline-none focus:border-gold transition-colors"
           />
           <button
             onClick={handlePrecoManual}
-            className="bg-dark-light text-white text-xs font-medium px-4 py-2 rounded-button hover:bg-metallic-navy transition-colors"
+            className="bg-primary-dark text-white text-xs font-primary font-medium px-3 py-2 rounded-button hover:bg-primary-dark/80 transition-colors ml-auto"
           >
             OK
           </button>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 pt-1">
           {faixasPreco.map((faixa) => (
-            <label key={faixa.label} className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group">
+            <label key={faixa.label} className="flex items-center gap-2.5 text-sm text-dark-light font-secondary cursor-pointer group">
               <input
                 type="radio"
                 name="faixa-preco"
@@ -130,10 +130,10 @@ export default function FiltersSidebar({
               <span className="relative w-4 h-4 border border-gray-mid rounded-full bg-white flex items-center justify-center peer-checked:border-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
                 <span className="w-2 h-2 rounded-full bg-gold opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></span>
               </span>
-              <span className="text-sm font-light group-hover:font-normal transition-all">{faixa.label}</span>
+              <span className="text-sm font-secondary font-normal group-hover:font-medium transition-all">{faixa.label}</span>
             </label>
           ))}
-          <label className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group">
+          <label className="flex items-center gap-2.5 text-sm text-dark-light font-secondary cursor-pointer group">
             <input
               type="radio"
               name="faixa-preco"
@@ -144,24 +144,21 @@ export default function FiltersSidebar({
             <span className="relative w-4 h-4 border border-gray-mid rounded-full bg-white flex items-center justify-center peer-checked:border-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
               <span className="w-2 h-2 rounded-full bg-gold opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></span>
             </span>
-            <span className="text-sm font-light group-hover:font-normal transition-all">Todos os preços</span>
+            <span className="text-sm font-secondary font-normal group-hover:font-medium transition-all">Todos os preços</span>
           </label>
         </div>
       </div>
 
-      {/* DIVISÓRIA */}
-      <div className="border-b border-gray-mid my-1" />
-
-      {/* CATEGORIAS */}
+      {/* CATEGORIAS - Card Style */}
       {categorias.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-[10px] font-medium uppercase tracking-widest text-text-light flex items-center gap-2">
-            <Layers className="w-3.5 h-3.5" strokeWidth={2} />
+        <div className="bg-white border border-[#f0f0f0] rounded-card p-5 shadow-sm-luxury space-y-4">
+          <h3 className="font-primary font-bold text-sm text-primary-dark flex items-center gap-2">
+            <Layers className="w-4 h-4 text-text-light" strokeWidth={1.5} />
             Categorias
           </h3>
           <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-2">
             {categorias.map((cat) => (
-              <label key={cat._id} className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group">
+              <label key={cat._id} className="flex items-center gap-2.5 text-sm text-dark-light font-secondary cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={categoriasSelecionadas.includes(cat._id)}
@@ -171,36 +168,33 @@ export default function FiltersSidebar({
                 <span className="w-4 h-4 border border-gray-mid rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
                   <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
                 </span>
-                <span className="text-sm font-light group-hover:font-normal transition-all">{cat.nome}</span>
+                <span className="text-sm font-secondary font-normal group-hover:font-medium transition-all">{cat.nome}</span>
               </label>
             ))}
           </div>
         </div>
       )}
 
-      {/* DIVISÓRIA (opcional) */}
-      <div className="border-b border-gray-mid my-1" />
-
-      {/* COLEÇÕES (estático – exemplo) */}
-      <div className="space-y-4">
-        <h3 className="text-[10px] font-medium uppercase tracking-widest text-text-light flex items-center gap-2">
-          <Tag className="w-3.5 h-3.5" strokeWidth={2} />
+      {/* COLEÇÕES - Card Style */}
+      <div className="bg-white border border-[#f0f0f0] rounded-card p-5 shadow-sm-luxury space-y-4">
+        <h3 className="font-primary font-bold text-sm text-primary-dark flex items-center gap-2">
+          <Tag className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Coleções
         </h3>
         <div className="flex flex-col gap-2">
-          <label className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group">
+          <label className="flex items-center gap-2.5 text-sm text-dark-light font-secondary cursor-pointer group">
             <input type="checkbox" className="hidden peer" />
             <span className="w-4 h-4 border border-gray-mid rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
               <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
             </span>
-            <span className="text-sm font-light group-hover:font-normal transition-all">Premium</span>
+            <span className="text-sm font-secondary font-normal group-hover:font-medium transition-all">Premium</span>
           </label>
-          <label className="flex items-center gap-2.5 text-sm text-text-secondary cursor-pointer group">
+          <label className="flex items-center gap-2.5 text-sm text-dark-light font-secondary cursor-pointer group">
             <input type="checkbox" className="hidden peer" />
             <span className="w-4 h-4 border border-gray-mid rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
               <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
             </span>
-            <span className="text-sm font-light group-hover:font-normal transition-all">Promoções</span>
+            <span className="text-sm font-secondary font-normal group-hover:font-medium transition-all">Promoções</span>
           </label>
         </div>
       </div>
