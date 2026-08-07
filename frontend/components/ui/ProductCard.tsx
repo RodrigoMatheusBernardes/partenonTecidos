@@ -93,7 +93,12 @@ export default function ProductCard({ produto }: { produto?: any }) {
         </div>
 
         <div className="p-4 md:p-6 flex flex-col flex-1 gap-3">
-          <h3 className="font-serif font-normal text-lg md:text-xl leading-tight tracking-wide text-primary-dark line-clamp-2">
+          {/* 
+            CORREÇÃO DEFINITIVA: 
+            - text-primary-dark com !important para garantir a cor
+            - font-normal para hierarquia visual
+          */}
+          <h3 className="font-serif font-normal text-lg md:text-xl leading-tight tracking-wide text-primary-dark !text-primary-dark line-clamp-2">
             {nome}
           </h3>
 
