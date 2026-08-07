@@ -16,8 +16,8 @@ export default function Footer() {
             Receba informações exclusivas
           </h2>
 
-          {/* Frase - AUMENTADA COM CLASSES QUE O TAILWIND JÁ CONHECE */}
-          <p className="font-secondary text-2xl md:text-4xl leading-snug text-white/80 max-w-5xl mx-auto">
+          {/* Frase - CORRIGIDA COM !important */}
+          <p className="font-secondary text-2xl md:text-4xl leading-snug text-white/80 max-w-5xl mx-auto !text-base md:!text-4xl">
             Cadastre-se para receber novidades, lançamentos e ofertas especiais.
           </p>
 
