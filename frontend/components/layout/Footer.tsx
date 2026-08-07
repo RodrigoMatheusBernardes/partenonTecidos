@@ -7,40 +7,40 @@ export default function Footer() {
   return (
     <footer className="bg-primary-dark border-t border-white/20 text-white">
       
-      {/* NEWSLETTER - Nova Estrutura Centralizada */}
-      <div className="border-y border-white/20 py-12 md:py-20">
-        <div className="main-container flex flex-col items-center justify-center text-center gap-6 md:gap-8">
+      {/* NEWSLETTER - Refinamento Profissional */}
+      <div className="border-y border-white/20 py-16 md:py-24">
+        <div className="main-container flex flex-col items-center justify-center text-center gap-8 md:gap-12">
           
           {/* Título */}
-          <h2 className="font-primary font-bold text-3xl md:text-5xl tracking-wide text-white">
+          <h2 className="font-primary font-bold text-4xl md:text-6xl tracking-tight text-white">
             Receba informações exclusivas
           </h2>
 
-          {/* Frase (Descrição) - Aumentada e Centralizada */}
-          <p className="font-secondary text-lg md:text-2xl leading-relaxed text-white/80 max-w-3xl">
+          {/* Frase - AUMENTO SIGNIFICATIVO E REMOÇÃO DE RESTRIÇÃO */}
+          <p className="font-secondary text-xl md:text-3xl leading-relaxed text-white/80 font-medium w-full max-w-4xl">
             Cadastre-se para receber novidades, lançamentos e ofertas especiais.
           </p>
 
           {/* Input e Botão de Envio (Centralizado) */}
-          <div className="w-full max-w-lg relative mt-2">
+          <div className="w-full max-w-2xl relative mt-4">
             <input
               type="email"
               placeholder="Seu melhor e-mail"
-              className="w-full border border-white/30 rounded-full px-6 py-4 text-base font-secondary text-white placeholder:text-white/60 bg-white/10 focus:outline-none focus:border-gold transition-colors pr-14"
+              className="w-full border-2 border-white/30 rounded-full px-8 py-5 text-lg font-secondary text-white placeholder:text-white/60 bg-white/10 focus:outline-none focus:border-gold transition-colors pr-16"
             />
             <button
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-gold text-primary-dark p-3 rounded-full hover:bg-gold-light transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 bg-gold text-primary-dark p-4 rounded-full hover:bg-gold-light transition-colors"
               aria-label="Inscrever-se"
             >
-              <Send className="w-5 h-5" strokeWidth={2} />
+              <Send className="w-6 h-6" strokeWidth={2} />
             </button>
           </div>
 
-          {/* Botão Criar Conta - Centralizado com efeito Metálico */}
+          {/* Botão Criar Conta - CORRIGIDO E REFINADO */}
           <div className="mt-2">
             <Link
               href="/cadastro"
-              className="inline-block border-2 border-metallic-navy text-metallic-navy px-10 py-3 rounded-full text-sm font-secondary font-bold hover:bg-metallic-navy hover:text-white transition-all duration-300"
+              className="inline-block border-2 border-metallic-navy text-metallic-navy px-12 py-4 rounded-full text-lg font-secondary font-bold hover:bg-metallic-navy hover:text-white transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg"
             >
               Criar sua conta
             </Link>
