@@ -58,10 +58,10 @@ export default function FiltersSidebar({
   };
 
   return (
-    <div className="w-full flex flex-col gap-6">
+    <div className="w-full flex flex-col gap-8">
       
       {/* HEADER */}
-      <div className="flex items-center justify-between pb-4 border-b border-gray-mid/30">
+      <div className="flex items-center justify-between pb-4 border-b border-gray-mid/40">
         <h2 className="font-primary font-bold text-sm text-primary-dark flex items-center gap-2">
           <SlidersHorizontal className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Filtros
@@ -86,20 +86,20 @@ export default function FiltersSidebar({
         </div>
       </div>
 
-      {/* PREÇO - Card Style */}
-      <div className="bg-white border border-[#f0f0f0] rounded-card p-5 shadow-sm-luxury space-y-4">
+      {/* PREÇO - Sem Card */}
+      <div className="flex flex-col gap-3">
         <h3 className="font-primary font-bold text-sm text-primary-dark flex items-center gap-2">
           <DollarSign className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Preço
         </h3>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mb-2">
           <input
             type="number"
             value={minInput}
             onChange={(e) => setMinInput(e.target.value)}
             placeholder="Mín"
-            className="w-14 border border-gray-mid rounded-button bg-transparent px-2 py-2 text-sm text-dark-light placeholder:text-text-light focus:outline-none focus:border-gold transition-colors"
+            className="w-16 border border-gray-mid rounded-button bg-white px-2 py-2 text-sm text-dark-light placeholder:text-text-light focus:outline-none focus:border-gold transition-colors"
           />
           <span className="text-text-light text-xs">—</span>
           <input
@@ -107,17 +107,17 @@ export default function FiltersSidebar({
             value={maxInput}
             onChange={(e) => setMaxInput(e.target.value)}
             placeholder="Máx"
-            className="w-14 border border-gray-mid rounded-button bg-transparent px-2 py-2 text-sm text-dark-light placeholder:text-text-light focus:outline-none focus:border-gold transition-colors"
+            className="w-16 border border-gray-mid rounded-button bg-white px-2 py-2 text-sm text-dark-light placeholder:text-text-light focus:outline-none focus:border-gold transition-colors"
           />
           <button
             onClick={handlePrecoManual}
-            className="bg-primary-dark text-white text-xs font-primary font-medium px-3 py-2 rounded-button hover:bg-primary-dark/80 transition-colors ml-auto"
+            className="bg-primary-dark text-white text-xs font-primary font-medium px-3 py-2 rounded-button hover:bg-primary-dark/80 transition-colors"
           >
             OK
           </button>
         </div>
 
-        <div className="flex flex-col gap-2 pt-1">
+        <div className="flex flex-col gap-2 pl-1">
           {faixasPreco.map((faixa) => (
             <label key={faixa.label} className="flex items-center gap-2.5 text-sm text-dark-light font-secondary cursor-pointer group">
               <input
@@ -149,39 +149,43 @@ export default function FiltersSidebar({
         </div>
       </div>
 
-      {/* CATEGORIAS - Card Style */}
-      {categorias.length > 0 && (
-        <div className="bg-white border border-[#f0f0f0] rounded-card p-5 shadow-sm-luxury space-y-4">
-          <h3 className="font-primary font-bold text-sm text-primary-dark flex items-center gap-2">
-            <Layers className="w-4 h-4 text-text-light" strokeWidth={1.5} />
-            Categorias
-          </h3>
-          <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-2">
-            {categorias.map((cat) => (
-              <label key={cat._id} className="flex items-center gap-2.5 text-sm text-dark-light font-secondary cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={categoriasSelecionadas.includes(cat._id)}
-                  onChange={() => onCategoriaChange(cat._id)}
-                  className="hidden peer"
-                />
-                <span className="w-4 h-4 border border-gray-mid rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
-                  <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
-                </span>
-                <span className="text-sm font-secondary font-normal group-hover:font-medium transition-all">{cat.nome}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* DIVISOR SUTIL */}
+      <div className="border-b border-gray-mid/40" />
 
-      {/* COLEÇÕES - Card Style */}
-      <div className="bg-white border border-[#f0f0f0] rounded-card p-5 shadow-sm-luxury space-y-4">
+      {/* CATEGORIAS - Sem Card */}
+      <div className="flex flex-col gap-3">
+        <h3 className="font-primary font-bold text-sm text-primary-dark flex items-center gap-2">
+          <Layers className="w-4 h-4 text-text-light" strokeWidth={1.5} />
+          Categorias
+        </h3>
+        <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-2 pl-1">
+          {categorias.map((cat) => (
+            <label key={cat._id} className="flex items-center gap-2.5 text-sm text-dark-light font-secondary cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={categoriasSelecionadas.includes(cat._id)}
+                onChange={() => onCategoriaChange(cat._id)}
+                className="hidden peer"
+              />
+              <span className="w-4 h-4 border border-gray-mid rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
+                <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
+              </span>
+              <span className="text-sm font-secondary font-normal group-hover:font-medium transition-all">{cat.nome}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* DIVISOR SUTIL */}
+      <div className="border-b border-gray-mid/40" />
+
+      {/* COLEÇÕES - Sem Card */}
+      <div className="flex flex-col gap-3">
         <h3 className="font-primary font-bold text-sm text-primary-dark flex items-center gap-2">
           <Tag className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Coleções
         </h3>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 pl-1">
           <label className="flex items-center gap-2.5 text-sm text-dark-light font-secondary cursor-pointer group">
             <input type="checkbox" className="hidden peer" />
             <span className="w-4 h-4 border border-gray-mid rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
