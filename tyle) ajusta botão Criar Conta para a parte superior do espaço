@@ -1,0 +1,28 @@
+[33mcommit c8dc54a81203868e190dfc9fdff44ff690e4b645[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: RodrigoMatheusBernardes <rodrigo.brnd.com>
+Date:   Fri Aug 7 04:48:04 2026 -0300
+
+    feat: reformula página Sobre Nós com layout moderno e imagem de fundo
+    
+    BACKEND:
+    - Adiciona imagem sobre.png na pasta uploads (para referência)
+    
+    FRONTEND:
+    - Reformula página Sobre Nós com design moderno e clean
+    - Remove seções de Missão, Visão e Valores
+    - Hero com overlay e texto institucional
+    - Adiciona vídeo institucional (embed YouTube)
+    - Seção de localização com mapa Google Maps e endereço
+    - Chamada para contato com botão WhatsApp e redes sociais
+    - Adiciona imagem de fundo /images/sobre.png na pasta public
+    - Fundo com overlay suave para legibilidade
+    
+    UI/UX:
+    - Layout minimalista, espaçado e totalmente responsivo
+    - Mantém identidade visual e consistência com o restante do site
+    - Ícones de redes sociais em SVG inline (sem erros de build)
+    
+    CORREÇÕES:
+    - Corrige erro de build com onError em Server Component
+    - Cria componente ImageWithFallback para imagens com fallback
+    - Ajusta cores e contraste para melhor legibilidade
