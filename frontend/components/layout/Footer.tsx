@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <footer className="bg-primary-dark border-t border-white/20 text-white">
       
-      {/* NEWSLETTER - Refinamento Profissional */}
+      {/* NEWSLETTER - REFINAMENTO DEFINITIVO */}
       <div className="border-y border-white/20 py-16 md:py-24">
         <div className="main-container flex flex-col items-center justify-center text-center gap-8 md:gap-12">
           
@@ -16,8 +16,8 @@ export default function Footer() {
             Receba informações exclusivas
           </h2>
 
-          {/* Frase - AUMENTO SIGNIFICATIVO E REMOÇÃO DE RESTRIÇÃO */}
-          <p className="font-secondary text-xl md:text-3xl leading-relaxed text-white/80 font-medium w-full max-w-4xl">
+          {/* Frase - AUMENTADA COM CLASSES QUE O TAILWIND JÁ CONHECE */}
+          <p className="font-secondary text-2xl md:text-4xl leading-snug text-white/80 max-w-5xl mx-auto">
             Cadastre-se para receber novidades, lançamentos e ofertas especiais.
           </p>
 
