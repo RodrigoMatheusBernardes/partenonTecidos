@@ -93,7 +93,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
         </div>
 
         <div className="p-4 md:p-6 flex flex-col flex-1 gap-3">
-          <h3 className="font-serif font-light text-lg md:text-xl leading-tight tracking-wide text-dark-light line-clamp-2">
+          <h3 className="font-serif font-normal text-lg md:text-xl leading-tight tracking-wide text-primary-dark line-clamp-2">
             {nome}
           </h3>
 
@@ -117,30 +117,28 @@ export default function ProductCard({ produto }: { produto?: any }) {
             <p className="text-xs text-error font-medium">⚠️ Últimas unidades!</p>
           )}
 
-          {/* BOTÃO COM GRADIENTE METÁLICO DA COLEÇÃO */}
           <div className="mt-auto w-full" onClick={(e) => e.stopPropagation()}>
             <button
-  onClick={handleAddToCart}
-  disabled={estoque <= 0}
-  className={`
-    w-full text-sm font-medium tracking-wide
-    py-3.5 px-5 rounded-full
-    border-2 border-dark-light
-    bg-transparent text-dark-light
-    hover:bg-[#0B1F33] hover:!bg-[#0B1F33]
-    hover:text-white hover:!text-white
-    hover:-translate-y-0.5 hover:shadow-md
-    transition-all duration-300 ease-out
-    flex items-center justify-center gap-2.5
-    ${estoque <= 0 ? '!border-gray-200 !text-gray-400 cursor-not-allowed hover:!translate-y-0 hover:!shadow-none' : ''}
-    relative z-10
-  `}
->
-  <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
-  <span className="hover:text-white hover:!text-white">
-    {estoque > 0 ? 'Adicionar' : 'Esgotado'}
-  </span>
-</button>
+              onClick={handleAddToCart}
+              disabled={estoque <= 0}
+              className={`
+                w-full text-sm font-medium tracking-wide
+                py-3.5 px-5 rounded-full
+                border-2 border-primary-dark
+                bg-transparent text-primary-dark
+                hover:bg-primary-dark hover:text-white
+                hover:-translate-y-0.5 hover:shadow-md
+                transition-all duration-300 ease-out
+                flex items-center justify-center gap-2.5
+                ${estoque <= 0 ? '!border-gray-200 !text-gray-400 cursor-not-allowed hover:!translate-y-0 hover:!shadow-none' : ''}
+                relative z-10
+              `}
+            >
+              <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
+              <span>
+                {estoque > 0 ? 'Adicionar' : 'Esgotado'}
+              </span>
+            </button>
           </div>
         </div>
       </Link>
