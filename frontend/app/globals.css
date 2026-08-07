@@ -82,11 +82,13 @@ ul, ol {
 /* ═══════════════════════════════════════════════════════════════════════════
    TIPOGRAFIA – herdam cor (permite classes como text-white)
    ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+    */
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-primary);
   font-weight: 700;
-  color: inherit;
+  color: #0B1742;   /* ← AGORA DEFINIDO EXPLICITAMENTE (AZUL ROYAL) */
   line-height: 1.3;
   letter-spacing: -0.01em;
 }
