@@ -7,31 +7,57 @@ export default function Footer() {
   return (
     <footer className="bg-primary-dark border-t border-white/20 text-white">
       
-      {/* NEWSLETTER - CORRIGIDA */}
+      {/* NEWSLETTER - Layout Original Mantido, Tipografia Ajustada */}
       <div className="border-y border-white/20 py-12 md:py-16">
-        <div className="main-container flex flex-col items-center justify-center text-center gap-6 md:gap-8">
-          <div className="space-y-2">
+        <div className="main-container flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
+          
+          {/* Texto */}
+          <div className="text-center md:text-left">
             <h2 className="font-primary font-bold text-3xl md:text-4xl tracking-wide text-white">
               Receba informações exclusivas
             </h2>
-            <p className="font-secondary text-base md:text-lg text-white/80">
+            <p className="font-secondary text-base md:text-lg text-white/80 mt-2">
               Cadastre-se para receber novidades, lançamentos e ofertas especiais.
             </p>
           </div>
-          
-          <div className="w-full max-w-md relative">
-            <input
-              type="email"
-              placeholder="Seu melhor e-mail"
-              className="w-full border border-white/30 rounded-full px-6 py-4 text-base font-secondary text-white placeholder:text-white/60 bg-white/10 focus:outline-none focus:border-gold transition-colors pr-14"
-            />
-            <button
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-gold text-primary-dark p-3 rounded-full hover:bg-gold-light transition-colors"
-              aria-label="Inscrever-se"
-            >
-              <Send className="w-5 h-5" strokeWidth={2} />
-            </button>
+
+          {/* Input + Incentivo */}
+          <div className="w-full md:w-auto flex-1 max-w-md">
+            <div className="relative">
+              <input
+                type="email"
+                placeholder="Seu melhor e-mail"
+                className="w-full border border-white/30 rounded-full px-6 py-4 text-base font-secondary text-white placeholder:text-white/60 bg-white/10 focus:outline-none focus:border-gold transition-colors pr-14"
+              />
+              <button
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-gold text-primary-dark p-3 rounded-full hover:bg-gold-light transition-colors"
+                aria-label="Inscrever-se"
+              >
+                <Send className="w-5 h-5" strokeWidth={2} />
+              </button>
+            </div>
+
+            {/* Bloco de Incentivo ao Cadastro */}
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-2 mt-4 text-sm text-white/60 font-secondary">
+              <span className="whitespace-nowrap">Faça parte da nossa comunidade</span>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/cadastro"
+                  className="text-white hover:text-gold transition-colors font-medium underline-offset-4 hover:underline"
+                >
+                  Criar conta
+                </Link>
+                <span className="text-white/30">•</span>
+                <Link
+                  href="/login"
+                  className="text-white/60 hover:text-white transition-colors underline-offset-4 hover:underline"
+                >
+                  Entrar
+                </Link>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
 
