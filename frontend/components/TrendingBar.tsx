@@ -54,10 +54,12 @@ export default function TrendingBar() {
       <div className="w-full py-16 md:py-20">
         <div className="main-container">
           <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-2xl md:text-4xl font-serif font-light text-gray-800">
+            <h2 className="font-primary font-bold text-2xl md:text-4xl text-metallic-navy">
               Produtos em Alta
             </h2>
-            <p className="text-text-secondary font-light text-sm mt-2">Os favoritos da nossa comunidade</p>
+            <p className="font-secondary text-text-secondary text-sm mt-2">
+              Os favoritos da nossa comunidade
+            </p>
           </div>
           <div className="flex justify-center py-12">
             <div className="w-10 h-10 border-4 border-gray-mid border-t-gold rounded-full animate-spin" />
@@ -76,10 +78,12 @@ export default function TrendingBar() {
     <div className="w-full py-16 md:py-20">
       <div className="main-container">
         <div className="text-center mb-10 md:mb-12">
-          <h2 className="text-2xl md:text-4xl font-serif font-light text-gray-800">
+          <h2 className="font-primary font-bold text-2xl md:text-4xl text-metallic-navy">
             Produtos em Alta
           </h2>
-          <p className="text-text-secondary font-light text-sm mt-2">Os favoritos da nossa comunidade</p>
+          <p className="font-secondary text-text-secondary text-sm mt-2">
+            Os favoritos da nossa comunidade
+          </p>
         </div>
 
         <div className="relative">
@@ -93,12 +97,12 @@ export default function TrendingBar() {
                   absolute left-1 md:left-2 top-1/2 -translate-y-1/2 z-10
                   p-2 md:p-3 bg-white/90 backdrop-blur-sm
                   border border-gray-mid rounded-full shadow-sm
-                  hover:border-dark-light hover:shadow-md hover:scale-105
+                  hover:border-primary-dark hover:shadow-md hover:scale-105
                   disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-gray-mid
                   transition-all duration-300
                 "
               >
-                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-dark-light" />
+                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-primary-dark" />
               </button>
               <button
                 onClick={() => setCurrentIndex(Math.min(maxIndex, currentIndex + 1))}
@@ -107,12 +111,12 @@ export default function TrendingBar() {
                   absolute right-1 md:right-2 top-1/2 -translate-y-1/2 z-10
                   p-2 md:p-3 bg-white/90 backdrop-blur-sm
                   border border-gray-mid rounded-full shadow-sm
-                  hover:border-dark-light hover:shadow-md hover:scale-105
+                  hover:border-primary-dark hover:shadow-md hover:scale-105
                   disabled:opacity-40 disabled:hover:scale-100 disabled:hover:border-gray-mid
                   transition-all duration-300
                 "
               >
-                <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-dark-light" />
+                <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-primary-dark" />
               </button>
             </>
           )}
@@ -132,7 +136,7 @@ export default function TrendingBar() {
                 key={i}
                 onClick={() => setCurrentIndex(i)}
                 className={`h-1 rounded-full transition-all ${
-                  i === currentIndex ? 'w-8 bg-dark-light' : 'w-4 bg-gray-mid'
+                  i === currentIndex ? 'w-8 bg-primary-dark' : 'w-4 bg-gray-mid'
                 }`}
               />
             ))}
