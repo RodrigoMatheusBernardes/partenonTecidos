@@ -7,48 +7,49 @@ export default function Footer() {
   return (
     <footer className="bg-primary-dark border-t border-white/20 text-white">
       
-      {/* NEWSLETTER - APENAS TIPOGRAFIA AJUSTADA E BOTÃO ADICIONADO */}
+      {/* NEWSLETTER - Estrutura Restaurada, Tipografia Ajustada */}
       <div className="border-y border-white/20 py-12 md:py-16">
-        <div className="main-container flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
+        <div className="main-container flex flex-col md:flex-row items-center justify-between gap-8">
           
           {/* Texto à esquerda (DESKTOP) / Centralizado (MOBILE) */}
           <div className="text-center md:text-left">
+            {/* Título: Aumentado levemente para manter a proporção */}
             <h2 className="font-primary font-bold text-3xl md:text-4xl tracking-wide text-white">
               Receba informações
             </h2>
-            <p className="font-secondary text-base md:text-lg text-white/80 mt-2 leading-relaxed max-w-md">
+            {/* DESCRIÇÃO: AUMENTO SIGNIFICATIVO DE FONTE */}
+            <p className="font-secondary text-base md:text-lg leading-relaxed text-white/80 mt-2 max-w-lg">
               Cadastre-se para receber novidades, lançamentos e ofertas especiais.
             </p>
           </div>
 
-          {/* Formulário e Botão à direita (DESKTOP) / Centralizado (MOBILE) */}
-          <div className="flex flex-col items-center md:items-end w-full md:w-auto gap-4">
-            
-            {/* Campo de e-mail (posição original mantida) */}
-            <div className="w-full max-w-md relative">
-              <input
-                type="email"
-                placeholder="Seu melhor e-mail"
-                className="w-full border border-white/30 rounded-full px-6 py-4 text-base font-secondary text-white placeholder:text-white/60 bg-white/10 focus:outline-none focus:border-gold transition-colors pr-14"
-              />
-              {/* Botão de envio existente (posição original mantida) */}
-              <button
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-gold text-primary-dark p-3 rounded-full hover:bg-gold-light transition-colors"
-                aria-label="Inscrever-se"
-              >
-                <Send className="w-5 h-5" strokeWidth={2} />
-              </button>
-            </div>
-
-            {/* NOVO BOTÃO CENTRALIZADO - Criar sua conta */}
-            <Link
-              href="/cadastro"
-              className="inline-block border border-white/30 text-white px-8 py-2.5 rounded-full text-sm font-secondary font-medium hover:bg-white hover:text-primary-dark transition-colors"
+          {/* Input e Botão à direita (DESKTOP) / Centralizado (MOBILE) */}
+          <div className="w-full md:w-auto flex-1 max-w-md relative">
+            {/* Campo de e-mail original */}
+            <input
+              type="email"
+              placeholder="Seu melhor e-mail"
+              className="w-full border border-white/30 rounded-full px-6 py-4 text-base font-secondary text-white placeholder:text-white/60 bg-white/10 focus:outline-none focus:border-gold transition-colors pr-14"
+            />
+            {/* Botão de envio original */}
+            <button
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-gold text-primary-dark p-3 rounded-full hover:bg-gold-light transition-colors"
+              aria-label="Inscrever-se"
             >
-              Criar sua conta
-            </Link>
+              <Send className="w-5 h-5" strokeWidth={2} />
+            </button>
 
+            {/* NOVO BOTÃO PERFEITAMENTE CENTRALIZADO */}
+            <div className="flex justify-center w-full mt-6">
+              <Link
+                href="/cadastro"
+                className="inline-block border border-white/30 text-white px-8 py-2.5 rounded-full text-sm font-secondary font-medium hover:bg-white hover:text-primary-dark transition-colors"
+              >
+                Criar sua conta
+              </Link>
+            </div>
           </div>
+
         </div>
       </div>
 
