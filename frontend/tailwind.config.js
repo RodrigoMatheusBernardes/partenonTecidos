@@ -7,19 +7,22 @@ module.exports = {
   ],
   theme: {
     extend: {
-      /* ════════════════════════════════════════════════════════
-         NOVAS FONTES (identidade visual)
-         ════════════════════════════════════════════════════════ */
+      /* ════════════════════════════════════════════════════════════
+         FONTES
+         ════════════════════════════════════════════════════════════ */
       fontFamily: {
         primary: ['Gotham Ultra', '"Helvetica Neue"', 'Arial', 'sans-serif'],
         secondary: ['Asap', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
+        product: ['Cormorant Garamond', 'Georgia', 'serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
 
-      /* ════════════════════════════════════════════════════════
-         CORES – mantidas + novas do manual da marca
-         ════════════════════════════════════════════════════════ */
+      /* ════════════════════════════════════════════════════════════
+         CORES
+         ════════════════════════════════════════════════════════════ */
       colors: {
-        // ═══ CORES EXISTENTES (mantidas) ═══
+        // Cores mantidas do projeto
         'parthenon-brown': '#6B5344',
         'parthenon-brown-dark': '#4A3A2E',
         'parthenon-beige': '#E8DCC8',
@@ -43,14 +46,14 @@ module.exports = {
         'secondary': '#d4a373',
         'accent': '#e76f51',
 
-        // ═══ NOVAS CORES (manual da marca) ═══
+        // NOVAS CORES (manual da marca)
         'primary-dark': '#0B1742',    // Azul escuro institucional
         'secondary-gray': '#A9ABAE',  // Cinza institucional
       },
 
-      /* ════════════════════════════════════════════════════════
+      /* ════════════════════════════════════════════════════════════
          ESPAÇAMENTO, SHADOWS E DEMAIS TOKENS (mantidos)
-         ════════════════════════════════════════════════════════ */
+         ════════════════════════════════════════════════════════════ */
       spacing: {
         'section-xs': '1.25rem',
         'section-sm': '1.5rem',

@@ -3,12 +3,12 @@
 
 @theme {
   /* ═══════════════════════════════════════════════════════════════
-     NOVAS FONTES (identidade visual)
+     FONTES (identidade visual)
      ═══════════════════════════════════════════════════════════════ */
   --font-primary: 'Gotham Ultra', 'Helvetica Neue', Arial, sans-serif;
   --font-secondary: 'Asap', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Mantidas para compatibilidade */
+  /* Mantidas para compatibilidade com componentes existentes */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-product: 'Cormorant Garamond', Georgia, serif;
@@ -36,8 +36,8 @@
   /* ═══════════════════════════════════════════════════════════════
      NOVAS CORES (manual da marca – complementares)
      ═══════════════════════════════════════════════════════════════ */
-  --color-primary-dark: #0B1742;
-  --color-secondary-gray: #A9ABAE;
+  --color-primary-dark: #0B1742;   /* Azul escuro institucional */
+  --color-secondary-gray: #A9ABAE; /* Cinza institucional */
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -319,7 +319,7 @@ textarea {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   UTILITÁRIOS – CINZA CHUMBO (PADRÃO DA LOJA)
+   UTILITÁRIOS – CINZA CHUMBO (PADRÃO DA LOJA) – mantido
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @utility text-lead-gray {
