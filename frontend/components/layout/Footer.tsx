@@ -36,8 +36,8 @@ export default function Footer() {
             </button>
           </div>
 
-          {/* Botão Criar Conta - CORRIGIDO NA DIV ENVOLTÓRIA */}
-          <div className="!flex !justify-center w-full !mt-8">
+          {/* Botão Criar Conta - CSS IN-LINE GARANTIDO */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
             <Link
               href="/cadastro"
               className="inline-block border-2 border-transparent bg-gradient-to-r from-[#0A1420] via-[#1A3A5C] to-[#0A1420] bg-[length:200%_100%] text-white px-12 py-4 rounded-full text-lg font-secondary font-bold transition-all duration-500 hover:bg-[length:100%_100%] hover:shadow-lg hover:scale-105"
