@@ -135,8 +135,10 @@ export default function Home() {
       <section className="w-full bg-[#F7F7F7] py-16 md:py-20">
         <div className="main-container">
           <div className="flex flex-col md:flex-row gap-8">
+            
+            {/* SIDEBAR - CORRIGIDA (Removido bg-white, shadow e border) */}
             <aside className="hidden md:block w-64 flex-shrink-0">
-              <div className="sticky top-8 bg-white rounded-card shadow-sm-luxury border border-gray-mid p-6">
+              <div className="sticky top-8">
                 <FiltersSidebar
                   precoMin={precoMin}
                   precoMax={precoMax}
@@ -157,13 +159,13 @@ export default function Home() {
                   limparFiltros={limparFiltros}
                 />
 
-                {/* ✅ CONTEÚDO ABAIXO DO FILTRO – preenche o espaço vazio */}
-                <div className="mt-8 pt-6 border-t border-gray-mid space-y-6">
+                {/* CONTEÚDO ABAIXO DO FILTRO */}
+                <div className="mt-8 pt-6 border-t border-gray-mid/30 space-y-6">
                   
                   {/* Categorias Populares */}
                   {categorias.length > 0 && (
                     <div>
-                      <h4 className="text-xs font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
+                      <h4 className="text-xs font-primary font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
                         <Tag className="w-3.5 h-3.5" strokeWidth={2} />
                         Categorias em Destaque
                       </h4>
@@ -184,7 +186,7 @@ export default function Home() {
 
                   {/* Produtos em Alta (mini versão) */}
                   <div>
-                    <h4 className="text-xs font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
+                    <h4 className="text-xs font-primary font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
                       <Sparkles className="w-3.5 h-3.5" strokeWidth={2} />
                       Mais Vendidos
                     </h4>
@@ -358,7 +360,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SEÇÃO DE QUALIDADES – centralizada verticalmente */}
+      {/* SEÇÃO DE QUALIDADES */}
       <section className="py-16 md:py-20 border-t border-gray-mid">
         <div className="main-container flex flex-col justify-center min-h-[300px] md:min-h-[400px]">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 text-center">
