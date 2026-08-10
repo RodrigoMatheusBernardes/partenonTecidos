@@ -60,7 +60,7 @@ export default function Header() {
           {/* Logo – ATUALIZADO com fontes e cores do manual */}
           <Link href="/" className="flex items-center gap-1 flex-shrink-0">
             <span className="font-primary font-bold text-2xl tracking-[0.15em] text-white">
-              PARTENON
+              PARTHENON
             </span>
             <span className="font-secondary font-light text-xl tracking-[0.1em] text-secondary-gray hidden sm:inline">
               TECIDOS
