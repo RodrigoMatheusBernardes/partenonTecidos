@@ -60,10 +60,9 @@ export default function Header() {
         <div className="flex items-center justify-between h-20">
           
           {/* LOGO SUBSTITUÍDA - Imagem oficial da empresa */}
-          {/* Ajuste: object-contain garante proporção, maxHeight limita a altura sem forçar o header a crescer */}
           <Link href="/" className="flex items-center flex-shrink-0">
             <Image
-              src="/logoT.png"
+              src="/images/img/logoT.png"
               alt="Parthenon Tecidos"
               width={200}
               height={50}
