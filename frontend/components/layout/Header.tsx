@@ -58,7 +58,9 @@ export default function Header() {
     <header className="bg-primary-dark border-b border-secondary-gray/20 sticky top-0 z-50 text-white">
       <div className="main-container">
         <div className="flex items-center justify-between h-20">
-          {/* Logo – agora com a imagem oficial */}
+          
+          {/* LOGO SUBSTITUÍDA - Imagem oficial da empresa */}
+          {/* Ajuste: object-contain garante proporção, maxHeight limita a altura sem forçar o header a crescer */}
           <Link href="/" className="flex items-center flex-shrink-0">
             <Image
               src="/logoT.png"
@@ -66,8 +68,8 @@ export default function Header() {
               width={200}
               height={50}
               priority
-              className="h-auto w-auto"
-              style={{ maxHeight: '50px' }}
+              className="h-auto w-auto object-contain"
+              style={{ maxHeight: '40px' }} 
             />
           </Link>
 
