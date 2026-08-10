@@ -59,16 +59,16 @@ export default function Header() {
       <div className="main-container">
         <div className="flex items-center justify-between h-20">
           
-          {/* LOGO SUBSTITUÍDA - Imagem oficial da empresa */}
+          {/* LOGO - Ajuste de tamanho para ficar visualmente compatível */}
           <Link href="/" className="flex items-center flex-shrink-0">
             <Image
               src="/images/img/logoT.png"
               alt="Parthenon Tecidos"
-              width={200}
-              height={50}
+              width={240}
+              height={60}
               priority
               className="h-auto w-auto object-contain"
-              style={{ maxHeight: '40px' }} 
+              style={{ maxHeight: '56px' }} 
             />
           </Link>
 
