@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
@@ -57,14 +58,17 @@ export default function Header() {
     <header className="bg-primary-dark border-b border-secondary-gray/20 sticky top-0 z-50 text-white">
       <div className="main-container">
         <div className="flex items-center justify-between h-20">
-          {/* Logo – ATUALIZADO com fontes e cores do manual */}
-          <Link href="/" className="flex items-center gap-1 flex-shrink-0">
-            <span className="font-primary font-bold text-2xl tracking-[0.15em] text-white">
-              PARTHENON
-            </span>
-            <span className="font-secondary font-light text-xl tracking-[0.1em] text-secondary-gray hidden sm:inline">
-              TECIDOS
-            </span>
+          {/* Logo – agora com a imagem oficial */}
+          <Link href="/" className="flex items-center flex-shrink-0">
+            <Image
+              src="/logoT.png"
+              alt="Parthenon Tecidos"
+              width={200}
+              height={50}
+              priority
+              className="h-auto w-auto"
+              style={{ maxHeight: '50px' }}
+            />
           </Link>
 
           {/* Navigation */}
