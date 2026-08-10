@@ -59,15 +59,15 @@ export default function Header() {
       <div className="main-container">
         <div className="flex items-center justify-between h-20">
           
-          {/* LOGO - Ajuste fino: máxima escala sem ultrapassar a tarja */}
+          {/* LOGO - Tamanho máximo com margem de segurança e alta resolução */}
           <Link href="/" className="flex items-center flex-shrink-0 h-20">
             <Image
               src="/images/img/logoT.png"
               alt="Parthenon Tecidos"
-              width={400}
-              height={100}
+              width={600}
+              height={150}
               priority
-              className="max-h-full w-auto object-contain"
+              className="max-h-[76px] w-auto object-contain"
             />
           </Link>
 
