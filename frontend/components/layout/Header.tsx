@@ -62,7 +62,7 @@ export default function Header() {
           {/* LOGO - Com imagem recortada e tamanho máximo contido */}
           <Link href="/" className="flex items-center flex-shrink-0 h-20">
             <Image
-              src="/images/img/logoT.png"
+              src="/images/img/logoTP.png"
               alt="Parthenon Tecidos"
               width={450}
               height={112}
