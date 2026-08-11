@@ -75,8 +75,8 @@ export default function Header() {
               <Image
                 src="/images/img/textilpartenon.png"
                 alt="Parthenon Tecidos"
-                width={180}
-                height={50}
+                width={145}
+                height={40}
                 priority
                 className="max-h-[50px] w-auto object-contain"
               />
