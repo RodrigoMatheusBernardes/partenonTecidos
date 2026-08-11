@@ -5,7 +5,7 @@ import { useRef, useEffect, useState } from 'react';
 interface HeroVideoProps {
   /**
    * Caminho para o vídeo principal.
-   * @default '/videos/vd ATENDIMENTO TEXTIL.mp4'
+   * @default '/videos/vid ATENDIMENTO TEXTIL.mp4'
    */
   src?: string;
   /**
@@ -66,7 +66,7 @@ export default function HeroVideo({
       {shouldPlayVideo ? (
         <video
           ref={videoRef}
-          src={encodeURIComponent(src)}
+          src={src}
           autoPlay
           muted
           playsInline
