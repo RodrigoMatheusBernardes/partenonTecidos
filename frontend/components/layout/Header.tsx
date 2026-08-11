@@ -59,16 +59,28 @@ export default function Header() {
       <div className="main-container">
         <div className="flex items-center justify-between h-20">
           
-          {/* LOGO - Com imagem recortada e tamanho máximo contido */}
+          {/* LOGO - COMPOSIÇÃO INDEPENDENTE: SÍMBOLO + TEXTO */}
           <Link href="/" className="flex items-center flex-shrink-0 h-20">
-            <Image
-              src="/images/img/logott.png"
-              alt="Parthenon Tecidos"
-              width={450}
-              height={112}
-              priority
-              className="max-h-[76px] w-auto object-contain"
-            />
+            <div className="flex items-center gap-3">
+              {/* Símbolo */}
+              <Image
+                src="/images/img/simbolo.png"
+                alt="Símbolo Parthenon"
+                width={60}
+                height={60}
+                priority
+                className="max-h-[70px] w-auto object-contain"
+              />
+              {/* Texto */}
+              <Image
+                src="/images/img/textilpartenon.png"
+                alt="Parthenon Tecidos"
+                width={200}
+                height={50}
+                priority
+                className="max-h-[50px] w-auto object-contain"
+              />
+            </div>
           </Link>
 
           {/* Navigation */}
