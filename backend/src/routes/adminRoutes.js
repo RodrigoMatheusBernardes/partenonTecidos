@@ -20,7 +20,6 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
     const pedidosPendentes = await Pedido.countDocuments({ status: 'pendente' });
     const totalCupons = await Cupom.countDocuments({ ativo: true });
 
-    // ✅ Usar aggregation para calcular faturamento em vez de find + reduce
     const faturamentoResult = await Pedido.aggregate([
       { $match: { status: { $ne: 'cancelado' } } },
       { $group: { _id: null, total: { $sum: '$total' } } }
@@ -88,7 +87,6 @@ router.get('/stats', authMiddleware, async (req, res) => {
     const totalPedidos = await Pedido.countDocuments();
     const totalCupons = await Cupom.countDocuments({ ativo: true });
     
-    // ✅ Usar aggregation para calcular faturamento
     const faturamentoResult = await Pedido.aggregate([
       { $group: { _id: null, total: { $sum: '$total' } } }
     ]);
@@ -162,7 +160,7 @@ router.get('/stats/vendas-diarias', authMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ========== INSIGHTS ==========
+// ========== INSIGHTS (CORRIGIDO) ==========
 router.get('/insights', authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
@@ -171,59 +169,153 @@ router.get('/insights', authMiddleware, async (req, res) => {
     const trintaDiasAtras = new Date(hoje);
     trintaDiasAtras.setDate(hoje.getDate() - 30);
 
-    const produtosBaixoEstoque = await Produto.find({ ativo: true, $expr: { $lte: ['$estoque', '$alerta_minimo'] } }).select('nome estoque alerta_minimo vendas').lean();
+    // 1. Produtos com baixo estoque
+    let produtosBaixoEstoque = [];
+    try {
+      produtosBaixoEstoque = await Produto.find({
+        ativo: true,
+        $expr: { $lte: ['$estoque', '$alerta_minimo'] }
+      }).select('nome estoque alerta_minimo').lean();
+    } catch (err) {
+      console.error('Erro em produtosBaixoEstoque:', err);
+      produtosBaixoEstoque = [];
+    }
 
-    const vendasPorProduto = await Pedido.aggregate([
-      { $match: { status: { $ne: 'cancelado' }, createdAt: { $gte: trintaDiasAtras } } },
-      { $unwind: '$itens' },
-      { $group: { _id: '$itens.produtoId', total_vendido: { $sum: '$itens.quantidade' }, receita: { $sum: { $multiply: ['$itens.quantidade', '$itens.preco'] } } } },
-      { $sort: { total_vendido: -1 } },
-      { $limit: 10 }
-    ]);
-
-    const todosProdutosAtivos = await Produto.find({ ativo: true }, '_id nome').lean();
-    const idsComVendas = vendasPorProduto.filter(v => v._id).map(v => v._id.toString());
-    const produtosBaixaPerformance = todosProdutosAtivos.filter(p => p._id && !idsComVendas.includes(p._id.toString())).slice(0, 5);
-
-    const sugestoesReposicao = await Promise.all(produtosBaixoEstoque.map(async (prod) => {
-      const vendasPeriodo = await Pedido.aggregate([
+    // 2. Vendas por produto (últimos 30 dias)
+    let vendasPorProduto = [];
+    try {
+      vendasPorProduto = await Pedido.aggregate([
         { $match: { status: { $ne: 'cancelado' }, createdAt: { $gte: trintaDiasAtras } } },
         { $unwind: '$itens' },
-        { $match: { 'itens.produtoId': prod._id } },
-        { $group: { _id: null, total: { $sum: '$itens.quantidade' } } }
+        { $group: {
+            _id: '$itens.produtoId',
+            total_vendido: { $sum: '$itens.quantidade' },
+            receita: { $sum: { $multiply: ['$itens.quantidade', '$itens.preco'] } }
+          }
+        },
+        { $sort: { total_vendido: -1 } },
+        { $limit: 10 }
       ]);
-      const totalVendido = vendasPeriodo[0]?.total || 0;
-      const mediaDiaria = totalVendido / 30;
-      const recomendado = Math.ceil(mediaDiaria * 7);
-      return { _id: prod._id, nome: prod.nome, estoque_atual: prod.estoque, alerta_minimo: prod.alerta_minimo, media_diaria: mediaDiaria.toFixed(2), recomendado_comprar: recomendado > 0 ? recomendado : prod.alerta_minimo * 2 };
-    }));
+    } catch (err) {
+      console.error('Erro em vendasPorProduto:', err);
+      vendasPorProduto = [];
+    }
 
-    const categoriaTop = await Pedido.aggregate([
-      { $match: { status: { $ne: 'cancelado' }, createdAt: { $gte: trintaDiasAtras } } },
-      { $unwind: '$itens' },
-      { $lookup: { from: 'produtos', localField: 'itens.produtoId', foreignField: '_id', as: 'produto' } },
-      { $unwind: '$produto' },
-      { $lookup: { from: 'categorias', localField: 'produto.categoria', foreignField: '_id', as: 'categoria' } },
-      { $unwind: { path: '$categoria', preserveNullAndEmptyArrays: true } },
-      { $group: { _id: { $ifNull: ['$categoria.nome', 'Sem categoria'] }, total: { $sum: '$itens.quantidade' } } },
-      { $sort: { total: -1 } },
-      { $limit: 1 }
-    ]);
-    const fraseDestaque = categoriaTop.length > 0 ? `🔥 A categoria "${categoriaTop[0]._id}" foi a mais vendida nos últimos 30 dias, com ${categoriaTop[0].total} metros comercializados.` : '📊 Nenhuma venda registrada nos últimos 30 dias.';
+    // 3. Produtos com baixa performance
+    let produtosBaixaPerformance = [];
+    try {
+      const todosProdutosAtivos = await Produto.find({ ativo: true }, '_id nome').lean();
+      const idsComVendas = vendasPorProduto.filter(v => v._id).map(v => v._id.toString());
+      produtosBaixaPerformance = todosProdutosAtivos
+        .filter(p => p._id && !idsComVendas.includes(p._id.toString()))
+        .slice(0, 5);
+    } catch (err) {
+      console.error('Erro em produtosBaixaPerformance:', err);
+      produtosBaixaPerformance = [];
+    }
 
-    const rankingVendas = await Promise.all(vendasPorProduto.slice(0, 5).map(async (v) => {
-      const produto = await Produto.findById(v._id, 'nome').lean();
-      return { nome: produto?.nome || 'Produto removido', total_vendido: v.total_vendido, receita: v.receita };
-    }));
+    // 4. Sugestões de reposição (otimizado)
+    let sugestoesReposicao = [];
+    try {
+      if (produtosBaixoEstoque.length > 0) {
+        const idsBaixoEstoque = produtosBaixoEstoque.map(p => p._id);
+        const vendasPeriodo = await Pedido.aggregate([
+          { $match: { status: { $ne: 'cancelado' }, createdAt: { $gte: trintaDiasAtras } } },
+          { $unwind: '$itens' },
+          { $match: { 'itens.produtoId': { $in: idsBaixoEstoque } } },
+          { $group: { _id: '$itens.produtoId', total: { $sum: '$itens.quantidade' } } }
+        ]);
 
-    res.json({ sugestoesReposicao, produtosBaixaPerformance, rankingVendas, fraseDestaque });
+        const vendasMap = new Map(vendasPeriodo.map(v => [v._id.toString(), v.total]));
+        sugestoesReposicao = produtosBaixoEstoque.map(prod => {
+          const totalVendido = vendasMap.get(prod._id.toString()) || 0;
+          const mediaDiaria = totalVendido / 30;
+          const recomendado = Math.ceil(mediaDiaria * 7);
+          return {
+            _id: prod._id,
+            nome: prod.nome,
+            estoque_atual: prod.estoque,
+            alerta_minimo: prod.alerta_minimo,
+            media_diaria: mediaDiaria.toFixed(2),
+            recomendado_comprar: recomendado > 0 ? recomendado : prod.alerta_minimo * 2
+          };
+        });
+      }
+    } catch (err) {
+      console.error('Erro em sugestoesReposicao:', err);
+      sugestoesReposicao = [];
+    }
+
+    // 5. Categoria top e frase destaque
+    let categoriaTop = [];
+    let fraseDestaque = '📊 Nenhuma venda registrada nos últimos 30 dias.';
+    try {
+      categoriaTop = await Pedido.aggregate([
+        { $match: { status: { $ne: 'cancelado' }, createdAt: { $gte: trintaDiasAtras } } },
+        { $unwind: '$itens' },
+        { $lookup: {
+            from: 'produtos',
+            localField: 'itens.produtoId',
+            foreignField: '_id',
+            as: 'produto'
+          }
+        },
+        { $unwind: { path: '$produto', preserveNullAndEmptyArrays: true } },
+        // Converte o campo categoria (string) para ObjectId antes do lookup
+        { $addFields: {
+            categoriaObjectId: { $toObjectId: '$produto.categoria' }
+          }
+        },
+        { $lookup: {
+            from: 'categorias',
+            localField: 'categoriaObjectId',
+            foreignField: '_id',
+            as: 'categoria'
+          }
+        },
+        { $unwind: { path: '$categoria', preserveNullAndEmptyArrays: true } },
+        { $group: {
+            _id: { $ifNull: ['$categoria.nome', 'Sem categoria'] },
+            total: { $sum: '$itens.quantidade' }
+          }
+        },
+        { $sort: { total: -1 } },
+        { $limit: 1 }
+      ]);
+
+      if (categoriaTop.length > 0) {
+        fraseDestaque = `🔥 A categoria "${categoriaTop[0]._id}" foi a mais vendida nos últimos 30 dias, com ${categoriaTop[0].total} metros comercializados.`;
+      }
+    } catch (err) {
+      console.error('Erro em categoriaTop:', err);
+      categoriaTop = [];
+    }
+
+    // 6. Ranking de vendas (top 5)
+    let rankingVendas = [];
+    try {
+      rankingVendas = await Promise.all(vendasPorProduto.slice(0, 5).map(async (v) => {
+        const produto = await Produto.findById(v._id, 'nome').lean();
+        return { nome: produto?.nome || 'Produto removido', total_vendido: v.total_vendido, receita: v.receita };
+      }));
+    } catch (err) {
+      console.error('Erro em rankingVendas:', err);
+      rankingVendas = [];
+    }
+
+    res.json({
+      sugestoesReposicao,
+      produtosBaixaPerformance,
+      rankingVendas,
+      fraseDestaque
+    });
   } catch (err) {
-    console.error('Erro ao carregar insights:', err);
+    console.error('Erro geral em insights:', err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// ========== ASSISTENTE COM IA (GROQ + GEMINI + REGRAS) ==========
+// ========== ASSISTENTE COM IA ==========
 router.post('/insights/assistente', authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
@@ -238,7 +330,7 @@ router.post('/insights/assistente', authMiddleware, async (req, res) => {
   }
 });
 
-// ========== ASSISTENTE IA EXCLUSIVO (GROQ + GEMINI, SEM FALLBACK) ==========
+// ========== ASSISTENTE IA EXCLUSIVO ==========
 router.post('/insights/ia', authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acesso restrito.' });
@@ -250,7 +342,6 @@ router.post('/insights/ia', authMiddleware, async (req, res) => {
 
     let resposta = '';
 
-    // 1. Tentar Groq
     if (groqKey) {
       try {
         const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -279,7 +370,6 @@ router.post('/insights/ia', authMiddleware, async (req, res) => {
       }
     }
 
-    // 2. Se Groq não retornou, tentar Gemini
     if (!resposta && geminiKey) {
       try {
         const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -292,7 +382,6 @@ router.post('/insights/ia', authMiddleware, async (req, res) => {
       }
     }
 
-    // 3. Se nenhuma IA funcionou
     if (!resposta) {
       resposta = '❌ Nenhuma IA disponível no momento. Tente novamente mais tarde.';
     }
@@ -306,9 +395,8 @@ router.post('/insights/ia', authMiddleware, async (req, res) => {
   }
 });
 
-// ========== FUNÇÃO QUE USA IA REAL (GROQ PRIMEIRO, GEMINI DEPOIS) ==========
+// ========== FUNÇÃO QUE USA IA REAL ==========
 async function analisarComIA(pergunta) {
-  // 1. Tenta o Groq (maior cota gratuita)
   const groqKey = process.env.GROQ_API_KEY;
   if (groqKey) {
     try {
@@ -341,7 +429,6 @@ async function analisarComIA(pergunta) {
     }
   }
 
-  // 2. Fallback para o Gemini
   const geminiKey = process.env.GEMINI_API_KEY;
   if (geminiKey) {
     try {
@@ -355,7 +442,6 @@ async function analisarComIA(pergunta) {
     }
   }
 
-  // 3. Nenhuma IA disponível → regras manuais
   return await analisarComRegras(pergunta);
 }
 
@@ -526,7 +612,8 @@ async function analisarComRegras(p) {
 
   return 'Desculpe, ainda não entendi sua pergunta. Tente perguntar sobre: "produto mais vendido", "estoque baixo", "categoria mais vendida", "faturamento", "preço médio", "melhor frete para CEP", "pedidos pendentes", "comparar preço do [produto]" ou "tendência de [termo]".';
 }
-// GET /api/admin/clientes – lista clientes (admin e seller)
+
+// ========== CLIENTES ==========
 router.get('/clientes', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
     const busca = sanitizeText(String(req.query.busca || ''), 120);
@@ -581,7 +668,7 @@ router.get('/clientes', authMiddleware, requireRole(['admin']), async (req, res)
     res.status(500).json({ error: err.message });
   }
 });
-// GET /api/admin/clientes/:id/pedidos – pedidos de um cliente
+
 router.get('/clientes/:id/pedidos', authMiddleware, requireRole(['admin']), async (req, res) => {
   try {
     if (!validateObjectId(req.params.id)) {
@@ -606,4 +693,5 @@ router.get('/clientes/:id/pedidos', authMiddleware, requireRole(['admin']), asyn
     res.status(500).json({ error: err.message });
   }
 });
+
 module.exports = router;
