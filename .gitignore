@@ -25,3 +25,5 @@ frontend/.env
 .vercel
 .env*
 /frontend/public/videos/vid/*.mp4
+# Backup do repositório
+backup-before-video-cleanup.bundle
