@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { authFetch } from '@/lib/auth';
+import { extractDataArray } from '@/lib/api'; // <-- NOVO IMPORT
 import toast from 'react-hot-toast';
 
 interface Cupom {
@@ -37,7 +38,9 @@ export default function AdminCuponsPage() {
       const res = await authFetch(`/api/cupons/admin`);
       if (!res.ok) throw new Error('Erro ao carregar');
       const data = await res.json();
-      setCupons(data);
+      // CORREÇÃO: extrai o array da resposta paginada
+      const cuponsList = extractDataArray<Cupom>(data);
+      setCupons(cuponsList);
     } catch (err) {
       toast.error('Erro ao carregar cupons');
     } finally {
