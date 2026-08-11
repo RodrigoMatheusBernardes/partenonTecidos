@@ -42,7 +42,11 @@ export default function AdminInsightsPage() {
 
   useEffect(() => {
     authGet(`/api/admin/insights`)
-      .then(res => setData(res.data))
+      .then(res => {
+        // Extrai o objeto de dados corretamente (pode vir como { data: ... } ou diretamente)
+        const payload = (res.data && res.data.data) ? res.data.data : res.data;
+        setData(payload);
+      })
       .catch(err => {
         console.error(err);
         toast.error('Erro ao carregar insights');
