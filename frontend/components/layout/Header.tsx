@@ -64,7 +64,7 @@ export default function Header() {
             <div className="flex items-center gap-3">
               {/* Símbolo */}
               <Image
-                src="/images/img/simbolo.png"
+                src="/images/img/logott.png"
                 alt="Símbolo Parthenon"
                 width={60}
                 height={60}
