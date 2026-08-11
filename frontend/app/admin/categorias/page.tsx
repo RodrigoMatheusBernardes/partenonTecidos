@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { authDelete, authGet, authPost, authPut } from '@/lib/auth';
+import { extractDataArray } from '@/lib/api'; // <-- NOVO IMPORT
 
 interface Categoria {
   _id?: string;
@@ -24,7 +25,9 @@ export default function AdminCategorias() {
     try {
       setCarregando(true);
       const res = await authGet(`/api/categorias/admin`);
-      setCategorias(res.data);
+      // CORREÇÃO: extrai o array da resposta paginada
+      const categoriasList = extractDataArray<Categoria>(res.data);
+      setCategorias(categoriasList);
     } catch (err: any) {
       console.error(err);
       setErro('Erro ao carregar categorias. Verifique se você está logado como admin.');
