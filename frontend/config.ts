@@ -1,8 +1,8 @@
 ﻿const config = {
   environment: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   api: {
-    development: 'http://localhost:5000',
-    production: 'https://partenontecidos.onrender.com' // <-- URL correta do seu Render
+    development: '', // Em desenvolvimento, usa o proxy do Next.js
+    production: 'https://partenontecidos.onrender.com'
   }
 };
 
@@ -13,8 +13,8 @@ export const getApiUrl = (): string => {
     return envApiUrl;
   }
 
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    return config.api.development;
+  if (process.env.NODE_ENV === 'development') {
+    return ''; // Ativa o proxy do Next.js
   }
   return config.api.production;
 };
