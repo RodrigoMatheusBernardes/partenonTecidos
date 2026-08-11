@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { authFetch } from '@/lib/auth';
+import { extractDataArray } from '@/lib/api'; // <-- NOVO IMPORT
 
 interface Produto {
   _id: string;
@@ -22,9 +23,10 @@ export default function AdminEstoquePage() {
         if (!res.ok) throw new Error('Falha ao carregar');
         return res.json();
       })
-      .then((data: Produto[]) => {
-        // Garantir que todos os campos tenham valor padrão
-        const corrigidos = data.map(p => ({
+      .then((response: unknown) => {
+        // CORREÇÃO: extrai o array da resposta paginada
+        const produtosList = extractDataArray<Produto>(response);
+        const corrigidos = produtosList.map(p => ({
           ...p,
           estoque: p.estoque || 0,
           reservado: p.reservado || 0,
