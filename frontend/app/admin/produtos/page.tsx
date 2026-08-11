@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { authDelete, authGet } from '@/lib/auth';
+import { extractDataArray } from '@/lib/api'; // <-- NOVO IMPORT
 import toast from 'react-hot-toast';
 
 interface Produto {
@@ -20,7 +21,9 @@ export default function AdminProdutosPage() {
   const carregar = async () => {
     try {
       const res = await authGet(`/api/produtos`);
-      setProdutos(res.data);
+      // CORREÇÃO: extrai o array do objeto paginado
+      const produtosList = extractDataArray(res.data);
+      setProdutos(produtosList);
     } catch (err) {
       toast.error('Erro ao carregar produtos');
     } finally {
