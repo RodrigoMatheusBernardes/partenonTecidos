@@ -24,3 +24,4 @@ backend/.env
 frontend/.env
 .vercel
 .env*
+/frontend/public/videos/vid/*.mp4
