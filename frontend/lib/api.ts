@@ -12,11 +12,3 @@ export function extractDataArray<T>(payload: unknown): T[] {
 
   return [];
 }
-
-export function getCachedApiUrl(): string {
-  if (typeof window !== 'undefined') {
-    const cached = localStorage.getItem('activeApiUrl');
-    if (cached) return cached;
-  }
-  return getApiUrl();
-}
