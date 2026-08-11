@@ -5,7 +5,7 @@ import { useRef, useEffect, useState } from 'react';
 interface HeroVideoProps {
   /**
    * Caminho para o vídeo principal.
-   * @default '/videos/abertura1.mp4'
+   * @default '/videos/vd ATENDIMENTO TEXTIL.mp4'
    */
   src?: string;
   /**
@@ -32,7 +32,7 @@ interface HeroVideoProps {
 }
 
 export default function HeroVideo({
-  src = '/videos/abertura1.mp4',
+  src = '/videos/vid/ ATENDIMENTO TEXTIL.mp4',
   fallbackSrc,
   height = '85vh',
   minHeight = '500px',
@@ -66,7 +66,7 @@ export default function HeroVideo({
       {shouldPlayVideo ? (
         <video
           ref={videoRef}
-          src={src}
+          src={encodeURIComponent(src)}
           autoPlay
           muted
           playsInline
