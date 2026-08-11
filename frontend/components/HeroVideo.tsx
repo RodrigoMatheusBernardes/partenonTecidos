@@ -5,13 +5,13 @@ import { useRef, useEffect, useState } from 'react';
 interface HeroVideoProps {
   /**
    * Caminho para o vídeo principal.
-   * @default '/videos/vid ATENDIMENTO TEXTIL.mp4'
+   * @default '/videos/vd ATENDIMENTO TEXTIL.mp4'
    */
   src?: string;
   /**
    * Caminho para uma imagem de fallback (usada quando o vídeo não carrega
    * ou quando o usuário prefere redução de movimento).
-   * @default undefined (exibe apenas fundo escuro)
+   * @default '/images/img/meio rosto.webp'
    */
   fallbackSrc?: string;
   /**
@@ -32,8 +32,8 @@ interface HeroVideoProps {
 }
 
 export default function HeroVideo({
-  src = '/videos/vid/ ATENDIMENTO TEXTIL.mp4',
-  fallbackSrc,
+  src = '/videos/vid ATENDIMENTO TEXTIL.mp4',
+  fallbackSrc = '/images/img/meio rosto.webp',
   height = '85vh',
   minHeight = '500px',
   fit = 'cover',
@@ -54,7 +54,7 @@ export default function HeroVideo({
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  // Se o usuário prefere redução de movimento, não tentamos reproduzir o vídeo
+  // Se o usuário prefere redução de movimento ou o vídeo falhou, usamos o fallback
   const shouldPlayVideo = !prefersReducedMotion && !hasError;
 
   return (
@@ -76,18 +76,13 @@ export default function HeroVideo({
           onError={() => setHasError(true)}
         />
       ) : (
-        // Fallback estático (imagem ou fundo escuro)
+        // Fallback estático (imagem)
         <div className="absolute inset-0 w-full h-full bg-primary-dark/80 flex items-center justify-center">
-          {fallbackSrc ? (
-            <img
-              src={fallbackSrc}
-              alt="Parthenon Tecidos"
-              className="w-full h-full object-cover object-center"
-            />
-          ) : (
-            // Fundo escuro simples (sem quebrar o layout)
-            <div className="w-full h-full bg-primary-dark" />
-          )}
+          <img
+            src={fallbackSrc}
+            alt="Parthenon Tecidos"
+            className="w-full h-full object-cover object-center"
+          />
         </div>
       )}
 

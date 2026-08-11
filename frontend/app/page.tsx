@@ -8,7 +8,7 @@ import { extractDataArray, getApiUrl } from '@/lib/api';
 import SearchBar from '@/components/SearchBar';
 import FiltersSidebar from '@/components/FiltersSidebar';
 import ProductCard from '@/components/ui/ProductCard';
-import HomeBanner from '@/components/HomeBanner';
+import HeroVideo from '@/components/HeroVideo'; // <-- Import adicionado
 import TrendingBar from '@/components/TrendingBar';
 import { SlidersHorizontal, Tag, Sparkles, Star } from 'lucide-react';
 
@@ -130,7 +130,7 @@ export default function Home() {
 
   return (
     <>
-      <HomeBanner />
+      <HeroVideo /> {/* <-- Substituição do HomeBanner */}
 
       <section className="w-full bg-[#F7F7F7] py-16 md:py-20">
         <div className="main-container">
