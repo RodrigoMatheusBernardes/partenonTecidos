@@ -1,11 +1,12 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
+import Link from 'next/link';
 
 interface HeroVideoProps {
   /**
    * Caminho para o vídeo principal.
-   * @default '/videos/vd ATENDIMENTO TEXTIL.mp4'
+   * @default '/videos/vid/ATENDIMENTO TEXTIL.mp4'
    */
   src?: string;
   /**
@@ -32,7 +33,7 @@ interface HeroVideoProps {
 }
 
 export default function HeroVideo({
-  src = '/videos/vid ATENDIMENTO TEXTIL.mp4',
+  src = '/videos/vid/ATENDIMENTO TEXTIL.mp4',
   fallbackSrc = '/images/img/meio rosto.webp',
   height = '85vh',
   minHeight = '500px',
@@ -59,10 +60,10 @@ export default function HeroVideo({
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-primary-dark"
+      className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group"
       style={{ height, minHeight }}
     >
-      {/* Vídeo principal */}
+      {/* Vídeo principal (ou fallback) */}
       {shouldPlayVideo ? (
         <video
           ref={videoRef}
@@ -76,8 +77,7 @@ export default function HeroVideo({
           onError={() => setHasError(true)}
         />
       ) : (
-        // Fallback estático (imagem)
-        <div className="absolute inset-0 w-full h-full bg-primary-dark/80 flex items-center justify-center">
+        <div className="absolute inset-0 w-full h-full">
           <img
             src={fallbackSrc}
             alt="Parthenon Tecidos"
@@ -86,8 +86,40 @@ export default function HeroVideo({
         </div>
       )}
 
-      {/* Gradiente sutil para suavizar as bordas laterais (opcional) */}
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-primary-dark/20 via-transparent to-primary-dark/20" />
+      {/* Overlay escuro para legibilidade (mesmo do HomeBanner original) */}
+      <div className="absolute inset-0 bg-primary-dark/20 z-20" />
+
+      {/* Conteúdo textual e CTA (mesmo do HomeBanner original) */}
+      <div className="relative z-30 flex items-center justify-center h-full px-6">
+        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
+          
+          {/* Label - Nova Coleção */}
+          <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-secondary font-medium text-white">
+            Nova Coleção 2026
+          </p>
+
+          {/* Título Principal - Parthenon */}
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
+            Parthenon <br />
+            <span className="font-primary font-medium tracking-[0.05em] text-white">Tecidos</span>
+          </h1>
+          
+          {/* Subtítulo */}
+          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">
+            A elegância que tece histórias
+          </p>
+
+          {/* CTA - Botão */}
+          <div className="pt-2">
+            <Link
+              href="/loja"
+              className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500"
+            >
+              Conhecer a coleção
+            </Link>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
