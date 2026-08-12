@@ -4,7 +4,7 @@ const { generateSignedUrl } = require('../services/b2');
 
 // Mapeamento interno dos nomes dos arquivos no B2
 const VIDEO_FILES = {
-  hero: 'ATENDIMENTO TEXTIL.mp4',        // <-- Corrigido (removido "vd ")
+  hero: 'ATENDIMENTO TEXTIL.mp4',     // <-- CORRIGIDO (removido o prefixo "vd ")
   second: 'TEXTIL LOCAL.mp4',
 };
 
