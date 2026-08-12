@@ -8,28 +8,52 @@ import { Volume2, VolumeX } from 'lucide-react';
 export default function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [url1, setUrl1] = useState<string | null>(null); // URL do partenon1
-  const [url2, setUrl2] = useState<string | null>(null); // URL do partenon2
-  const [current, setCurrent] = useState<1 | 2>(1);      // 1 = primeiro, 2 = segundo
+  const [url2, setUrl2] = useState<string | null>(null); // URL do partenon2 (opcional)
+  const [current, setCurrent] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [muted, setMuted] = useState(true); // Inicia mudo para autoplay
+  const [muted, setMuted] = useState(true);
 
-  // Função para buscar as URLs
+  // Função para buscar as URLs – com tratamento individual
   const fetchVideoUrls = async () => {
     try {
       const apiUrl = getApiUrl();
-      const [res1, res2] = await Promise.all([
-        fetch(`${apiUrl}/api/videos/hero`),
-        fetch(`${apiUrl}/api/videos/second`),
-      ]);
-      if (!res1.ok || !res2.ok) throw new Error('Erro ao carregar URLs');
+
+      // Busca o primeiro vídeo (obrigatório)
+      const res1 = await fetch(`${apiUrl}/api/videos/hero`);
+      if (!res1.ok) {
+        throw new Error(`Falha no primeiro vídeo: ${res1.status}`);
+      }
       const data1 = await res1.json();
-      const data2 = await res2.json();
-      if (data1.url) setUrl1(data1.url);
-      if (data2.url) setUrl2(data2.url);
-      if (!data1.url || !data2.url) throw new Error('URL não encontrada');
+      if (!data1.url) {
+        throw new Error('Primeiro vídeo não retornou URL');
+      }
+      setUrl1(data1.url);
+
+      // Busca o segundo vídeo (opcional)
+      try {
+        const res2 = await fetch(`${apiUrl}/api/videos/second`);
+        if (res2.ok) {
+          const data2 = await res2.json();
+          if (data2.url) {
+            setUrl2(data2.url);
+            console.log('✅ Segundo vídeo carregado com sucesso');
+          } else {
+            console.warn('⚠️ Segundo vídeo: URL não encontrada na resposta');
+          }
+        } else {
+          console.warn(`⚠️ Segundo vídeo indisponível (status ${res2.status})`);
+        }
+      } catch (err2) {
+        console.warn('⚠️ Erro ao carregar segundo vídeo:', err2.message);
+      }
+
+      // Se não tiver o primeiro, lança erro
+      if (!url1) {
+        throw new Error('Nenhum vídeo disponível');
+      }
     } catch (err) {
-      console.error('Erro ao carregar vídeos:', err);
+      console.error('❌ Erro crítico ao carregar vídeos:', err);
       setError(true);
     } finally {
       setLoading(false);
@@ -40,9 +64,19 @@ export default function HeroVideo() {
     fetchVideoUrls();
   }, []);
 
-  // Troca de vídeo ao finalizar
+  // Troca de vídeo ao finalizar (só se o segundo estiver disponível)
   const handleEnded = () => {
-    setCurrent(current === 1 ? 2 : 1);
+    if (current === 1 && url2) {
+      setCurrent(2);
+    } else if (current === 2 && url1) {
+      setCurrent(1);
+    } else {
+      // Se não houver segundo, reinicia o primeiro
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch(() => {});
+      }
+    }
   };
 
   // Renderização condicional
@@ -56,11 +90,11 @@ export default function HeroVideo() {
     );
   }
 
-  if (error || !url1 || !url2) {
+  if (error || !url1) {
     return (
       <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
-          <p className="text-red-500">Erro ao carregar os vídeos.</p>
+          <p className="text-red-500">Erro ao carregar o vídeo principal.</p>
         </div>
       </section>
     );
@@ -68,11 +102,9 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
-      {/* O vídeo atual */}
       <video
-        key={current} // força recriação para trocar src
         ref={videoRef}
-        src={current === 1 ? url1 : url2}
+        src={current === 1 ? url1 : (url2 || url1)} // se url2 não existir, cai para url1
         autoPlay
         muted={muted}
         playsInline
@@ -81,7 +113,15 @@ export default function HeroVideo() {
         preload="metadata"
         className="w-full h-full object-cover object-center"
         onEnded={handleEnded}
-        onError={() => setError(true)}
+        onError={(e) => {
+          console.error('❌ Erro no elemento <video>:', e);
+          // Se o vídeo atual falhar, tenta voltar para o primeiro
+          if (current === 2 && url1) {
+            setCurrent(1);
+          } else {
+            setError(true);
+          }
+        }}
       />
 
       {/* Overlay e conteúdo textual (inalterados) */}
@@ -109,7 +149,7 @@ export default function HeroVideo() {
         </div>
       </div>
 
-      {/* Controle de áudio (botão discreto) */}
+      {/* Controle de áudio */}
       <button
         onClick={() => setMuted(!muted)}
         className="absolute bottom-6 right-6 z-40 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
