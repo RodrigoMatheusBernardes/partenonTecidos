@@ -7,19 +7,18 @@ import { Volume2, VolumeX } from 'lucide-react';
 
 export default function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [url1, setUrl1] = useState<string | null>(null); // URL do partenon1
-  const [url2, setUrl2] = useState<string | null>(null); // URL do partenon2 (opcional)
+  const [url1, setUrl1] = useState<string | null>(null);
+  const [url2, setUrl2] = useState<string | null>(null);
   const [current, setCurrent] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [muted, setMuted] = useState(true);
 
-  // Função para buscar as URLs – com tratamento individual
   const fetchVideoUrls = async () => {
     try {
       const apiUrl = getApiUrl();
 
-      // Busca o primeiro vídeo (obrigatório)
+      // Primeiro vídeo (obrigatório)
       const res1 = await fetch(`${apiUrl}/api/videos/hero`);
       if (!res1.ok) {
         throw new Error(`Falha no primeiro vídeo: ${res1.status}`);
@@ -30,7 +29,7 @@ export default function HeroVideo() {
       }
       setUrl1(data1.url);
 
-      // Busca o segundo vídeo (opcional)
+      // Segundo vídeo (opcional)
       try {
         const res2 = await fetch(`${apiUrl}/api/videos/second`);
         if (res2.ok) {
@@ -45,15 +44,17 @@ export default function HeroVideo() {
           console.warn(`⚠️ Segundo vídeo indisponível (status ${res2.status})`);
         }
       } catch (err2) {
-        console.warn('⚠️ Erro ao carregar segundo vídeo:', err2.message);
+        // TypeScript safe: err2 is unknown, so we cast or check
+        const message = err2 instanceof Error ? err2.message : String(err2);
+        console.warn('⚠️ Erro ao carregar segundo vídeo:', message);
       }
 
-      // Se não tiver o primeiro, lança erro
       if (!url1) {
         throw new Error('Nenhum vídeo disponível');
       }
     } catch (err) {
-      console.error('❌ Erro crítico ao carregar vídeos:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('❌ Erro crítico ao carregar vídeos:', message);
       setError(true);
     } finally {
       setLoading(false);
@@ -64,14 +65,12 @@ export default function HeroVideo() {
     fetchVideoUrls();
   }, []);
 
-  // Troca de vídeo ao finalizar (só se o segundo estiver disponível)
   const handleEnded = () => {
     if (current === 1 && url2) {
       setCurrent(2);
     } else if (current === 2 && url1) {
       setCurrent(1);
     } else {
-      // Se não houver segundo, reinicia o primeiro
       if (videoRef.current) {
         videoRef.current.currentTime = 0;
         videoRef.current.play().catch(() => {});
@@ -79,7 +78,6 @@ export default function HeroVideo() {
     }
   };
 
-  // Renderização condicional
   if (loading) {
     return (
       <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
@@ -104,7 +102,7 @@ export default function HeroVideo() {
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
       <video
         ref={videoRef}
-        src={current === 1 ? url1 : (url2 || url1)} // se url2 não existir, cai para url1
+        src={current === 1 ? url1 : (url2 || url1)}
         autoPlay
         muted={muted}
         playsInline
@@ -115,7 +113,6 @@ export default function HeroVideo() {
         onEnded={handleEnded}
         onError={(e) => {
           console.error('❌ Erro no elemento <video>:', e);
-          // Se o vídeo atual falhar, tenta voltar para o primeiro
           if (current === 2 && url1) {
             setCurrent(1);
           } else {
@@ -124,7 +121,6 @@ export default function HeroVideo() {
         }}
       />
 
-      {/* Overlay e conteúdo textual (inalterados) */}
       <div className="absolute inset-0 bg-primary-dark/20 z-20" />
       <div className="relative z-30 flex items-center justify-center h-full px-6">
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
@@ -149,7 +145,6 @@ export default function HeroVideo() {
         </div>
       </div>
 
-      {/* Controle de áudio */}
       <button
         onClick={() => setMuted(!muted)}
         className="absolute bottom-6 right-6 z-40 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
