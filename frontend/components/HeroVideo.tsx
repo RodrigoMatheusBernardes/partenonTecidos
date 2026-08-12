@@ -13,25 +13,33 @@ export default function HeroVideo() {
   useEffect(() => {
     const fetchVideo = async () => {
       try {
+        console.log('🔍 Iniciando fetch...');
         const apiUrl = getApiUrl();
-        const url = `${apiUrl}/api/videos/hero`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Erro na API: ${res.status}`);
-        const data = await res.json();
+        console.log('📡 API URL:', apiUrl);
+        const response = await fetch(`${apiUrl}/api/videos/hero`);
+        console.log('📦 Status da resposta:', response.status);
+        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+        const data = await response.json();
+        console.log('✅ Dados recebidos:', data);
         if (data.url) {
           setVideoUrl(data.url);
+          console.log('🎬 URL do vídeo definida:', data.url);
         } else {
-          throw new Error('URL não encontrada');
+          throw new Error('Resposta sem URL');
         }
       } catch (err) {
-        console.error('Erro ao carregar vídeo:', err);
+        console.error('❌ Erro no fetch:', err);
         setHasError(true);
       } finally {
         setLoading(false);
+        console.log('⏳ Loading finalizado');
       }
     };
+
     fetchVideo();
   }, []);
+
+  console.log('📌 Estado atual:', { loading, hasError, videoUrl });
 
   if (loading) {
     return (
@@ -64,7 +72,10 @@ export default function HeroVideo() {
         loop={false}
         controls={false}
         className="w-full h-full object-cover object-center"
-        onError={() => setHasError(true)}
+        onError={(e) => {
+          console.error('🔥 Erro no elemento video:', e);
+          setHasError(true);
+        }}
       />
       <div className="absolute inset-0 bg-primary-dark/20 z-20" />
       <div className="relative z-30 flex items-center justify-center h-full px-6">
