@@ -8,14 +8,13 @@ const s3Client = new S3Client({
     accessKeyId: process.env.B2_ACCESS_KEY_ID,
     secretAccessKey: process.env.B2_SECRET_ACCESS_KEY,
   },
-  forcePathStyle: true, // já deve estar presente
+  forcePathStyle: true,
 });
 
 async function generateSignedUrl(fileKey, expiresIn = 3600) {
   const command = new GetObjectCommand({
     Bucket: process.env.B2_BUCKET_NAME,
     Key: fileKey,
-    ChecksumMode: 'NONE', // <-- explícito para evitar o parâmetro
   });
 
   const signedUrl = await getSignedUrl(s3Client, command, { expiresIn });
