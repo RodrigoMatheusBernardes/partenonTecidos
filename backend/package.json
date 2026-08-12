@@ -8,6 +8,8 @@
     "dev": "node src/server.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1108.0",
+    "@aws-sdk/s3-request-presigner": "^3.1108.0",
     "@google/generative-ai": "^0.24.1",
     "autoprefixer": "^10.5.0",
     "bcryptjs": "^2.4.3",
