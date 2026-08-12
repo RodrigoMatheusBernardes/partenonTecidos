@@ -1,7 +1,7 @@
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
-// Configuração do cliente S3 para Backblaze B2 (valores fixos)
+// Configuração do cliente S3 para Backblaze B2
 const s3Client = new S3Client({
   endpoint: 'https://s3.us-east-005.backblazeb2.com',
   region: 'us-east-005',
@@ -11,15 +11,12 @@ const s3Client = new S3Client({
   },
 });
 
-/**
- * Gera uma URL pré-assinada para um arquivo no bucket B2.
- * @param {string} fileKey - O caminho/arquivo dentro do bucket (ex: 'vd ATENDIMENTO TEXTIL.mp4')
- * @param {number} expiresIn - Tempo de expiração em segundos (padrão: 3600 = 1 hora)
- * @returns {Promise<string>} - A URL pré-assinada
- */
+// Nome do bucket fixo (substitui a variável de ambiente problemática)
+const BUCKET_NAME = 'partenon-tecidos-videos';
+
 async function generateSignedUrl(fileKey, expiresIn = 3600) {
   const command = new GetObjectCommand({
-    Bucket: process.env.B2_BUCKET_NAME,
+    Bucket: BUCKET_NAME,
     Key: fileKey,
   });
 
