@@ -46,6 +46,8 @@ app.use('/api/categorias', require('./routes/categoriaRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/vendedores', require('./routes/vendedorRoutes'));
 app.use('/api/concorrentes', require('./routes/concorrenteRoutes'));
+// Rotas de vídeos (B2)
+app.use('/api/videos', require('./routes/videoRoutes'));
 // Adicionar rotas de pagamento
 app.use('/api/pagamentos', require('./routes/pagamentoRoutes'));
 app.use('/api/webhooks', require('./routes/webhookRoutes'));
