@@ -12,37 +12,27 @@ export default function HeroVideo() {
 
   useEffect(() => {
     const fetchVideo = async () => {
-      console.log('🔍 [HeroVideo] Iniciando fetch...');
       try {
         const apiUrl = getApiUrl();
-        console.log('📡 [HeroVideo] getApiUrl() retornou:', apiUrl);
         const url = `${apiUrl}/api/videos/hero`;
-        console.log('🌐 [HeroVideo] URL final da requisição:', url);
         const res = await fetch(url);
-        if (!res.ok) {
-          console.error('❌ [HeroVideo] Resposta não OK:', res.status);
-          throw new Error(`Erro na API: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`Erro na API: ${res.status}`);
         const data = await res.json();
-        console.log('✅ [HeroVideo] Dados recebidos:', data);
         if (data.url) {
           setVideoUrl(data.url);
-          console.log('🎬 [HeroVideo] URL do vídeo definida:', data.url);
         } else {
-          throw new Error('URL não encontrada na resposta');
+          throw new Error('URL não encontrada');
         }
       } catch (err) {
-        console.error('❌ [HeroVideo] Erro no fetch:', err);
+        console.error('Erro ao carregar vídeo:', err);
         setHasError(true);
       } finally {
         setLoading(false);
-        console.log('⏳ [HeroVideo] Loading finalizado');
       }
     };
     fetchVideo();
   }, []);
 
-  // Se ainda estiver carregando ou tiver erro, exibe mensagem
   if (loading) {
     return (
       <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
@@ -74,10 +64,7 @@ export default function HeroVideo() {
         loop={false}
         controls={false}
         className="w-full h-full object-cover object-center"
-        onError={(e) => {
-          console.error('❌ [HeroVideo] Erro no elemento video:', e);
-          setHasError(true);
-        }}
+        onError={() => setHasError(true)}
       />
       <div className="absolute inset-0 bg-primary-dark/20 z-20" />
       <div className="relative z-30 flex items-center justify-center h-full px-6">
