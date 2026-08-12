@@ -17,8 +17,10 @@ export default function HeroVideo() {
   const fetchVideoUrls = async () => {
     try {
       const apiUrl = getApiUrl();
+      let fetchedUrl1: string | null = null;
+      let fetchedUrl2: string | null = null;
 
-      // Primeiro vídeo (obrigatório)
+      // 1. Busca o primeiro vídeo (obrigatório)
       const res1 = await fetch(`${apiUrl}/api/videos/hero`);
       if (!res1.ok) {
         throw new Error(`Falha no primeiro vídeo: ${res1.status}`);
@@ -27,15 +29,15 @@ export default function HeroVideo() {
       if (!data1.url) {
         throw new Error('Primeiro vídeo não retornou URL');
       }
-      setUrl1(data1.url);
+      fetchedUrl1 = data1.url;
 
-      // Segundo vídeo (opcional)
+      // 2. Busca o segundo vídeo (opcional)
       try {
         const res2 = await fetch(`${apiUrl}/api/videos/second`);
         if (res2.ok) {
           const data2 = await res2.json();
           if (data2.url) {
-            setUrl2(data2.url);
+            fetchedUrl2 = data2.url;
             console.log('✅ Segundo vídeo carregado com sucesso');
           } else {
             console.warn('⚠️ Segundo vídeo: URL não encontrada na resposta');
@@ -44,14 +46,18 @@ export default function HeroVideo() {
           console.warn(`⚠️ Segundo vídeo indisponível (status ${res2.status})`);
         }
       } catch (err2) {
-        // TypeScript safe: err2 is unknown, so we cast or check
         const message = err2 instanceof Error ? err2.message : String(err2);
         console.warn('⚠️ Erro ao carregar segundo vídeo:', message);
       }
 
-      if (!url1) {
+      // 3. Verifica se o primeiro vídeo foi obtido (usa a variável local)
+      if (!fetchedUrl1) {
         throw new Error('Nenhum vídeo disponível');
       }
+
+      // 4. Atualiza os estados com os valores locais
+      setUrl1(fetchedUrl1);
+      setUrl2(fetchedUrl2);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       console.error('❌ Erro crítico ao carregar vídeos:', message);
