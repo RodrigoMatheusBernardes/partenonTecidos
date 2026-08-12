@@ -25,24 +25,39 @@ export default function HeroVideo() {
         }
         const data = await res.json();
         console.log('✅ [HeroVideo] Dados recebidos:', data);
-        setVideoUrl(data.url);
+        if (data.url) {
+          setVideoUrl(data.url);
+          console.log('🎬 [HeroVideo] URL do vídeo definida:', data.url);
+        } else {
+          throw new Error('URL não encontrada na resposta');
+        }
       } catch (err) {
         console.error('❌ [HeroVideo] Erro no fetch:', err);
         setHasError(true);
       } finally {
         setLoading(false);
+        console.log('⏳ [HeroVideo] Loading finalizado');
       }
     };
     fetchVideo();
   }, []);
 
-  if (loading || hasError || !videoUrl) {
+  // Se ainda estiver carregando ou tiver erro, exibe mensagem
+  if (loading) {
     return (
       <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
-          <p className="text-gold">
-            {loading ? 'Carregando experiência...' : 'Erro ao carregar o vídeo.'}
-          </p>
+          <p className="text-gold">Carregando experiência...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (hasError || !videoUrl) {
+    return (
+      <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
+        <div className="text-white text-center">
+          <p className="text-red-500">Erro ao carregar o vídeo.</p>
         </div>
       </section>
     );
@@ -59,9 +74,34 @@ export default function HeroVideo() {
         loop={false}
         controls={false}
         className="w-full h-full object-cover object-center"
-        onError={() => setHasError(true)}
+        onError={(e) => {
+          console.error('❌ [HeroVideo] Erro no elemento video:', e);
+          setHasError(true);
+        }}
       />
-      {/* ... resto do texto e CTA ... */}
+      <div className="absolute inset-0 bg-primary-dark/20 z-20" />
+      <div className="relative z-30 flex items-center justify-center h-full px-6">
+        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
+          <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-secondary font-medium text-white">
+            Nova Coleção 2026
+          </p>
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
+            Parthenon <br />
+            <span className="font-primary font-medium tracking-[0.05em] text-white">Tecidos</span>
+          </h1>
+          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">
+            A elegância que tece histórias
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/loja"
+              className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500"
+            >
+              Conhecer a coleção
+            </Link>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
