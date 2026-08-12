@@ -1,117 +1,352 @@
 // backend/src/services/b2.js
 
-// Usa fetch nativo do Node.js (já disponível em Node 24)
-// Sem dependências externas.
+/**
+ * Integração Backblaze B2 usando a API Native v4.
+ *
+ * Requisitos:
+ * - Node.js 18+ (usa fetch nativo)
+ * - B2_ACCESS_KEY_ID
+ * - B2_SECRET_ACCESS_KEY
+ * - B2_BUCKET_NAME
+ *
+ * A Application Key precisa ter, no mínimo:
+ * - listBuckets
+ * - shareFiles
+ * - readFiles
+ */
 
-const B2_APP_KEY_ID = process.env.B2_ACCESS_KEY_ID;      // Application Key ID
-const B2_APP_KEY = process.env.B2_SECRET_ACCESS_KEY;      // Application Key
+const B2_ACCESS_KEY_ID = process.env.B2_ACCESS_KEY_ID;
+const B2_SECRET_ACCESS_KEY = process.env.B2_SECRET_ACCESS_KEY;
 const B2_BUCKET_NAME = process.env.B2_BUCKET_NAME;
 
-// Cache de autenticação e dados
-let authData = null;          // Armazena { accountId, apiUrl, downloadUrl, authorizationToken, tokenExpiry }
+let authToken = null;
+let accountId = null;
+let apiUrl = null;
+let downloadUrl = null;
+let tokenExpiry = 0;
 let bucketId = null;
 
 /**
- * Autentica no B2 usando API v4 (GET com Basic Auth).
- * A documentação oficial recomenda GET para b2_authorize_account.
+ * Valida se as variáveis essenciais existem.
+ * Nunca imprime os valores das credenciais.
  */
-async function getB2Auth() {
-  if (authData && authData.tokenExpiry && Date.now() < authData.tokenExpiry) {
-    return authData;
+function validateEnvironment() {
+  const missing = [];
+
+  if (!B2_ACCESS_KEY_ID) {
+    missing.push('B2_ACCESS_KEY_ID');
   }
 
-  const authString = Buffer.from(`${B2_APP_KEY_ID}:${B2_APP_KEY}`).toString('base64');
-  const response = await fetch('https://api.backblazeb2.com/b2api/v4/b2_authorize_account', {
-    method: 'GET',
-    headers: {
-      'Authorization': `Basic ${authString}`,
-    },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`B2 authorize failed: ${response.status} - ${errorText}`);
+  if (!B2_SECRET_ACCESS_KEY) {
+    missing.push('B2_SECRET_ACCESS_KEY');
   }
 
-  const data = await response.json();
-  authData = {
-    accountId: data.accountId,
-    apiUrl: data.apiUrl,
-    downloadUrl: data.downloadUrl,
-    authorizationToken: data.authorizationToken,
-    tokenExpiry: Date.now() + (data.expirationInSeconds || 86400) * 1000,
-  };
-  return authData;
+  if (!B2_BUCKET_NAME) {
+    missing.push('B2_BUCKET_NAME');
+  }
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Variáveis de ambiente B2 ausentes: ${missing.join(', ')}`
+    );
+  }
 }
 
 /**
- * Obtém o bucketId a partir do nome do bucket.
+ * Autentica no Backblaze B2 usando API v4.
+ *
+ * A API atual usa:
+ * GET /b2api/v4/b2_authorize_account
+ *
+ * Authorization:
+ * Basic base64(applicationKeyId:applicationKey)
  */
-async function getBucketId() {
-  if (bucketId) return bucketId;
+async function getB2Auth() {
+  validateEnvironment();
 
-  const { accountId, apiUrl, authorizationToken } = await getB2Auth();
+  // Reutiliza o token enquanto estiver válido.
+  // Renovamos alguns minutos antes da expiração.
+  if (
+    authToken &&
+    tokenExpiry &&
+    Date.now() < tokenExpiry
+  ) {
+    return {
+      authToken,
+      accountId,
+      apiUrl,
+      downloadUrl,
+    };
+  }
 
-  const response = await fetch(`${apiUrl}/b2api/v4/b2_list_buckets`, {
-    method: 'POST',
-    headers: {
-      'Authorization': authorizationToken,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      accountId: accountId,
-      bucketName: B2_BUCKET_NAME,
-    }),
-  });
+  const credentials = `${B2_ACCESS_KEY_ID}:${B2_SECRET_ACCESS_KEY}`;
+
+  const basicAuth = Buffer
+    .from(credentials, 'utf8')
+    .toString('base64');
+
+  const response = await fetch(
+    'https://api.backblazeb2.com/b2api/v4/b2_authorize_account',
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Basic ${basicAuth}`,
+      },
+    }
+  );
+
+  const responseText = await response.text();
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`B2 list buckets failed: ${response.status} - ${errorText}`);
+    // NÃO imprime credentials, Basic Auth ou token.
+    throw new Error(
+      `B2 authorize failed: ${response.status} - ${responseText}`
+    );
   }
 
-  const data = await response.json();
-  if (!data.buckets || data.buckets.length === 0) {
-    throw new Error(`Bucket "${B2_BUCKET_NAME}" not found.`);
+  let data;
+
+  try {
+    data = JSON.parse(responseText);
+  } catch (error) {
+    throw new Error(
+      'B2 authorize retornou uma resposta que não é JSON válido.'
+    );
   }
 
-  bucketId = data.buckets[0].bucketId;
+  // API v4:
+  // accountId
+  // authorizationToken
+  // apiInfo.storageApi.apiUrl
+  // apiInfo.storageApi.downloadUrl
+  if (!data.accountId) {
+    throw new Error(
+      'B2 authorize: resposta não contém accountId.'
+    );
+  }
+
+  if (!data.authorizationToken) {
+    throw new Error(
+      'B2 authorize: resposta não contém authorizationToken.'
+    );
+  }
+
+  if (!data.apiInfo?.storageApi?.apiUrl) {
+    throw new Error(
+      'B2 authorize: resposta não contém apiInfo.storageApi.apiUrl.'
+    );
+  }
+
+  if (!data.apiInfo?.storageApi?.downloadUrl) {
+    throw new Error(
+      'B2 authorize: resposta não contém apiInfo.storageApi.downloadUrl.'
+    );
+  }
+
+  accountId = data.accountId;
+  authToken = data.authorizationToken;
+  apiUrl = data.apiInfo.storageApi.apiUrl;
+  downloadUrl = data.apiInfo.storageApi.downloadUrl;
+
+  // O token B2 é válido por no máximo 24h.
+  // Usamos 23h para evitar trabalhar no limite da expiração.
+  tokenExpiry = Date.now() + (23 * 60 * 60 * 1000);
+
+  console.log('✅ B2 authentication successful');
+
+  return {
+    authToken,
+    accountId,
+    apiUrl,
+    downloadUrl,
+  };
+}
+
+/**
+ * Obtém o bucketId através do nome do bucket.
+ */
+async function getBucketId() {
+  if (bucketId) {
+    return bucketId;
+  }
+
+  const {
+    authToken,
+    accountId,
+    apiUrl,
+  } = await getB2Auth();
+
+  const response = await fetch(
+    `${apiUrl}/b2api/v4/b2_list_buckets`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: authToken,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        accountId,
+        bucketName: B2_BUCKET_NAME,
+      }),
+    }
+  );
+
+  const responseText = await response.text();
+
+  if (!response.ok) {
+    throw new Error(
+      `B2 list buckets failed: ${response.status} - ${responseText}`
+    );
+  }
+
+  let data;
+
+  try {
+    data = JSON.parse(responseText);
+  } catch (error) {
+    throw new Error(
+      'B2 list buckets retornou uma resposta que não é JSON válido.'
+    );
+  }
+
+  if (!Array.isArray(data.buckets) || data.buckets.length === 0) {
+    throw new Error(
+      `Bucket "${B2_BUCKET_NAME}" não encontrado na conta B2.`
+    );
+  }
+
+  const bucket = data.buckets.find(
+    (item) => item.bucketName === B2_BUCKET_NAME
+  );
+
+  if (!bucket) {
+    throw new Error(
+      `Bucket "${B2_BUCKET_NAME}" não foi encontrado.`
+    );
+  }
+
+  if (!bucket.bucketId) {
+    throw new Error(
+      `O bucket "${B2_BUCKET_NAME}" foi encontrado, mas não possui bucketId.`
+    );
+  }
+
+  bucketId = bucket.bucketId;
+
+  console.log('✅ B2 bucket found');
+
   return bucketId;
 }
 
 /**
- * Gera token de download autorizado (caminho streaming)
- * A Application Key precisa ter a capacidade "shareFiles".
+ * Gera uma autorização específica para o arquivo.
+ *
+ * A Application Key precisa possuir:
+ * shareFiles
  */
 async function generateSignedUrl(fileKey, expiresIn = 3600) {
   try {
-    const { accountId, apiUrl, downloadUrl, authorizationToken } = await getB2Auth();
-    const bucketId = await getBucketId();
-
-    const response = await fetch(`${apiUrl}/b2api/v4/b2_get_download_authorization`, {
-      method: 'POST',
-      headers: {
-        'Authorization': authorizationToken,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        bucketId: bucketId,
-        fileNamePrefix: fileKey,
-        validDurationInSeconds: expiresIn,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`B2 get download auth failed: ${response.status} - ${errorText}`);
+    if (!fileKey) {
+      throw new Error('fileKey não informado.');
     }
 
-    const data = await response.json();
-    // A URL final de download é: downloadUrl + '/file/' + bucketName + '/' + fileKey + '?Authorization=' + data.authorizationToken
-    return `${downloadUrl}/file/${B2_BUCKET_NAME}/${fileKey}?Authorization=${data.authorizationToken}`;
+    if (
+      !Number.isInteger(expiresIn) ||
+      expiresIn < 1 ||
+      expiresIn > 604800
+    ) {
+      throw new Error(
+        'expiresIn deve estar entre 1 e 604800 segundos.'
+      );
+    }
+
+    const {
+      authToken,
+      apiUrl,
+      downloadUrl,
+    } = await getB2Auth();
+
+    const currentBucketId = await getBucketId();
+
+    const response = await fetch(
+      `${apiUrl}/b2api/v4/b2_get_download_authorization`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: authToken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bucketId: currentBucketId,
+          fileNamePrefix: fileKey,
+          validDurationInSeconds: expiresIn,
+        }),
+      }
+    );
+
+    const responseText = await response.text();
+
+    if (!response.ok) {
+      throw new Error(
+        `B2 get download auth failed: ${response.status} - ${responseText}`
+      );
+    }
+
+    let data;
+
+    try {
+      data = JSON.parse(responseText);
+    } catch (error) {
+      throw new Error(
+        'B2 get download authorization retornou uma resposta que não é JSON válido.'
+      );
+    }
+
+    if (!data.authorizationToken) {
+      throw new Error(
+        'B2 get download authorization não retornou authorizationToken.'
+      );
+    }
+
+    /**
+     * Codificamos o nome do arquivo para evitar problemas
+     * caso futuramente ele contenha espaços ou caracteres especiais.
+     *
+     * Mantemos "/" sem encoding para preservar possíveis caminhos.
+     */
+    const encodedFileKey = fileKey
+      .split('/')
+      .map(encodeURIComponent)
+      .join('/');
+
+    const finalUrl =
+      `${downloadUrl}/file/${encodeURIComponent(B2_BUCKET_NAME)}/${encodedFileKey}` +
+      `?Authorization=${encodeURIComponent(data.authorizationToken)}`;
+
+    console.log(
+      `✅ B2 signed URL generated for file: ${fileKey}`
+    );
+
+    return finalUrl;
+
   } catch (error) {
-    console.error('Erro detalhado ao gerar URL do vídeo:', error.message);
+    /**
+     * IMPORTANTE:
+     * Nunca registrar:
+     * - B2_SECRET_ACCESS_KEY
+     * - Authorization header
+     * - authToken
+     * - signed URL
+     */
+    console.error(
+      'Erro detalhado ao gerar URL do vídeo:',
+      error.message
+    );
+
     throw error;
   }
 }
 
-module.exports = { generateSignedUrl };
+module.exports = {
+  generateSignedUrl,
+};
