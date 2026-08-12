@@ -1,23 +1,21 @@
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
-// Configuração do cliente S3 para Backblaze B2
 const s3Client = new S3Client({
-  endpoint: 'https://s3.us-east-005.backblazeb2.com',
-  region: 'us-east-005',
+  endpoint: `https://${process.env.B2_ENDPOINT}`,
+  region: process.env.B2_REGION,
   credentials: {
     accessKeyId: process.env.B2_ACCESS_KEY_ID,
     secretAccessKey: process.env.B2_SECRET_ACCESS_KEY,
   },
+  forcePathStyle: true, // já deve estar presente
 });
-
-// Nome do bucket fixo (substitui a variável de ambiente problemática)
-const BUCKET_NAME = 'partenon-tecidos-videos';
 
 async function generateSignedUrl(fileKey, expiresIn = 3600) {
   const command = new GetObjectCommand({
-    Bucket: BUCKET_NAME,
+    Bucket: process.env.B2_BUCKET_NAME,
     Key: fileKey,
+    ChecksumMode: 'NONE', // <-- explícito para evitar o parâmetro
   });
 
   const signedUrl = await getSignedUrl(s3Client, command, { expiresIn });
