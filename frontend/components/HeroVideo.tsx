@@ -39,6 +39,17 @@ export default function HeroVideo() {
     fetchVideo();
   }, []);
 
+  // Quando a URL mudar, carregue o vídeo imediatamente
+  useEffect(() => {
+    if (videoUrl && videoRef.current) {
+      // Força o recarregamento do vídeo com a nova URL
+      videoRef.current.src = videoUrl;
+      videoRef.current.load();
+      // Tenta reproduzir
+      videoRef.current.play().catch(e => console.warn('Autoplay bloqueado:', e));
+    }
+  }, [videoUrl]);
+
   console.log('📌 Estado atual:', { loading, hasError, videoUrl });
 
   if (loading) {
@@ -71,6 +82,7 @@ export default function HeroVideo() {
         playsInline
         loop={false}
         controls={false}
+        preload="auto"
         className="w-full h-full object-cover object-center"
         onError={(e) => {
           console.error('🔥 Erro no elemento video:', e);
