@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { generateSignedUrl } = require('../services/b2');
 
-// Mapeamento interno dos nomes dos arquivos no B2
 const VIDEO_FILES = {
   hero: 'partenon1.mp4',
   second: 'partenon2.mp4',
