@@ -2,13 +2,9 @@
 
 import { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { getApiUrl } from '@/config'; // Supondo que getApiUrl esteja em config.ts
 
 interface HeroVideoProps {
-  /**
-   * Caminho para o vídeo principal.
-   * @default '/videos/vid/ATENDIMENTO TEXTIL.mp4'
-   */
-  src?: string;
   /**
    * Caminho para uma imagem de fallback (usada quando o vídeo não carrega
    * ou quando o usuário prefere redução de movimento).
@@ -33,13 +29,14 @@ interface HeroVideoProps {
 }
 
 export default function HeroVideo({
-  src = '/videos/vid/ATENDIMENTO TEXTIL.mp4',
   fallbackSrc = '/images/img/meio rosto.webp',
   height = '85vh',
   minHeight = '500px',
   fit = 'cover',
 }: HeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -55,8 +52,28 @@ export default function HeroVideo({
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
+  // Carrega a URL assinada do backend
+  useEffect(() => {
+    const fetchVideoUrl = async () => {
+      try {
+        const apiUrl = getApiUrl();
+        const res = await fetch(`${apiUrl}/api/videos/hero`);
+        if (!res.ok) throw new Error('Falha ao carregar URL do vídeo');
+        const data = await res.json();
+        setVideoUrl(data.url);
+      } catch (err) {
+        console.error('Erro ao carregar URL do vídeo:', err);
+        setHasError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVideoUrl();
+  }, []);
+
   // Se o usuário prefere redução de movimento ou o vídeo falhou, usamos o fallback
-  const shouldPlayVideo = !prefersReducedMotion && !hasError;
+  const shouldPlayVideo = !prefersReducedMotion && !hasError && !loading && videoUrl;
 
   return (
     <section
@@ -67,7 +84,7 @@ export default function HeroVideo({
       {shouldPlayVideo ? (
         <video
           ref={videoRef}
-          src={src}
+          src={videoUrl}
           autoPlay
           muted
           playsInline
@@ -86,10 +103,10 @@ export default function HeroVideo({
         </div>
       )}
 
-      {/* Overlay escuro para legibilidade (mesmo do HomeBanner original) */}
+      {/* Overlay escuro para legibilidade */}
       <div className="absolute inset-0 bg-primary-dark/20 z-20" />
 
-      {/* Conteúdo textual e CTA (mesmo do HomeBanner original) */}
+      {/* Conteúdo textual e CTA */}
       <div className="relative z-30 flex items-center justify-center h-full px-6">
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
           
