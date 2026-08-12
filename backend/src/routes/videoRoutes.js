@@ -4,8 +4,8 @@ const { generateSignedUrl } = require('../services/b2');
 
 // Mapeamento interno dos nomes dos arquivos no B2
 const VIDEO_FILES = {
-  hero: 'ATENDIMENTO TEXTIL.mp4',     // <-- CORRIGIDO (removido o prefixo "vd ")
-  second: 'TEXTIL LOCAL.mp4',
+  hero: 'partenon1.mp4',
+  second: 'partenon2.mp4',
 };
 
 router.get('/hero', async (req, res) => {
