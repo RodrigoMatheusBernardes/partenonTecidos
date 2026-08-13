@@ -81,31 +81,35 @@ export default function HeroVideo() {
   const [apiReady, setApiReady] = useState(false);
   const currentVideoIndexRef = useRef(0);
 
+  // 1. Componente monta
+  console.log('[HeroVideo] 1. Componente montado');
+
   // Função para carregar a API do YouTube via Promise
   const loadYouTubeAPI = useCallback(() => {
     return new Promise<void>((resolve) => {
       if (window.YT && window.YT.Player) {
-        console.log('[HeroVideo] API já disponível');
+        console.log('[HeroVideo] 2. API já disponível (window.YT e YT.Player existem)');
         setApiReady(true);
         resolve();
         return;
       }
 
-      console.log('[HeroVideo] Carregando YouTube API...');
+      console.log('[HeroVideo] 3. Carregando YouTube API (script)');
       const script = document.createElement('script');
       script.src = 'https://www.youtube.com/iframe_api';
       script.onload = () => {
+        console.log('[HeroVideo] 4. Script carregado, aguardando YT.Player...');
         const checkYT = setInterval(() => {
           if (window.YT && window.YT.Player) {
             clearInterval(checkYT);
-            console.log('[HeroVideo] YouTube API carregada');
+            console.log('[HeroVideo] 5. YT.Player disponível (API pronta)');
             setApiReady(true);
             resolve();
           }
         }, 100);
       };
       script.onerror = () => {
-        console.error('[HeroVideo] Falha ao carregar YouTube API');
+        console.error('[HeroVideo] 6. ERRO ao carregar script da YouTube API');
         setError(true);
       };
       document.body.appendChild(script);
@@ -114,31 +118,39 @@ export default function HeroVideo() {
 
   // Efeito para carregar a API na montagem
   useEffect(() => {
-    console.log('[HeroVideo] Componente montado');
+    console.log('[HeroVideo] 7. useEffect (loadYouTubeAPI) executado');
     loadYouTubeAPI().catch(() => {});
   }, [loadYouTubeAPI]);
 
   // Efeito para detectar quando o container estiver disponível
   useEffect(() => {
     if (containerRef.current) {
-      console.log('[HeroVideo] Container disponível');
+      console.log('[HeroVideo] 8. Container disponível (containerRef.current definido)');
       setHasContainer(true);
+    } else {
+      console.log('[HeroVideo] 8. Container AINDA não disponível (containerRef.current nulo)');
     }
   }, [containerRef.current]);
 
   // Efeito que inicializa o player quando API e container estiverem prontos
   useEffect(() => {
+    console.log('[HeroVideo] 9. useEffect de inicialização do player executado');
+    console.log(`[HeroVideo] 9. Estado atual -> apiReady: ${apiReady}, hasContainer: ${hasContainer}, playerRef.current: ${playerRef.current ? 'já existe' : 'null'}`);
+
     if (!apiReady || !hasContainer || playerRef.current) {
+      if (!apiReady) console.log('[HeroVideo] 9. Aguardando apiReady...');
+      if (!hasContainer) console.log('[HeroVideo] 9. Aguardando hasContainer...');
+      if (playerRef.current) console.log('[HeroVideo] 9. playerRef.current já existe, não recriando');
       return;
     }
 
     const container = containerRef.current;
     if (!container) {
-      console.warn('[HeroVideo] Container ainda nulo');
+      console.warn('[HeroVideo] 10. containerRef.current é nulo no momento da criação');
       return;
     }
 
-    console.log('[HeroVideo] API e Container prontos. Inicializando player...');
+    console.log('[HeroVideo] 11. Criando YT.Player...');
 
     try {
       playerRef.current = new window.YT!.Player(container, {
@@ -156,33 +168,37 @@ export default function HeroVideo() {
         },
         events: {
           onReady: (event) => {
-            console.log('[HeroVideo] Player pronto (onReady)');
+            console.log('[HeroVideo] 12. EVENTO onReady disparado');
+            console.log('[HeroVideo] 12. Player está pronto para reprodução');
             event.target.mute();
             setPlayerReady(true);
             setIsLoading(false);
+            console.log('[HeroVideo] 12. Chamando playVideo()');
             event.target.playVideo();
           },
           onError: (event) => {
-            console.error('[HeroVideo] Erro no player:', event.data);
+            console.error('[HeroVideo] 13. EVENTO onError disparado');
+            console.error('[HeroVideo] 13. Código do erro:', event.data);
             setError(true);
             setIsLoading(false);
           },
           onStateChange: (event) => {
             const state = event.data;
-            // 0 = ended, 1 = playing, 5 = buffering, etc.
+            // state: -1 (unstarted), 0 (ended), 1 (playing), 2 (paused), 3 (buffering), 5 (video cued)
+            console.log(`[HeroVideo] 14. EVENTO onStateChange: estado = ${state}`);
             if (state === 0) {
-              // Vídeo terminou -> próximo
+              console.log('[HeroVideo] 14. Vídeo terminou (state=0). Carregando próximo vídeo...');
               const nextIndex = (currentVideoIndexRef.current + 1) % VIDEO_IDS.length;
               currentVideoIndexRef.current = nextIndex;
+              console.log(`[HeroVideo] 14. Carregando vídeo ID: ${VIDEO_IDS[nextIndex]}`);
               event.target.loadVideoById(VIDEO_IDS[nextIndex]);
-              console.log(`[HeroVideo] Trocando para vídeo ${nextIndex + 1}`);
             }
           },
         },
       });
-      console.log('[HeroVideo] Player criado com sucesso');
+      console.log('[HeroVideo] 15. YT.Player criado com sucesso');
     } catch (err) {
-      console.error('[HeroVideo] Erro ao criar player:', err);
+      console.error('[HeroVideo] 16. ERRO ao criar YT.Player:', err);
       setError(true);
       setIsLoading(false);
     }
@@ -191,13 +207,14 @@ export default function HeroVideo() {
   // Cleanup na desmontagem
   useEffect(() => {
     return () => {
-      console.log('[HeroVideo] Desmontando componente');
+      console.log('[HeroVideo] 17. Cleanup: componente desmontado');
       if (playerRef.current) {
+        console.log('[HeroVideo] 17. Destruindo player existente');
         try {
           playerRef.current.destroy();
           playerRef.current = null;
         } catch {
-          /* ignore */
+          console.warn('[HeroVideo] 17. Erro ao destruir player');
         }
       }
     };
@@ -205,11 +222,17 @@ export default function HeroVideo() {
 
   // Alterna o mute
   const toggleMute = () => {
-    if (!playerRef.current) return;
+    console.log('[HeroVideo] 18. Botão de áudio clicado');
+    if (!playerRef.current) {
+      console.warn('[HeroVideo] 18. player não existe');
+      return;
+    }
     if (muted) {
+      console.log('[HeroVideo] 18. Desmutando player');
       playerRef.current.unMute();
       setMuted(false);
     } else {
+      console.log('[HeroVideo] 18. Mutando player');
       playerRef.current.mute();
       setMuted(true);
     }
@@ -217,6 +240,7 @@ export default function HeroVideo() {
 
   // Estados visuais
   if (error) {
+    console.log('[HeroVideo] 19. Exibindo estado de erro');
     return (
       <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
@@ -227,6 +251,7 @@ export default function HeroVideo() {
   }
 
   if (!playerReady || isLoading) {
+    console.log(`[HeroVideo] 20. Exibindo loading. playerReady: ${playerReady}, isLoading: ${isLoading}`);
     return (
       <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
@@ -236,6 +261,7 @@ export default function HeroVideo() {
     );
   }
 
+  console.log('[HeroVideo] 21. Renderizando player (estado OK)');
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
       <div
