@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 export default function YouTubeTestPage() {
   const [logs, setLogs] = useState<string[]>([]);
+  const [iframeError, setIframeError] = useState<boolean>(false);
 
   useEffect(() => {
     const log = (msg: string) => setLogs((prev) => [...prev, msg]);
@@ -12,6 +13,7 @@ export default function YouTubeTestPage() {
     log(`📍 window.location.origin: ${window.location.origin}`);
     log(`📄 document.referrer: ${document.referrer || '(vazio)'}`);
 
+    // Script da API
     const script = document.createElement('script');
     script.src = 'https://www.youtube.com/iframe_api';
     script.onload = () => {
@@ -39,7 +41,7 @@ export default function YouTubeTestPage() {
                 onError: (event) => {
                   log(`❌ ERRO DO YOUTUBE: Código ${event.data}`);
                   if (event.data === 153) {
-                    log('🔒 O erro 153 confirmou a ausência de Referer.');
+                    log('🔒 O erro 153 confirma a ausência de HTTP Referer.');
                   }
                 },
               },
