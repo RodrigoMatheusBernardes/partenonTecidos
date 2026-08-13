@@ -5,9 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Volume2, VolumeX, PlayCircle } from 'lucide-react';
 
-// ============================================================
-// Definição dos tipos da YouTube IFrame API
-// ============================================================
 declare global {
   interface Window {
     YT?: {
@@ -31,16 +28,13 @@ declare namespace YT {
     playlist?: string;
     origin?: string;
   }
-
   interface PlayerEvent {
     target: Player;
     data: number;
   }
-
   interface OnReadyEvent extends PlayerEvent {}
   interface OnStateChangeEvent extends PlayerEvent {}
   interface OnErrorEvent extends PlayerEvent {}
-
   interface PlayerOptions {
     height: string;
     width: string;
@@ -52,7 +46,6 @@ declare namespace YT {
       onError?: (event: OnErrorEvent) => void;
     };
   }
-
   interface Player {
     playVideo(): void;
     mute(): void;
@@ -62,9 +55,6 @@ declare namespace YT {
   }
 }
 
-// ============================================================
-// IDs dos vídeos do YouTube
-// ============================================================
 const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
 
 export default function HeroVideo() {
@@ -85,7 +75,6 @@ export default function HeroVideo() {
         tryInitialize();
         return;
       }
-
       const script = document.createElement('script');
       script.src = 'https://www.youtube.com/iframe_api';
       script.onload = () => {
@@ -236,7 +225,33 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
-      <div ref={containerRef} className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }} />
+      {/* Container com overflow: hidden e CSS que centraliza e amplia o iframe */}
+      <div
+        ref={containerRef}
+        className="absolute inset-0 w-full h-full overflow-hidden"
+        style={{ pointerEvents: 'none' }}
+      />
+
+      {/* CSS adicional para garantir que o iframe preencha o Hero sem distorção */}
+      <style jsx>{`
+        .hero-video-container {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+        }
+        .hero-video-container iframe {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          min-width: 100%;
+          min-height: 100%;
+          width: auto;
+          height: auto;
+          pointer-events: none; /* evita cliques no player */
+        }
+      `}</style>
 
       {loading && (
         <div className="absolute inset-0 z-10 bg-primary-dark flex items-center justify-center">
