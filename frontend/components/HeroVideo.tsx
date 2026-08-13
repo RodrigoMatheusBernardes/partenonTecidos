@@ -5,19 +5,59 @@ import Link from 'next/link';
 import { Volume2, VolumeX, PlayCircle } from 'lucide-react';
 
 // ============================================================
-// Tipos mínimos para o player do YouTube (sem namespace)
+// Definição completa dos tipos da YouTube IFrame API (sem dependências)
 // ============================================================
-type YTPlayer = {
-  playVideo(): void;
-  mute(): void;
-  unMute(): void;
-  destroy(): void;
-  loadVideoById(videoId: string): void;
-};
-
 declare global {
   interface Window {
-    YT: any; // simplificado: YT será tratado como any, mas o TypeScript não reclamará
+    YT?: {
+      Player: new (
+        element: HTMLElement,
+        options: YT.PlayerOptions
+      ) => YT.Player;
+    };
+  }
+}
+
+declare namespace YT {
+  interface PlayerVars {
+    autoplay?: 0 | 1;
+    mute?: 0 | 1;
+    playsinline?: 0 | 1;
+    controls?: 0 | 1;
+    enablejsapi?: 0 | 1;
+    rel?: 0 | 1;
+    loop?: 0 | 1;
+    playlist?: string;
+    origin?: string;
+  }
+
+  interface PlayerEvent {
+    target: Player;
+    data: number;
+  }
+
+  interface OnReadyEvent extends PlayerEvent {}
+  interface OnStateChangeEvent extends PlayerEvent {}
+  interface OnErrorEvent extends PlayerEvent {}
+
+  interface PlayerOptions {
+    height: string;
+    width: string;
+    videoId: string;
+    playerVars?: PlayerVars;
+    events?: {
+      onReady?: (event: OnReadyEvent) => void;
+      onStateChange?: (event: OnStateChangeEvent) => void;
+      onError?: (event: OnErrorEvent) => void;
+    };
+  }
+
+  interface Player {
+    playVideo(): void;
+    mute(): void;
+    unMute(): void;
+    destroy(): void;
+    loadVideoById(videoId: string): void;
   }
 }
 
@@ -28,7 +68,7 @@ const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<YTPlayer | null>(null);
+  const playerRef = useRef<YT.Player | null>(null);
   const currentIndexRef = useRef(0);
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
@@ -89,26 +129,25 @@ export default function HeroVideo() {
             controls: 0,
             enablejsapi: 1,
             rel: 0,
-            origin: window.location.origin, // origin é o seu domínio
+            origin: window.location.origin,
           },
           events: {
-            onReady: (event) => {
+            onReady: (event: YT.OnReadyEvent) => {
               event.target.mute();
               setPlayerReady(true);
               setLoading(false);
               event.target.playVideo();
             },
-            onError: (event) => {
+            onError: (event: YT.OnErrorEvent) => {
               console.error('[HeroVideo] erro do YouTube:', event.data);
               if (event.data === 153) {
-                // Erro 153 = Missing HTTP Referer
                 console.warn('[HeroVideo] Erro 153: HTTP Referer ausente. Verifique a política de referrer.');
               }
               setError(true);
               setLoading(false);
               setShowFallback(true);
             },
-            onStateChange: (event) => {
+            onStateChange: (event: YT.OnStateChangeEvent) => {
               if (event.data === 0) {
                 const next = (currentIndexRef.current + 1) % VIDEO_IDS.length;
                 currentIndexRef.current = next;
