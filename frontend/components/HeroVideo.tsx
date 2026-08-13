@@ -5,43 +5,56 @@ import Link from 'next/link';
 import { Volume2, VolumeX, PlayCircle } from 'lucide-react';
 
 // ============================================================
-// Tipos mínimos para a YouTube IFrame API (sem namespace)
+// Definição completa dos tipos da YouTube IFrame API
 // ============================================================
-type YTPlayer = {
-  playVideo(): void;
-  mute(): void;
-  unMute(): void;
-  destroy(): void;
-  loadVideoById(videoId: string): void;
-};
+declare namespace YT {
+  interface PlayerVars {
+    autoplay?: 0 | 1;
+    mute?: 0 | 1;
+    playsinline?: 0 | 1;
+    controls?: 0 | 1;
+    enablejsapi?: 0 | 1;
+    rel?: 0 | 1;
+    loop?: 0 | 1;
+    playlist?: string;
+    origin?: string;
+  }
 
+  interface PlayerEvent {
+    target: Player;
+    data: number;
+  }
+
+  interface OnReadyEvent extends PlayerEvent {}
+  interface OnStateChangeEvent extends PlayerEvent {}
+  interface OnErrorEvent extends PlayerEvent {}
+
+  interface PlayerOptions {
+    height: string;
+    width: string;
+    videoId: string;
+    playerVars?: PlayerVars;
+    events?: {
+      onReady?: (event: OnReadyEvent) => void;
+      onStateChange?: (event: OnStateChangeEvent) => void;
+      onError?: (event: OnErrorEvent) => void;
+    };
+  }
+
+  interface Player {
+    playVideo(): void;
+    mute(): void;
+    unMute(): void;
+    destroy(): void;
+    loadVideoById(videoId: string): void;
+  }
+}
+
+// Estende a interface global do Window
 declare global {
   interface Window {
     YT: {
-      Player: new (
-        element: HTMLElement,
-        options: {
-          height: string;
-          width: string;
-          videoId: string;
-          playerVars?: {
-            autoplay?: 0 | 1;
-            mute?: 0 | 1;
-            playsinline?: 0 | 1;
-            controls?: 0 | 1;
-            enablejsapi?: 0 | 1;
-            rel?: 0 | 1;
-            loop?: 0 | 1;
-            playlist?: string;
-            origin?: string;
-          };
-          events?: {
-            onReady?: (event: { target: YTPlayer }) => void;
-            onStateChange?: (event: { target: YTPlayer; data: number }) => void;
-            onError?: (event: { target: YTPlayer; data: number }) => void;
-          };
-        }
-      ) => YTPlayer;
+      Player: new (element: HTMLElement, options: YT.PlayerOptions) => YT.Player;
     };
   }
 }
@@ -53,7 +66,7 @@ const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<YTPlayer | null>(null);
+  const playerRef = useRef<YT.Player | null>(null);
   const currentIndexRef = useRef(0);
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
