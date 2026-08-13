@@ -4,11 +4,56 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Volume2, VolumeX, PlayCircle } from 'lucide-react';
 
+// ============================================================
+// Tipos mínimos para a YouTube IFrame API (sem namespace)
+// ============================================================
+type YTPlayer = {
+  playVideo(): void;
+  mute(): void;
+  unMute(): void;
+  destroy(): void;
+  loadVideoById(videoId: string): void;
+};
+
+declare global {
+  interface Window {
+    YT: {
+      Player: new (
+        element: HTMLElement,
+        options: {
+          height: string;
+          width: string;
+          videoId: string;
+          playerVars?: {
+            autoplay?: 0 | 1;
+            mute?: 0 | 1;
+            playsinline?: 0 | 1;
+            controls?: 0 | 1;
+            enablejsapi?: 0 | 1;
+            rel?: 0 | 1;
+            loop?: 0 | 1;
+            playlist?: string;
+            origin?: string;
+          };
+          events?: {
+            onReady?: (event: { target: YTPlayer }) => void;
+            onStateChange?: (event: { target: YTPlayer; data: number }) => void;
+            onError?: (event: { target: YTPlayer; data: number }) => void;
+          };
+        }
+      ) => YTPlayer;
+    };
+  }
+}
+
+// ============================================================
+// IDs dos vídeos do YouTube
+// ============================================================
 const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<YT.Player | null>(null);
+  const playerRef = useRef<YTPlayer | null>(null);
   const currentIndexRef = useRef(0);
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
@@ -16,6 +61,7 @@ export default function HeroVideo() {
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
 
+  // Carrega a API do YouTube e inicializa o player quando possível
   useEffect(() => {
     console.log('[HeroVideo] montado');
 
@@ -24,6 +70,7 @@ export default function HeroVideo() {
         tryInitialize();
         return;
       }
+
       const script = document.createElement('script');
       script.src = 'https://www.youtube.com/iframe_api';
       script.onload = () => {
@@ -38,6 +85,7 @@ export default function HeroVideo() {
         console.error('[HeroVideo] erro ao carregar script');
         setError(true);
         setLoading(false);
+        setShowFallback(true);
       };
       document.body.appendChild(script);
     };
@@ -92,6 +140,7 @@ export default function HeroVideo() {
           },
         });
         playerRef.current = player;
+        console.log('[HeroVideo] player criado');
       } catch (err) {
         console.error('[HeroVideo] erro ao criar player:', err);
         setError(true);
