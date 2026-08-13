@@ -28,5 +28,8 @@
     "node-fetch": "^3.3.2",
     "postcss": "^8.5.14",
     "tailwindcss": "^4.3.0"
+  },
+  "devDependencies": {
+    "@types/youtube": "^0.3.0"
   }
 }

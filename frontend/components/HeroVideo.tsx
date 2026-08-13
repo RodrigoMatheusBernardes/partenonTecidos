@@ -7,7 +7,14 @@ import { Volume2, VolumeX } from 'lucide-react';
 // YouTube IDs dos vídeos
 const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
 
-// Variável global para manter o player
+// Declaração global para a API do YouTube
+declare global {
+  interface Window {
+    YT: typeof YT;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
+
 let player: YT.Player | null = null;
 
 export default function HeroVideo() {
@@ -27,14 +34,6 @@ export default function HeroVideo() {
     tag.src = 'https://www.youtube.com/iframe_api';
     const firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-
-    // Cleanup opcional se o componente desmontar antes da API carregar
-    return () => {
-      if (player) {
-        try { player.destroy(); } catch { /* ignorar */ }
-        player = null;
-      }
-    };
   }, []);
 
   // Inicializa o player quando a API estiver pronta
@@ -54,7 +53,7 @@ export default function HeroVideo() {
           enablejsapi: 1,
           rel: 0,
           loop: 1,
-          playlist: VIDEO_IDS.join(','), // cria playlist com os dois vídeos em loop
+          playlist: VIDEO_IDS.join(','), // playlist com os dois vídeos em loop
         },
         events: {
           onReady: (event) => {
@@ -77,16 +76,14 @@ export default function HeroVideo() {
     }
   }, []);
 
-  // Efeito que monitora a API e a inicializa
+  // Aguarda a API e inicializa
   useEffect(() => {
     if (window.YT && window.YT.Player && containerRef.current) {
       onYouTubeIframeAPIReady();
     } else {
-      // Armazena o callback global
       window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
     }
 
-    // Cleanup: remove o callback ao desmontar
     return () => {
       if (window.onYouTubeIframeAPIReady === onYouTubeIframeAPIReady) {
         window.onYouTubeIframeAPIReady = undefined;
@@ -94,7 +91,6 @@ export default function HeroVideo() {
     };
   }, [onYouTubeIframeAPIReady]);
 
-  // Alterna o mute do player
   const toggleMute = () => {
     if (!player) return;
     if (muted) {
