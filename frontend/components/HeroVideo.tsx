@@ -1,10 +1,13 @@
 'use client';
 export type {};
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Volume2, VolumeX, PlayCircle } from 'lucide-react';
 
+// ============================================================
+// Definição dos tipos da YouTube IFrame API
+// ============================================================
 declare global {
   interface Window {
     YT?: {
@@ -27,14 +30,19 @@ declare namespace YT {
     loop?: 0 | 1;
     playlist?: string;
     origin?: string;
+    modestbranding?: 0 | 1;
+    iv_load_policy?: 3; // desabilita anotações
   }
+
   interface PlayerEvent {
     target: Player;
     data: number;
   }
+
   interface OnReadyEvent extends PlayerEvent {}
   interface OnStateChangeEvent extends PlayerEvent {}
   interface OnErrorEvent extends PlayerEvent {}
+
   interface PlayerOptions {
     height: string;
     width: string;
@@ -46,6 +54,7 @@ declare namespace YT {
       onError?: (event: OnErrorEvent) => void;
     };
   }
+
   interface Player {
     playVideo(): void;
     mute(): void;
@@ -55,6 +64,9 @@ declare namespace YT {
   }
 }
 
+// ============================================================
+// IDs dos vídeos do YouTube
+// ============================================================
 const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
 
 export default function HeroVideo() {
@@ -67,47 +79,6 @@ export default function HeroVideo() {
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
 
-  // Função para ajustar o iframe
-  const resizeIframe = useCallback(() => {
-    if (!containerRef.current) return;
-    const iframe = containerRef.current.querySelector('iframe');
-    if (!iframe) return;
-
-    // Remove atributos que possam restringir o tamanho
-    iframe.removeAttribute('width');
-    iframe.removeAttribute('height');
-    iframe.style.width = 'auto';
-    iframe.style.height = 'auto';
-
-    // Aplica o estilo "cover"
-    iframe.style.position = 'absolute';
-    iframe.style.top = '50%';
-    iframe.style.left = '50%';
-    iframe.style.transform = 'translate(-50%, -50%)';
-    iframe.style.minWidth = '100%';
-    iframe.style.minHeight = '100%';
-    iframe.style.pointerEvents = 'none';
-    iframe.style.border = '0';
-  }, []);
-
-  // Observador de redimensionamento
-  useEffect(() => {
-    if (!containerRef.current || !playerReady) return;
-
-    const resizeObserver = new ResizeObserver(() => {
-      resizeIframe();
-    });
-    resizeObserver.observe(containerRef.current);
-
-    // Também ajusta quando a janela redimensiona
-    window.addEventListener('resize', resizeIframe);
-
-    return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener('resize', resizeIframe);
-    };
-  }, [playerReady, resizeIframe]);
-
   useEffect(() => {
     console.log('[HeroVideo] montado');
 
@@ -116,6 +87,7 @@ export default function HeroVideo() {
         tryInitialize();
         return;
       }
+
       const script = document.createElement('script');
       script.src = 'https://www.youtube.com/iframe_api';
       script.onload = () => {
@@ -161,13 +133,14 @@ export default function HeroVideo() {
             enablejsapi: 1,
             rel: 0,
             origin: window.location.origin,
+            modestbranding: 1,       // minimiza o logotipo do YouTube
+            iv_load_policy: 3,       // desabilita anotações
           },
           events: {
             onReady: (event: YT.OnReadyEvent) => {
               event.target.mute();
               setPlayerReady(true);
               setLoading(false);
-              resizeIframe(); // Ajusta após ficar pronto
               event.target.playVideo();
             },
             onError: (event: YT.OnErrorEvent) => {
@@ -206,7 +179,7 @@ export default function HeroVideo() {
         playerRef.current = null;
       }
     };
-  }, [resizeIframe]);
+  }, []);
 
   const toggleMute = () => {
     if (!playerRef.current) return;
@@ -267,12 +240,17 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
-      {/* Container do player */}
+      {/* Container do player – ocupa 100% do Hero */}
       <div
         ref={containerRef}
-        className="absolute inset-0 w-full h-full overflow-hidden"
+        className="absolute inset-0 w-full h-full flex items-center justify-center"
+        style={{ pointerEvents: 'none' }}
       />
 
+      {/* Gradiente escuro nas laterais para preencher visualmente o espaço vazio */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/80 via-transparent to-primary-dark/80 pointer-events-none" />
+
+      {/* Overlay de loading */}
       {loading && (
         <div className="absolute inset-0 z-10 bg-primary-dark flex items-center justify-center">
           <div className="text-white text-center">
@@ -281,6 +259,7 @@ export default function HeroVideo() {
         </div>
       )}
 
+      {/* Overlay de texto e CTA */}
       <div className="absolute inset-0 bg-primary-dark/20 z-20" />
       <div className="relative z-30 flex items-center justify-center h-full px-6">
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
@@ -305,6 +284,7 @@ export default function HeroVideo() {
         </div>
       </div>
 
+      {/* Botão de áudio */}
       {playerReady && (
         <button
           onClick={toggleMute}
