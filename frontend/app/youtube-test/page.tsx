@@ -2,9 +2,65 @@
 
 import { useEffect, useState } from 'react';
 
+// ============================================================
+// Definição dos tipos da YouTube IFrame API (para a página de teste)
+// ============================================================
+declare global {
+  interface Window {
+    YT?: {
+      Player: new (
+        element: HTMLElement,
+        options: YT.PlayerOptions
+      ) => YT.Player;
+    };
+  }
+}
+
+declare namespace YT {
+  interface PlayerVars {
+    autoplay?: 0 | 1;
+    mute?: 0 | 1;
+    playsinline?: 0 | 1;
+    controls?: 0 | 1;
+    enablejsapi?: 0 | 1;
+    origin?: string;
+  }
+
+  interface PlayerEvent {
+    target: Player;
+    data: number;
+  }
+
+  interface OnReadyEvent extends PlayerEvent {}
+  interface OnStateChangeEvent extends PlayerEvent {}
+  interface OnErrorEvent extends PlayerEvent {}
+
+  interface PlayerOptions {
+    height: string;
+    width: string;
+    videoId: string;
+    playerVars?: PlayerVars;
+    events?: {
+      onReady?: (event: OnReadyEvent) => void;
+      onStateChange?: (event: OnStateChangeEvent) => void;
+      onError?: (event: OnErrorEvent) => void;
+    };
+  }
+
+  interface Player {
+    playVideo(): void;
+    mute(): void;
+    unMute(): void;
+    destroy(): void;
+    loadVideoById(videoId: string): void;
+  }
+}
+
+// ============================================================
+// Componente da página de teste
+// ============================================================
 export default function YouTubeTestPage() {
   const [logs, setLogs] = useState<string[]>([]);
-  const [iframeError, setIframeError] = useState<boolean>(false);
 
   useEffect(() => {
     const log = (msg: string) => setLogs((prev) => [...prev, msg]);
@@ -13,7 +69,6 @@ export default function YouTubeTestPage() {
     log(`📍 window.location.origin: ${window.location.origin}`);
     log(`📄 document.referrer: ${document.referrer || '(vazio)'}`);
 
-    // Script da API
     const script = document.createElement('script');
     script.src = 'https://www.youtube.com/iframe_api';
     script.onload = () => {
@@ -37,8 +92,9 @@ export default function YouTubeTestPage() {
               },
               events: {
                 onReady: () => log('✅ onReady disparado'),
-                onStateChange: (event) => log(`🔄 Estado do player: ${event.data}`),
-                onError: (event) => {
+                onStateChange: (event: YT.OnStateChangeEvent) =>
+                  log(`🔄 Estado do player: ${event.data}`),
+                onError: (event: YT.OnErrorEvent) => {
                   log(`❌ ERRO DO YOUTUBE: Código ${event.data}`);
                   if (event.data === 153) {
                     log('🔒 O erro 153 confirma a ausência de HTTP Referer.');
