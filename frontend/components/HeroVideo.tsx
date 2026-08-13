@@ -7,6 +7,7 @@ import { Volume2, VolumeX } from 'lucide-react';
 // YouTube IDs dos vídeos
 const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
 
+// Variável global para manter o player
 let player: YT.Player | null = null;
 
 export default function HeroVideo() {
@@ -15,9 +16,9 @@ export default function HeroVideo() {
   const [playerReady, setPlayerReady] = useState(false);
   const [error, setError] = useState(false);
 
-  // Carrega a API do YouTube
+  // Carrega a API do YouTube apenas uma vez
   useEffect(() => {
-    if (window.YT) {
+    if (window.YT && window.YT.Player) {
       // API já carregada
       return;
     }
@@ -26,64 +27,82 @@ export default function HeroVideo() {
     tag.src = 'https://www.youtube.com/iframe_api';
     const firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
+    // Cleanup opcional se o componente desmontar antes da API carregar
+    return () => {
+      if (player) {
+        try { player.destroy(); } catch { /* ignorar */ }
+        player = null;
+      }
+    };
   }, []);
 
   // Inicializa o player quando a API estiver pronta
   const onYouTubeIframeAPIReady = useCallback(() => {
     if (!containerRef.current || player) return;
 
-    player = new YT.Player(containerRef.current, {
-      height: '100%',
-      width: '100%',
-      videoId: VIDEO_IDS[0],
-      playerVars: {
-        autoplay: 1,
-        mute: 1,
-        playsinline: 1,
-        controls: 0,
-        enablejsapi: 1,
-        rel: 0,
-        loop: 1,
-        playlist: VIDEO_IDS.join(','), // cria uma playlist automática com os dois vídeos
-      },
-      events: {
-        onReady: (event) => {
-          event.target.mute(); // garante que comece mudo
-          setPlayerReady(true);
-          event.target.playVideo();
+    try {
+      player = new YT.Player(containerRef.current, {
+        height: '100%',
+        width: '100%',
+        videoId: VIDEO_IDS[0],
+        playerVars: {
+          autoplay: 1,
+          mute: 1,
+          playsinline: 1,
+          controls: 0,
+          enablejsapi: 1,
+          rel: 0,
+          loop: 1,
+          playlist: VIDEO_IDS.join(','), // cria playlist com os dois vídeos em loop
         },
-        onError: () => {
-          setError(true);
+        events: {
+          onReady: (event) => {
+            event.target.mute();
+            setPlayerReady(true);
+            event.target.playVideo();
+          },
+          onError: (event) => {
+            console.error('YouTube player error:', event.data);
+            setError(true);
+          },
+          onStateChange: (event) => {
+            // O YouTube já cuida da transição entre os vídeos da playlist
+          },
         },
-        onStateChange: (event) => {
-          // Se o vídeo terminar, o YouTube já vai para o próximo da playlist
-          // Não precisamos de lógica manual para sequência
-        },
-      },
-    });
+      });
+    } catch (err) {
+      console.error('Erro ao criar player:', err);
+      setError(true);
+    }
   }, []);
 
-  // Aguarda a API do YouTube e depois inicializa
+  // Efeito que monitora a API e a inicializa
   useEffect(() => {
-    // Se a API já estiver disponível, inicialize imediatamente
-    if (window.YT && window.YT.Player) {
+    if (window.YT && window.YT.Player && containerRef.current) {
       onYouTubeIframeAPIReady();
     } else {
-      // Define o callback global que o YouTube chama quando a API estiver pronta
+      // Armazena o callback global
       window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
     }
+
+    // Cleanup: remove o callback ao desmontar
+    return () => {
+      if (window.onYouTubeIframeAPIReady === onYouTubeIframeAPIReady) {
+        window.onYouTubeIframeAPIReady = undefined;
+      }
+    };
   }, [onYouTubeIframeAPIReady]);
 
-  // Troca o estado de mute
+  // Alterna o mute do player
   const toggleMute = () => {
-    if (player) {
-      if (muted) {
-        player.unMute();
-        setMuted(false);
-      } else {
-        player.mute();
-        setMuted(true);
-      }
+    if (!player) return;
+    if (muted) {
+      player.unMute();
+      setMuted(false);
+    } else {
+      player.mute();
+      setMuted(true);
     }
   };
 
@@ -115,7 +134,6 @@ export default function HeroVideo() {
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* Overlay e conteúdo textual (inalterados) */}
       <div className="absolute inset-0 bg-primary-dark/20 z-20" />
       <div className="relative z-30 flex items-center justify-center h-full px-6">
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
@@ -140,7 +158,6 @@ export default function HeroVideo() {
         </div>
       </div>
 
-      {/* Controle de áudio (botão discreto) */}
       <button
         onClick={toggleMute}
         className="absolute bottom-6 right-6 z-40 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
