@@ -1,14 +1,29 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Volume2, VolumeX } from 'lucide-react';
 
 // ============================================================
-// Definições manuais dos tipos da YouTube IFrame API
+// Tipos mínimos para a YouTube IFrame API
 // ============================================================
-declare namespace YT {
-  interface PlayerVars {
+declare global {
+  interface Window {
+    YT?: {
+      Player: new (
+        element: HTMLElement,
+        options: YTPlayerOptions
+      ) => YTPlayer;
+    };
+    onYouTubeIframeAPIReady?: () => void;
+  }
+}
+
+interface YTPlayerOptions {
+  height: string;
+  width: string;
+  videoId: string;
+  playerVars?: {
     autoplay?: 0 | 1;
     mute?: 0 | 1;
     playsinline?: 0 | 1;
@@ -18,48 +33,20 @@ declare namespace YT {
     loop?: 0 | 1;
     playlist?: string;
     origin?: string;
-  }
-
-  interface PlayerEvent {
-    target: Player;
-    data: number;
-  }
-
-  interface OnReadyEvent extends PlayerEvent {}
-  interface OnStateChangeEvent extends PlayerEvent {}
-  interface OnErrorEvent extends PlayerEvent {}
-
-  interface PlayerOptions {
-    height: string;
-    width: string;
-    videoId: string;
-    playerVars?: PlayerVars;
-    events?: {
-      onReady?: (event: OnReadyEvent) => void;
-      onStateChange?: (event: OnStateChangeEvent) => void;
-      onError?: (event: OnErrorEvent) => void;
-    };
-  }
-
-  interface Player {
-    new (element: HTMLElement, options: PlayerOptions): Player;
-    playVideo(): void;
-    mute(): void;
-    unMute(): void;
-    destroy(): void;
-    loadVideoById(videoId: string): void;
-    getCurrentTime(): number;
-    getDuration(): number;
-    getPlayerState(): number;
-  }
+  };
+  events?: {
+    onReady?: (event: { target: YTPlayer }) => void;
+    onStateChange?: (event: { target: YTPlayer; data: number }) => void;
+    onError?: (event: { target: YTPlayer; data: number }) => void;
+  };
 }
 
-declare global {
-  interface Window {
-    YT?: {
-      Player: new (element: HTMLElement, options: YT.PlayerOptions) => YT.Player;
-    };
-  }
+interface YTPlayer {
+  playVideo(): void;
+  mute(): void;
+  unMute(): void;
+  destroy(): void;
+  loadVideoById(videoId: string): void;
 }
 
 // ============================================================
@@ -68,80 +55,91 @@ declare global {
 const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
 
 // ============================================================
-// Componente HeroVideo
+// Componente Principal
 // ============================================================
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<YT.Player | null>(null);
+  const playerRef = useRef<YTPlayer | null>(null);
+  const currentIndexRef = useRef(0);
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
   const [error, setError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [apiReady, setApiReady] = useState(false);
-  const currentVideoIndexRef = useRef(0);
-  const initializationAttemptedRef = useRef(false);
+  const [loading, setLoading] = useState(true);
 
-  // 1. Função para carregar a API do YouTube
-  const loadYouTubeAPI = useCallback(() => {
-    return new Promise<void>((resolve) => {
-      if (window.YT && window.YT.Player) {
-        console.log('[HeroVideo] YouTube API já disponível');
-        setApiReady(true);
-        resolve();
-        return;
+  // Carrega a API do YouTube uma única vez
+  useEffect(() => {
+    console.log('[HeroVideo] componente montado');
+
+    if (window.YT && window.YT.Player) {
+      console.log('[HeroVideo] API já disponível');
+      tryInitialize();
+      return;
+    }
+
+    console.log('[HeroVideo] carregando API');
+    const script = document.createElement('script');
+    script.src = 'https://www.youtube.com/iframe_api';
+    script.onload = () => {
+      console.log('[HeroVideo] script carregado');
+      // A API ainda pode não estar pronta, então aguardamos um pouco
+      const checkReady = setInterval(() => {
+        if (window.YT && window.YT.Player) {
+          clearInterval(checkReady);
+          console.log('[HeroVideo] API pronta');
+          tryInitialize();
+        }
+      }, 100);
+    };
+    script.onerror = () => {
+      console.error('[HeroVideo] erro ao carregar script');
+      setError(true);
+      setLoading(false);
+    };
+    document.body.appendChild(script);
+
+    // Define o callback global para quando a API estiver pronta
+    window.onYouTubeIframeAPIReady = () => {
+      console.log('[HeroVideo] onYouTubeIframeAPIReady chamado');
+      tryInitialize();
+    };
+
+    return () => {
+      console.log('[HeroVideo] componente desmontado');
+      if (playerRef.current) {
+        try {
+          playerRef.current.destroy();
+        } catch {
+          // ignore
+        }
+        playerRef.current = null;
       }
-
-      console.log('[HeroVideo] Carregando YouTube API...');
-      const script = document.createElement('script');
-      script.src = 'https://www.youtube.com/iframe_api';
-      script.onload = () => {
-        const checkYT = setInterval(() => {
-          if (window.YT && window.YT.Player) {
-            clearInterval(checkYT);
-            console.log('[HeroVideo] YouTube API carregada');
-            setApiReady(true);
-            resolve();
-          }
-        }, 100);
-      };
-      script.onerror = () => {
-        console.error('[HeroVideo] Falha ao carregar YouTube API');
-        setError(true);
-      };
-      document.body.appendChild(script);
-    });
+      // Remove o callback para evitar vazamento
+      if (window.onYouTubeIframeAPIReady) {
+        window.onYouTubeIframeAPIReady = undefined;
+      }
+    };
   }, []);
 
-  // 2. Função para inicializar o player
-  const initializePlayer = useCallback(() => {
-    console.log('[HeroVideo] Tentando inicializar player...');
+  // Função que tenta criar o player
+  const tryInitialize = () => {
+    if (playerRef.current) {
+      console.log('[HeroVideo] player já criado');
+      return;
+    }
 
     if (!containerRef.current) {
-      console.warn('[HeroVideo] Aguardando container (containerRef.current nulo)');
+      console.log('[HeroVideo] container ainda não disponível');
       return;
     }
 
-    if (!window.YT?.Player) {
-      console.warn('[HeroVideo] Aguardando YouTube API');
+    if (!window.YT || !window.YT.Player) {
+      console.log('[HeroVideo] API ainda não pronta');
       return;
     }
 
-    if (playerRef.current) {
-      console.warn('[HeroVideo] Player já inicializado');
-      return;
-    }
-
-    if (initializationAttemptedRef.current) {
-      console.warn('[HeroVideo] Inicialização já foi tentada');
-      return;
-    }
-
-    initializationAttemptedRef.current = true;
-
-    console.log('[HeroVideo] Container e API disponíveis. Criando player...');
-
+    console.log('[HeroVideo] container pronto, criando player');
     try {
-      playerRef.current = new window.YT.Player(containerRef.current, {
+      const player = new window.YT.Player(containerRef.current, {
         height: '100%',
         width: '100%',
         videoId: VIDEO_IDS[0],
@@ -156,94 +154,40 @@ export default function HeroVideo() {
         },
         events: {
           onReady: (event) => {
-            console.log('[HeroVideo] onReady disparado');
+            console.log('[HeroVideo] player pronto');
             event.target.mute();
             setPlayerReady(true);
-            setIsLoading(false);
+            setLoading(false);
             event.target.playVideo();
-          },
-          onError: (event) => {
-            console.error('[HeroVideo] Erro do player:', event.data);
-            setError(true);
-            setIsLoading(false);
           },
           onStateChange: (event) => {
             const state = event.data;
-            console.log(`[HeroVideo] Estado do player: ${state}`);
+            console.log(`[HeroVideo] estado do player: ${state}`);
             if (state === 0) {
-              const nextIndex = (currentVideoIndexRef.current + 1) % VIDEO_IDS.length;
-              currentVideoIndexRef.current = nextIndex;
+              // Vídeo terminou, carrega o próximo
+              const nextIndex = (currentIndexRef.current + 1) % VIDEO_IDS.length;
+              currentIndexRef.current = nextIndex;
               event.target.loadVideoById(VIDEO_IDS[nextIndex]);
+              console.log(`[HeroVideo] trocando para vídeo ${nextIndex + 1}`);
             }
+          },
+          onError: (event) => {
+            console.error(`[HeroVideo] erro do YouTube: ${event.data}`);
+            setError(true);
+            setLoading(false);
           },
         },
       });
-      console.log('[HeroVideo] Player criado com sucesso');
+      playerRef.current = player;
+      console.log('[HeroVideo] player criado');
     } catch (err) {
-      console.error('[HeroVideo] Erro ao criar player:', err);
+      console.error('[HeroVideo] erro ao criar player:', err);
       setError(true);
-      setIsLoading(false);
+      setLoading(false);
     }
-  }, []);
+  };
 
-  // 3. Carregar API na montagem
-  useEffect(() => {
-    console.log('[HeroVideo] Componente montado');
-    loadYouTubeAPI().catch(() => {});
-  }, [loadYouTubeAPI]);
-
-  // 4. Verificar container e API, e inicializar
-  useEffect(() => {
-    console.log(`[HeroVideo] Verificação: apiReady=${apiReady}, container=${!!containerRef.current}, player=${!!playerRef.current}`);
-
-    if (!containerRef.current) {
-      console.log('[HeroVideo] Aguardando container');
-      return;
-    }
-
-    if (!apiReady || !window.YT?.Player) {
-      console.log('[HeroVideo] Aguardando YouTube API');
-      return;
-    }
-
-    initializePlayer();
-  }, [apiReady, containerRef.current, initializePlayer]);
-
-  // 5. Callback global para quando a API estiver pronta
-  useEffect(() => {
-    const onYouTubeReady = () => {
-      console.log('[HeroVideo] Callback onYouTubeIframeAPIReady chamado');
-      setApiReady(true);
-      if (containerRef.current) {
-        initializePlayer();
-      }
-    };
-
-    window.onYouTubeIframeAPIReady = onYouTubeReady;
-
-    return () => {
-      if (window.onYouTubeIframeAPIReady === onYouTubeReady) {
-        delete window.onYouTubeIframeAPIReady;
-      }
-    };
-  }, [initializePlayer]);
-
-  // 6. Cleanup do player
-  useEffect(() => {
-    return () => {
-      console.log('[HeroVideo] Desmontando componente');
-      if (playerRef.current) {
-        try {
-          playerRef.current.destroy();
-          playerRef.current = null;
-        } catch {
-          // ignorar
-        }
-      }
-    };
-  }, []);
-
-  // 7. Alternar mute
+  // Alterna o mute
   const toggleMute = () => {
     if (!playerRef.current) return;
     if (muted) {
@@ -255,10 +199,10 @@ export default function HeroVideo() {
     }
   };
 
-  // 8. Estados visuais
+  // Fallback em caso de erro
   if (error) {
     return (
-      <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark flex items-center justify-center">
+      <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
           <p className="text-red-500">Erro ao carregar o vídeo.</p>
         </div>
@@ -268,11 +212,15 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
-      {/* Container do player (sempre presente) */}
-      <div ref={containerRef} className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }} />
+      {/* Container do player – SEMPRE presente */}
+      <div
+        ref={containerRef}
+        className="absolute inset-0 w-full h-full"
+        style={{ pointerEvents: 'none' }}
+      />
 
-      {/* Overlay de loading (sobreposto ao container) */}
-      {(!playerReady || isLoading) && (
+      {/* Loading sobreposto */}
+      {loading && (
         <div className="absolute inset-0 z-10 bg-primary-dark flex items-center justify-center">
           <div className="text-white text-center">
             <p className="text-gold">Carregando experiência...</p>
@@ -305,7 +253,7 @@ export default function HeroVideo() {
         </div>
       </div>
 
-      {/* Botão de áudio (só aparece quando o player está pronto) */}
+      {/* Botão de áudio – aparece apenas quando o player está pronto */}
       {playerReady && (
         <button
           onClick={toggleMute}
