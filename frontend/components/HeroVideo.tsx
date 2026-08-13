@@ -1,115 +1,103 @@
 'use client';
 
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { getApiUrl } from '@/config';
 import { Volume2, VolumeX } from 'lucide-react';
 
+// YouTube IDs dos vídeos
+const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
+
+let player: YT.Player | null = null;
+
 export default function HeroVideo() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [url1, setUrl1] = useState<string | null>(null);
-  const [url2, setUrl2] = useState<string | null>(null);
-  const [current, setCurrent] = useState<1 | 2>(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [muted, setMuted] = useState(true);
-  const [retryCount, setRetryCount] = useState(0);
-  const [isRenewing, setIsRenewing] = useState(false);
+  const [playerReady, setPlayerReady] = useState(false);
+  const [error, setError] = useState(false);
 
-  // Função centralizada para buscar as URLs
-  const fetchVideoUrls = useCallback(async (renew = false) => {
-    // Se já está renovando, não inicia outra
-    if (isRenewing) return;
-    setIsRenewing(true);
-
-    try {
-      const apiUrl = getApiUrl();
-      let fetchedUrl1: string | null = null;
-      let fetchedUrl2: string | null = null;
-
-      // Primeiro vídeo (obrigatório)
-      const res1 = await fetch(`${apiUrl}/api/videos/hero`);
-      if (!res1.ok) {
-        throw new Error(`Falha no primeiro vídeo: ${res1.status}`);
-      }
-      const data1 = await res1.json();
-      if (!data1.url) {
-        throw new Error('Primeiro vídeo não retornou URL');
-      }
-      fetchedUrl1 = data1.url;
-
-      // Segundo vídeo (opcional)
-      try {
-        const res2 = await fetch(`${apiUrl}/api/videos/second`);
-        if (res2.ok) {
-          const data2 = await res2.json();
-          if (data2.url) {
-            fetchedUrl2 = data2.url;
-            console.log('✅ Segundo vídeo carregado com sucesso');
-          } else {
-            console.warn('⚠️ Segundo vídeo: URL não encontrada na resposta');
-          }
-        } else {
-          console.warn(`⚠️ Segundo vídeo indisponível (status ${res2.status})`);
-        }
-      } catch (err2) {
-        const message = err2 instanceof Error ? err2.message : String(err2);
-        console.warn('⚠️ Erro ao carregar segundo vídeo:', message);
-      }
-
-      if (!fetchedUrl1) {
-        throw new Error('Nenhum vídeo disponível');
-      }
-
-      // Atualiza os estados
-      setUrl1(fetchedUrl1);
-      setUrl2(fetchedUrl2);
-      setRetryCount(0); // reseta contador em caso de renovação bem-sucedida
-      setError(false);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      console.error('❌ Erro crítico ao carregar vídeos:', message);
-      setError(true);
-    } finally {
-      setLoading(false);
-      setIsRenewing(false);
-    }
-  }, [isRenewing]);
-
-  // Carrega as URLs na montagem
+  // Carrega a API do YouTube
   useEffect(() => {
-    fetchVideoUrls();
-  }, [fetchVideoUrls]);
-
-  // Função de renovação (chamada em caso de erro de rede/expiração)
-  const handleRenew = useCallback(() => {
-    if (retryCount >= 1) {
-      console.warn('⚠️ Número máximo de tentativas atingido. Vídeo será interrompido.');
-      setError(true);
+    if (window.YT) {
+      // API já carregada
       return;
     }
-    setRetryCount((prev) => prev + 1);
-    setLoading(true);
-    fetchVideoUrls(true);
-  }, [retryCount, fetchVideoUrls]);
 
-  // Troca de vídeo ao finalizar
-  const handleEnded = () => {
-    if (current === 1 && url2) {
-      setCurrent(2);
-    } else if (current === 2 && url1) {
-      setCurrent(1);
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+  }, []);
+
+  // Inicializa o player quando a API estiver pronta
+  const onYouTubeIframeAPIReady = useCallback(() => {
+    if (!containerRef.current || player) return;
+
+    player = new YT.Player(containerRef.current, {
+      height: '100%',
+      width: '100%',
+      videoId: VIDEO_IDS[0],
+      playerVars: {
+        autoplay: 1,
+        mute: 1,
+        playsinline: 1,
+        controls: 0,
+        enablejsapi: 1,
+        rel: 0,
+        loop: 1,
+        playlist: VIDEO_IDS.join(','), // cria uma playlist automática com os dois vídeos
+      },
+      events: {
+        onReady: (event) => {
+          event.target.mute(); // garante que comece mudo
+          setPlayerReady(true);
+          event.target.playVideo();
+        },
+        onError: () => {
+          setError(true);
+        },
+        onStateChange: (event) => {
+          // Se o vídeo terminar, o YouTube já vai para o próximo da playlist
+          // Não precisamos de lógica manual para sequência
+        },
+      },
+    });
+  }, []);
+
+  // Aguarda a API do YouTube e depois inicializa
+  useEffect(() => {
+    // Se a API já estiver disponível, inicialize imediatamente
+    if (window.YT && window.YT.Player) {
+      onYouTubeIframeAPIReady();
     } else {
-      // Se não houver segundo, reinicia o primeiro
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.play().catch(() => {});
+      // Define o callback global que o YouTube chama quando a API estiver pronta
+      window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+    }
+  }, [onYouTubeIframeAPIReady]);
+
+  // Troca o estado de mute
+  const toggleMute = () => {
+    if (player) {
+      if (muted) {
+        player.unMute();
+        setMuted(false);
+      } else {
+        player.mute();
+        setMuted(true);
       }
     }
   };
 
-  // Estados de loading/erro
-  if (loading) {
+  if (error) {
+    return (
+      <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
+        <div className="text-white text-center">
+          <p className="text-red-500">Erro ao carregar o vídeo.</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (!playerReady) {
     return (
       <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
@@ -119,46 +107,12 @@ export default function HeroVideo() {
     );
   }
 
-  if (error || !url1) {
-    return (
-      <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
-        <div className="text-white text-center">
-          <p className="text-red-500">Erro ao carregar o vídeo principal.</p>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
-      <video
-        ref={videoRef}
-        src={current === 1 ? url1 : (url2 || url1)}
-        autoPlay
-        muted={muted}
-        playsInline
-        loop={false}
-        controls={false}
-        preload="metadata"
-        className="w-full h-full object-cover object-center"
-        onEnded={handleEnded}
-        onError={(event) => {
-          const video = event.currentTarget as HTMLVideoElement;
-          const errorCode = video.error?.code;
-          const errorMessage = video.error?.message;
-          console.error('❌ VIDEO ERROR', { errorCode, errorMessage });
-
-          // Se for erro de rede (2) ou HTTP 403 (manifestado como 403), tenta renovar
-          if (
-            errorCode === 2 || // MEDIA_ERR_NETWORK
-            (errorCode === undefined && errorMessage?.includes('403'))
-          ) {
-            handleRenew();
-          } else {
-            // Outros erros (decodificação, formato não suportado) não são recuperáveis
-            setError(true);
-          }
-        }}
+      <div
+        ref={containerRef}
+        className="absolute inset-0 w-full h-full"
+        style={{ pointerEvents: 'none' }}
       />
 
       {/* Overlay e conteúdo textual (inalterados) */}
@@ -186,9 +140,9 @@ export default function HeroVideo() {
         </div>
       </div>
 
-      {/* Controle de áudio */}
+      {/* Controle de áudio (botão discreto) */}
       <button
-        onClick={() => setMuted(!muted)}
+        onClick={toggleMute}
         className="absolute bottom-6 right-6 z-40 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
         aria-label={muted ? 'Ativar som' : 'Desativar som'}
       >
