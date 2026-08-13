@@ -5,6 +5,9 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Volume2, VolumeX, PlayCircle } from 'lucide-react';
 
+// ============================================================
+// Definição dos tipos da YouTube IFrame API
+// ============================================================
 declare global {
   interface Window {
     YT?: {
@@ -27,14 +30,19 @@ declare namespace YT {
     loop?: 0 | 1;
     playlist?: string;
     origin?: string;
+    modestbranding?: 0 | 1;
+    iv_load_policy?: 3; // desabilita anotações
   }
+
   interface PlayerEvent {
     target: Player;
     data: number;
   }
+
   interface OnReadyEvent extends PlayerEvent {}
   interface OnStateChangeEvent extends PlayerEvent {}
   interface OnErrorEvent extends PlayerEvent {}
+
   interface PlayerOptions {
     height: string;
     width: string;
@@ -46,6 +54,7 @@ declare namespace YT {
       onError?: (event: OnErrorEvent) => void;
     };
   }
+
   interface Player {
     playVideo(): void;
     mute(): void;
@@ -55,6 +64,9 @@ declare namespace YT {
   }
 }
 
+// ============================================================
+// IDs dos vídeos do YouTube
+// ============================================================
 const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
 
 export default function HeroVideo() {
@@ -75,6 +87,7 @@ export default function HeroVideo() {
         tryInitialize();
         return;
       }
+
       const script = document.createElement('script');
       script.src = 'https://www.youtube.com/iframe_api';
       script.onload = () => {
@@ -120,6 +133,8 @@ export default function HeroVideo() {
             enablejsapi: 1,
             rel: 0,
             origin: window.location.origin,
+            modestbranding: 1,
+            iv_load_policy: 3,
           },
           events: {
             onReady: (event: YT.OnReadyEvent) => {
@@ -225,33 +240,15 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
-      {/* Container com overflow: hidden e CSS que centraliza e amplia o iframe */}
+      {/* Container do player – ocupa 100% do Hero, com object-fit: contain para preservar o conteúdo */}
       <div
         ref={containerRef}
-        className="absolute inset-0 w-full h-full overflow-hidden"
+        className="absolute inset-0 w-full h-full flex items-center justify-center"
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* CSS adicional para garantir que o iframe preencha o Hero sem distorção */}
-      <style jsx>{`
-        .hero-video-container {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-        }
-        .hero-video-container iframe {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          min-width: 100%;
-          min-height: 100%;
-          width: auto;
-          height: auto;
-          pointer-events: none; /* evita cliques no player */
-        }
-      `}</style>
+      {/* Fundo escuro com gradiente sutil – preenche as laterais sem cortar o vídeo */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/80 via-transparent to-primary-dark/80" />
 
       {loading && (
         <div className="absolute inset-0 z-10 bg-primary-dark flex items-center justify-center">
@@ -261,6 +258,7 @@ export default function HeroVideo() {
         </div>
       )}
 
+      {/* Overlay de texto e CTA */}
       <div className="absolute inset-0 bg-primary-dark/20 z-20" />
       <div className="relative z-30 flex items-center justify-center h-full px-6">
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
@@ -285,6 +283,7 @@ export default function HeroVideo() {
         </div>
       </div>
 
+      {/* Botão de áudio */}
       {playerReady && (
         <button
           onClick={toggleMute}
