@@ -4,24 +4,82 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Volume2, VolumeX } from 'lucide-react';
 
-// YouTube IDs dos vídeos
-const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
+// ============================================================
+// Definições manuais dos tipos da YouTube IFrame API
+// ============================================================
+declare namespace YT {
+  interface PlayerVars {
+    autoplay?: 0 | 1;
+    mute?: 0 | 1;
+    playsinline?: 0 | 1;
+    controls?: 0 | 1;
+    enablejsapi?: 0 | 1;
+    rel?: 0 | 1;
+    loop?: 0 | 1;
+    playlist?: string;
+    origin?: string;
+  }
 
-// Declaração global para a API do YouTube
-declare global {
-  interface Window {
-    YT: typeof YT;
-    onYouTubeIframeAPIReady: () => void;
+  interface PlayerEvent {
+    target: Player;
+    data: number;
+  }
+
+  interface OnReadyEvent extends PlayerEvent {}
+  interface OnStateChangeEvent extends PlayerEvent {}
+  interface OnErrorEvent extends PlayerEvent {}
+
+  interface PlayerOptions {
+    height: string;
+    width: string;
+    videoId: string;
+    playerVars?: PlayerVars;
+    events?: {
+      onReady?: (event: OnReadyEvent) => void;
+      onStateChange?: (event: OnStateChangeEvent) => void;
+      onError?: (event: OnErrorEvent) => void;
+    };
+  }
+
+  interface Player {
+    new (element: HTMLElement, options: PlayerOptions): Player;
+    playVideo(): void;
+    mute(): void;
+    unMute(): void;
+    destroy(): void;
+    loadVideoById(videoId: string): void;
+    getCurrentTime(): number;
+    getDuration(): number;
+    getPlayerState(): number;
   }
 }
 
+// Estende a interface global do Window
+declare global {
+  interface Window {
+    YT?: {
+      Player: new (element: HTMLElement, options: YT.PlayerOptions) => YT.Player;
+    };
+    onYouTubeIframeAPIReady?: () => void;
+  }
+}
+
+// ============================================================
+// IDs dos vídeos do YouTube
+// ============================================================
+const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
+
 let player: YT.Player | null = null;
 
+// ============================================================
+// Componente HeroVideo
+// ============================================================
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
   const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Carrega a API do YouTube apenas uma vez
   useEffect(() => {
@@ -34,14 +92,21 @@ export default function HeroVideo() {
     tag.src = 'https://www.youtube.com/iframe_api';
     const firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
+    return () => {
+      if (player) {
+        try { player.destroy(); } catch { /* ignore */ }
+        player = null;
+      }
+    };
   }, []);
 
-  // Inicializa o player quando a API estiver pronta
+  // Callback que será chamado pela API do YouTube quando estiver pronta
   const onYouTubeIframeAPIReady = useCallback(() => {
     if (!containerRef.current || player) return;
 
     try {
-      player = new YT.Player(containerRef.current, {
+      player = new window.YT!.Player(containerRef.current, {
         height: '100%',
         width: '100%',
         videoId: VIDEO_IDS[0],
@@ -53,30 +118,34 @@ export default function HeroVideo() {
           enablejsapi: 1,
           rel: 0,
           loop: 1,
-          playlist: VIDEO_IDS.join(','), // playlist com os dois vídeos em loop
+          playlist: VIDEO_IDS.join(','),
         },
         events: {
           onReady: (event) => {
             event.target.mute();
             setPlayerReady(true);
+            setIsLoading(false);
             event.target.playVideo();
           },
           onError: (event) => {
             console.error('YouTube player error:', event.data);
             setError(true);
+            setIsLoading(false);
           },
           onStateChange: (event) => {
-            // O YouTube já cuida da transição entre os vídeos da playlist
+            // Quando o vídeo termina (state = 0), o YouTube já vai para o próximo da playlist
+            // Não precisamos de lógica adicional
           },
         },
       });
     } catch (err) {
       console.error('Erro ao criar player:', err);
       setError(true);
+      setIsLoading(false);
     }
   }, []);
 
-  // Aguarda a API e inicializa
+  // Configura o callback global e limpa
   useEffect(() => {
     if (window.YT && window.YT.Player && containerRef.current) {
       onYouTubeIframeAPIReady();
@@ -86,11 +155,12 @@ export default function HeroVideo() {
 
     return () => {
       if (window.onYouTubeIframeAPIReady === onYouTubeIframeAPIReady) {
-        window.onYouTubeIframeAPIReady = undefined;
+        delete window.onYouTubeIframeAPIReady;
       }
     };
   }, [onYouTubeIframeAPIReady]);
 
+  // Alterna o mute
   const toggleMute = () => {
     if (!player) return;
     if (muted) {
@@ -102,6 +172,7 @@ export default function HeroVideo() {
     }
   };
 
+  // Estados de carregamento e erro
   if (error) {
     return (
       <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
@@ -112,7 +183,7 @@ export default function HeroVideo() {
     );
   }
 
-  if (!playerReady) {
+  if (!playerReady || isLoading) {
     return (
       <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
