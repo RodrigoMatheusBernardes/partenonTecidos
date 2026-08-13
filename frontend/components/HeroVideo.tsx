@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Volume2, VolumeX, PlayCircle } from 'lucide-react';
 
 // ============================================================
-// Definição completa dos tipos da YouTube IFrame API (sem dependências)
+// Definição dos tipos da YouTube IFrame API
 // ============================================================
 declare global {
   interface Window {
@@ -280,3 +280,8 @@ export default function HeroVideo() {
     </section>
   );
 }
+
+// ============================================================
+// Força o arquivo a ser tratado como módulo
+// ============================================================
+export {};
