@@ -54,13 +54,11 @@ declare namespace YT {
   }
 }
 
-// Estende a interface global do Window
 declare global {
   interface Window {
     YT?: {
       Player: new (element: HTMLElement, options: YT.PlayerOptions) => YT.Player;
     };
-    onYouTubeIframeAPIReady?: () => void;
   }
 }
 
@@ -69,7 +67,8 @@ declare global {
 // ============================================================
 const VIDEO_IDS = ['OZt0hp6tY_E', 'BmLibpkdUeI'];
 
-let player: YT.Player | null = null;
+let playerInstance: YT.Player | null = null;
+let currentVideoIndex = 0;
 
 // ============================================================
 // Componente HeroVideo
@@ -81,32 +80,50 @@ export default function HeroVideo() {
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Carrega a API do YouTube apenas uma vez
-  useEffect(() => {
-    if (window.YT && window.YT.Player) {
-      // API já carregada
+  // Carrega a API do YouTube de forma assíncrona (Promise)
+  const loadYouTubeAPI = useCallback(() => {
+    return new Promise<void>((resolve, reject) => {
+      if (window.YT && window.YT.Player) {
+        console.log('[HeroVideo] YouTube API já carregada');
+        resolve();
+        return;
+      }
+
+      console.log('[HeroVideo] Carregando YouTube API...');
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.onload = () => {
+        // Aguarda a definição do YT.Player (pode demorar alguns milissegundos)
+        const checkYT = setInterval(() => {
+          if (window.YT && window.YT.Player) {
+            clearInterval(checkYT);
+            console.log('[HeroVideo] YouTube API carregada com sucesso');
+            resolve();
+          }
+        }, 100);
+      };
+      script.onerror = () => {
+        console.error('[HeroVideo] Falha ao carregar YouTube API');
+        reject(new Error('Falha ao carregar YouTube API'));
+      };
+      document.body.appendChild(script);
+    });
+  }, []);
+
+  // Inicializa o player após a API estar pronta
+  const createPlayer = useCallback(() => {
+    if (!containerRef.current) {
+      console.warn('[HeroVideo] containerRef.current não está disponível');
+      return;
+    }
+    if (playerInstance) {
+      console.warn('[HeroVideo] Player já existe');
       return;
     }
 
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-
-    return () => {
-      if (player) {
-        try { player.destroy(); } catch { /* ignore */ }
-        player = null;
-      }
-    };
-  }, []);
-
-  // Callback que será chamado pela API do YouTube quando estiver pronta
-  const onYouTubeIframeAPIReady = useCallback(() => {
-    if (!containerRef.current || player) return;
-
+    console.log('[HeroVideo] Criando player...');
     try {
-      player = new window.YT!.Player(containerRef.current, {
+      playerInstance = new window.YT!.Player(containerRef.current, {
         height: '100%',
         width: '100%',
         videoId: VIDEO_IDS[0],
@@ -117,62 +134,93 @@ export default function HeroVideo() {
           controls: 0,
           enablejsapi: 1,
           rel: 0,
-          loop: 1,
-          playlist: VIDEO_IDS.join(','),
+          origin: window.location.origin,
         },
         events: {
           onReady: (event) => {
+            console.log('[HeroVideo] onReady disparado');
             event.target.mute();
             setPlayerReady(true);
             setIsLoading(false);
             event.target.playVideo();
           },
           onError: (event) => {
-            console.error('YouTube player error:', event.data);
+            console.error('[HeroVideo] Erro do player:', event.data);
             setError(true);
             setIsLoading(false);
           },
           onStateChange: (event) => {
-            // Quando o vídeo termina (state = 0), o YouTube já vai para o próximo da playlist
-            // Não precisamos de lógica adicional
+            const state = event.data;
+            console.log(`[HeroVideo] onStateChange: ${state}`);
+            // state = 0 (ended), 1 (playing), 5 (buffering), etc.
+            if (state === 0) {
+              // Vídeo terminou -> próximo
+              const nextIndex = (currentVideoIndex + 1) % VIDEO_IDS.length;
+              currentVideoIndex = nextIndex;
+              event.target.loadVideoById(VIDEO_IDS[nextIndex]);
+            }
           },
         },
       });
+      console.log('[HeroVideo] Player criado');
     } catch (err) {
-      console.error('Erro ao criar player:', err);
+      console.error('[HeroVideo] Erro ao criar player:', err);
       setError(true);
       setIsLoading(false);
     }
   }, []);
 
-  // Configura o callback global e limpa
+  // Efeito principal: carrega API, cria player
   useEffect(() => {
-    if (window.YT && window.YT.Player && containerRef.current) {
-      onYouTubeIframeAPIReady();
-    } else {
-      window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
-    }
+    console.log('[HeroVideo] Componente montado');
 
-    return () => {
-      if (window.onYouTubeIframeAPIReady === onYouTubeIframeAPIReady) {
-        delete window.onYouTubeIframeAPIReady;
+    const init = async () => {
+      try {
+        await loadYouTubeAPI();
+        // Aguarda um tick para garantir que o ref esteja atualizado
+        setTimeout(() => {
+          if (containerRef.current) {
+            createPlayer();
+          } else {
+            console.warn('[HeroVideo] containerRef.current ainda nulo');
+          }
+        }, 100);
+      } catch (err) {
+        console.error('[HeroVideo] Erro na inicialização:', err);
+        setError(true);
+        setIsLoading(false);
       }
     };
-  }, [onYouTubeIframeAPIReady]);
 
-  // Alterna o mute
+    init();
+
+    return () => {
+      console.log('[HeroVideo] Componente desmontado');
+      if (playerInstance) {
+        try {
+          playerInstance.destroy();
+        } catch {
+          /* ignore */
+        }
+        playerInstance = null;
+      }
+      currentVideoIndex = 0;
+    };
+  }, [loadYouTubeAPI, createPlayer]);
+
+  // Alterna mute
   const toggleMute = () => {
-    if (!player) return;
+    if (!playerInstance) return;
     if (muted) {
-      player.unMute();
+      playerInstance.unMute();
       setMuted(false);
     } else {
-      player.mute();
+      playerInstance.mute();
       setMuted(true);
     }
   };
 
-  // Estados de carregamento e erro
+  // Estados visuais
   if (error) {
     return (
       <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
