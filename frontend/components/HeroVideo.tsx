@@ -1,14 +1,13 @@
 'use client';
 
-export type {};
-
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Volume2, VolumeX, PlayCircle } from 'lucide-react';
 
 // ============================================================
-// Definição dos tipos da YouTube IFrame API
+// YouTube IFrame API
 // ============================================================
+
 declare global {
   interface Window {
     YT?: {
@@ -66,39 +65,73 @@ declare namespace YT {
 }
 
 // ============================================================
-// IDs dos vídeos do YouTube
+// VÍDEOS
 // ============================================================
-const VIDEO_IDS = ['0OGYYD0XY9A', 'BmLibpkdUeI'];
+//
+// Desktop:
+//   Vídeo 1 = horizontal 16:9
+//
+// Mobile:
+//   Vídeo 2 = vertical / Shorts
+//
+// ============================================================
+
+const DESKTOP_VIDEO_ID = '0OGYYD0XY9A';
+const MOBILE_VIDEO_ID = 'BmLibpkdUeI';
+
+// ============================================================
+// Componente
+// ============================================================
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
-  const currentIndexRef = useRef(0);
 
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // ============================================================
+  // Detecta desktop/mobile
+  // ============================================================
+
+  useEffect(() => {
+    const updateViewport = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    updateViewport();
+
+    window.addEventListener('resize', updateViewport);
+
+    return () => {
+      window.removeEventListener('resize', updateViewport);
+    };
+  }, []);
+
+  // ============================================================
+  // Carregamento da API do YouTube
+  // ============================================================
 
   useEffect(() => {
     console.log('[HeroVideo] montado');
 
     const loadAPI = () => {
-      // Se a API já estiver carregada, inicializa imediatamente
-      if (window.YT && window.YT.Player) {
+      if (window.YT?.Player) {
         tryInitialize();
         return;
       }
 
-      // Evita adicionar múltiplos scripts da API
       const existingScript = document.querySelector(
         'script[src="https://www.youtube.com/iframe_api"]'
       );
 
       if (existingScript) {
         const check = setInterval(() => {
-          if (window.YT && window.YT.Player) {
+          if (window.YT?.Player) {
             clearInterval(check);
             tryInitialize();
           }
@@ -108,12 +141,13 @@ export default function HeroVideo() {
       }
 
       const script = document.createElement('script');
+
       script.src = 'https://www.youtube.com/iframe_api';
       script.async = true;
 
       script.onload = () => {
         const check = setInterval(() => {
-          if (window.YT && window.YT.Player) {
+          if (window.YT?.Player) {
             clearInterval(check);
             tryInitialize();
           }
@@ -121,7 +155,10 @@ export default function HeroVideo() {
       };
 
       script.onerror = () => {
-        console.error('[HeroVideo] erro ao carregar script do YouTube');
+        console.error(
+          '[HeroVideo] erro ao carregar API do YouTube'
+        );
+
         setError(true);
         setLoading(false);
         setShowFallback(true);
@@ -132,9 +169,12 @@ export default function HeroVideo() {
 
     const tryInitialize = () => {
       if (!containerRef.current) {
-        console.log('[HeroVideo] aguardando container');
+        setTimeout(tryInitialize, 200);
+        return;
+      }
 
-        setTimeout(tryInitialize, 300);
+      if (!window.YT?.Player) {
+        setTimeout(tryInitialize, 200);
         return;
       }
 
@@ -142,88 +182,116 @@ export default function HeroVideo() {
         return;
       }
 
-      if (!window.YT || !window.YT.Player) {
-        console.log('[HeroVideo] aguardando API do YouTube');
+      /*
+       * Importante:
+       *
+       * O vídeo inicial é escolhido de acordo com o tamanho
+       * da tela.
+       *
+       * Desktop -> horizontal
+       * Mobile  -> Shorts
+       */
 
-        setTimeout(tryInitialize, 300);
-        return;
-      }
+      const initialVideoId =
+        window.innerWidth < 768
+          ? MOBILE_VIDEO_ID
+          : DESKTOP_VIDEO_ID;
 
       try {
-        const player = new window.YT.Player(containerRef.current, {
-          /*
-           * O tamanho real do iframe será controlado pelo CSS.
-           * O YouTube recebe 100% aqui apenas para inicialização.
-           */
-          height: '100%',
-          width: '100%',
+        const player = new window.YT.Player(
+          containerRef.current,
+          {
+            /*
+             * O tamanho final será controlado pelo CSS.
+             */
+            width: '100%',
+            height: '100%',
 
-          videoId: VIDEO_IDS[0],
+            videoId: initialVideoId,
 
-          playerVars: {
-            autoplay: 1,
-            mute: 1,
-            playsinline: 1,
-            controls: 0,
-            enablejsapi: 1,
-            rel: 0,
-            origin: window.location.origin,
-            modestbranding: 1,
-            iv_load_policy: 3,
-          },
-
-          events: {
-            onReady: (event: YT.OnReadyEvent) => {
-              console.log('[HeroVideo] player pronto');
-
-              event.target.mute();
-
-              setMuted(true);
-              setPlayerReady(true);
-              setLoading(false);
-
-              event.target.playVideo();
+            playerVars: {
+              autoplay: 1,
+              mute: 1,
+              playsinline: 1,
+              controls: 0,
+              enablejsapi: 1,
+              rel: 0,
+              origin: window.location.origin,
+              modestbranding: 1,
+              iv_load_policy: 3,
             },
 
-            onError: (event: YT.OnErrorEvent) => {
-              console.error(
-                '[HeroVideo] erro do YouTube:',
-                event.data
-              );
+            events: {
+              // ==================================================
+              // READY
+              // ==================================================
 
-              if (event.data === 153) {
-                console.warn(
-                  '[HeroVideo] Erro 153: HTTP Referer ausente. Verifique a política de referrer.'
+              onReady: (event: YT.OnReadyEvent) => {
+                console.log('[HeroVideo] player pronto');
+
+                event.target.mute();
+                event.target.playVideo();
+
+                setMuted(true);
+                setPlayerReady(true);
+                setLoading(false);
+              },
+
+              // ==================================================
+              // ERROR
+              // ==================================================
+
+              onError: (event: YT.OnErrorEvent) => {
+                console.error(
+                  '[HeroVideo] erro do YouTube:',
+                  event.data
                 );
-              }
 
-              setError(true);
-              setLoading(false);
-              setShowFallback(true);
+                if (event.data === 153) {
+                  console.warn(
+                    '[HeroVideo] Erro 153: HTTP Referer ausente.'
+                  );
+                }
+
+                setError(true);
+                setLoading(false);
+                setShowFallback(true);
+              },
+
+              // ==================================================
+              // FIM DO VÍDEO
+              // ==================================================
+
+              onStateChange: (
+                event: YT.OnStateChangeEvent
+              ) => {
+                /*
+                 * Quando o vídeo termina:
+                 *
+                 * Desktop -> continua no vídeo horizontal
+                 * Mobile  -> continua no Shorts
+                 *
+                 * Não alternamos para o formato errado.
+                 */
+                if (event.data === 0) {
+                  const nextVideo =
+                    window.innerWidth < 768
+                      ? MOBILE_VIDEO_ID
+                      : DESKTOP_VIDEO_ID;
+
+                  event.target.loadVideoById(nextVideo);
+                }
+              },
             },
-
-            onStateChange: (event: YT.OnStateChangeEvent) => {
-              /*
-               * Estado 0 = vídeo terminou.
-               *
-               * Carrega automaticamente o próximo vídeo.
-               */
-              if (event.data === 0) {
-                const next =
-                  (currentIndexRef.current + 1) %
-                  VIDEO_IDS.length;
-
-                currentIndexRef.current = next;
-
-                event.target.loadVideoById(VIDEO_IDS[next]);
-              }
-            },
-          },
-        });
+          }
+        );
 
         playerRef.current = player;
 
-        console.log('[HeroVideo] player criado');
+        console.log(
+          '[HeroVideo] player criado:',
+          initialVideoId
+        );
       } catch (err) {
         console.error(
           '[HeroVideo] erro ao criar player:',
@@ -238,12 +306,16 @@ export default function HeroVideo() {
 
     loadAPI();
 
+    // ==========================================================
+    // Cleanup
+    // ==========================================================
+
     return () => {
       if (playerRef.current) {
         try {
           playerRef.current.destroy();
         } catch {
-          // Evita erro durante desmontagem
+          // Ignorar erro de desmontagem
         }
 
         playerRef.current = null;
@@ -252,8 +324,35 @@ export default function HeroVideo() {
   }, []);
 
   // ============================================================
-  // Controle de áudio
+  // Quando muda entre desktop/mobile
   // ============================================================
+
+  useEffect(() => {
+    if (!playerRef.current) {
+      return;
+    }
+
+    const videoId = isMobile
+      ? MOBILE_VIDEO_ID
+      : DESKTOP_VIDEO_ID;
+
+    try {
+      playerRef.current.loadVideoById(videoId);
+      playerRef.current.mute();
+
+      setMuted(true);
+    } catch (err) {
+      console.warn(
+        '[HeroVideo] não foi possível trocar o vídeo:',
+        err
+      );
+    }
+  }, [isMobile]);
+
+  // ============================================================
+  // Mute
+  // ============================================================
+
   const toggleMute = () => {
     if (!playerRef.current) {
       return;
@@ -269,11 +368,12 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Fallback
+  // FALLBACK
   // ============================================================
+
   if (showFallback) {
     return (
-      <section className="relative w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center overflow-hidden">
+      <section className="relative w-full min-h-[500px] h-[85vh] bg-primary-dark flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-primary-dark/90" />
 
         <div className="relative z-20 text-center px-6 max-w-2xl space-y-6">
@@ -286,14 +386,14 @@ export default function HeroVideo() {
             </span>
           </h1>
 
-          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">
+          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary text-white">
             A elegância que tece histórias
           </p>
 
           <div className="pt-2">
             <Link
               href="/loja"
-              className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500"
+              className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary hover:bg-gold hover:text-primary-dark transition-all duration-500"
             >
               Conhecer a coleção
             </Link>
@@ -301,13 +401,12 @@ export default function HeroVideo() {
 
           <div className="pt-6">
             <a
-              href={`https://www.youtube.com/watch?v=${VIDEO_IDS[0]}`}
+              href={`https://www.youtube.com/watch?v=${DESKTOP_VIDEO_ID}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-gold hover:text-gold/80 transition-colors text-sm md:text-base"
             >
               <PlayCircle className="w-5 h-5" />
-
               Assistir no YouTube
             </a>
           </div>
@@ -317,8 +416,9 @@ export default function HeroVideo() {
   }
 
   // ============================================================
-  // Estado de erro
+  // ERRO
   // ============================================================
+
   if (error) {
     return (
       <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
@@ -332,76 +432,119 @@ export default function HeroVideo() {
   }
 
   // ============================================================
-  // Hero principal
+  // HERO
   // ============================================================
+
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
 
       {/* ======================================================
-          VÍDEO
-          ======================================================
+          PLAYER
+          ====================================================== */}
 
-          O container ocupa todo o Hero.
-
-          O CSS abaixo transforma o iframe do YouTube em um
-          equivalente visual de:
-
-              object-fit: cover;
-
-          O vídeo continua sendo 16:9.
-
-          Não existe distorção.
-
-          Quando a proporção do Hero for diferente de 16:9,
-          o excesso do vídeo será cortado pelo overflow-hidden.
-      ====================================================== */}
       <div
         ref={containerRef}
-        className="hero-video-container absolute inset-0 w-full h-full"
-        style={{
-          pointerEvents: 'none',
-        }}
+        className="hero-video-container absolute inset-0"
+        aria-hidden="true"
       />
 
       {/* ======================================================
-          ESTILO DO IFRAME DO YOUTUBE
+          ESTILO DO PLAYER
           ====================================================== */}
+
       <style jsx global>{`
+        /*
+         * ======================================================
+         * CONTAINER
+         * ======================================================
+         */
+
         .hero-video-container {
           position: absolute;
           inset: 0;
           width: 100%;
           height: 100%;
           overflow: hidden;
+          background: #000;
         }
 
-        .hero-video-container iframe {
-          position: absolute !important;
+        /*
+         * ======================================================
+         * DESKTOP
+         *
+         * Vídeo horizontal 16:9.
+         *
+         * O iframe fica maior verticalmente que o Hero.
+         * Isso permite que o vídeo ocupe toda a largura sem
+         * criar barras pretas laterais.
+         * ======================================================
+         */
 
-          top: 50% !important;
-          left: 50% !important;
+        @media (min-width: 768px) {
+          .hero-video-container iframe {
+            position: absolute !important;
 
-          /*
-           * O vídeo original é 16:9.
-           *
-           * Estas dimensões fazem o iframe crescer o suficiente
-           * para cobrir completamente o Hero.
-           */
-          width: max(100%, 177.7778vh) !important;
-          height: max(100%, 56.25vw) !important;
+            top: 50% !important;
+            left: 50% !important;
 
-          max-width: none !important;
-          max-height: none !important;
+            width: 100vw !important;
 
-          transform: translate(-50%, -50%) !important;
+            /*
+             * Mantém a proporção 16:9.
+             *
+             * 100vw × 9/16
+             */
+            height: 56.25vw !important;
 
-          border: 0 !important;
+            max-width: none !important;
+            max-height: none !important;
+
+            transform: translate(-50%, -50%) !important;
+
+            border: 0 !important;
+          }
+        }
+
+        /*
+         * ======================================================
+         * MOBILE
+         *
+         * O segundo vídeo é vertical / Shorts.
+         *
+         * Aqui usamos 9:16 e fazemos o player preencher
+         * completamente a altura disponível.
+         * ======================================================
+         */
+
+        @media (max-width: 767px) {
+          .hero-video-container iframe {
+            position: absolute !important;
+
+            top: 50% !important;
+            left: 50% !important;
+
+            /*
+             * 9:16
+             *
+             * A altura acompanha o Hero.
+             */
+            width: 56.25vh !important;
+            height: 100vh !important;
+
+            max-width: none !important;
+            max-height: none !important;
+
+            transform: translate(-50%, -50%) !important;
+
+            border: 0 !important;
+          }
         }
       `}</style>
 
       {/* ======================================================
           LOADING
           ====================================================== */}
+
       {loading && (
         <div className="absolute inset-0 z-10 bg-primary-dark flex items-center justify-center">
           <div className="text-white text-center">
@@ -415,14 +558,33 @@ export default function HeroVideo() {
       {/* ======================================================
           OVERLAY
           ====================================================== */}
-      <div className="absolute inset-0 bg-primary-dark/20 z-20" />
+
+      <div
+        className="
+          absolute
+          inset-0
+          z-20
+          bg-gradient-to-t
+          from-primary-dark/45
+          via-primary-dark/10
+          to-primary-dark/10
+          pointer-events-none
+        "
+      />
 
       {/* ======================================================
-          TEXTO DO HERO
+          CONTEÚDO
           ====================================================== */}
-      <div className="relative z-30 flex items-center justify-center h-full px-6">
-        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
 
+      <div className="relative z-30 flex items-center justify-center h-full px-6">
+        <div
+          className="
+            text-center
+            max-w-2xl
+            space-y-6
+            drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]
+          "
+        >
           <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-secondary font-medium text-white">
             Nova Coleção 2026
           </p>
@@ -443,7 +605,23 @@ export default function HeroVideo() {
           <div className="pt-2">
             <Link
               href="/loja"
-              className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500"
+              className="
+                inline-block
+                border
+                border-gold
+                text-gold
+                px-10
+                py-4
+                text-xs
+                tracking-[0.2em]
+                uppercase
+                font-secondary
+                font-light
+                hover:bg-gold
+                hover:text-primary-dark
+                transition-all
+                duration-500
+              "
             >
               Conhecer a coleção
             </Link>
@@ -454,6 +632,7 @@ export default function HeroVideo() {
       {/* ======================================================
           BOTÃO DE ÁUDIO
           ====================================================== */}
+
       {playerReady && (
         <button
           onClick={toggleMute}
@@ -462,7 +641,19 @@ export default function HeroVideo() {
               ? 'Ativar som do vídeo'
               : 'Desativar som do vídeo'
           }
-          className="absolute bottom-6 right-6 z-40 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
+          className="
+            absolute
+            bottom-6
+            right-6
+            z-40
+            p-2
+            rounded-full
+            bg-white/10
+            backdrop-blur-sm
+            text-white
+            hover:bg-white/20
+            transition-colors
+          "
         >
           {muted ? (
             <VolumeX className="w-5 h-5" />
