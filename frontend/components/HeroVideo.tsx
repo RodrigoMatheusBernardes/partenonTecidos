@@ -65,7 +65,7 @@ declare namespace YT {
 }
 
 // ============================================================
-// IDs dos vídeos do YouTube — SOMENTE O PRIMEIRO FOI ALTERADO
+// IDs dos vídeos do YouTube
 // ============================================================
 const VIDEO_IDS = ['0OGYYD0XY9A', 'BmLibpkdUeI'];
 
@@ -242,11 +242,9 @@ export default function HeroVideo() {
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
       <div
         ref={containerRef}
-        className="absolute inset-0 w-full h-full flex items-center justify-center"
+        className="absolute inset-0 w-full h-full"
         style={{ pointerEvents: 'none' }}
       />
-
-      <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/80 via-transparent to-primary-dark/80 pointer-events-none" />
 
       {loading && (
         <div className="absolute inset-0 z-10 bg-primary-dark flex items-center justify-center">
