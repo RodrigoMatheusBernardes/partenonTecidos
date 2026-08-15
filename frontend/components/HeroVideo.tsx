@@ -72,9 +72,77 @@ export default function HeroVideo() {
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
 
+  // ============================================================
+  // Lógica de dimensionamento do iframe com ResizeObserver
+  // ============================================================
   useEffect(() => {
-    console.log('[HeroVideo] montado');
+    const container = containerRef.current;
+    if (!container || !playerReady) return;
 
+    // Encontra o iframe dentro do container (criado pelo YouTube)
+    const iframe = container.querySelector('iframe');
+    if (!iframe) return;
+
+    // Função para atualizar as dimensões do iframe baseado no container
+    const updateIframeSize = () => {
+      const rect = container.getBoundingClientRect();
+      const containerWidth = rect.width;
+      const containerHeight = rect.height;
+      const videoRatio = 16 / 9;
+
+      // Calcula o fator de escala para cobrir o container (cover)
+      const scale = Math.max(
+        containerWidth / videoRatio,
+        containerHeight / 1
+      );
+      // Equivalente a: scale = Math.max(containerWidth / 16, containerHeight / 9)
+      // Mas como o vídeo é 16:9, podemos calcular diretamente:
+      // largura ideal = containerWidth, altura ideal = containerWidth / videoRatio
+      // se container for mais largo que alto, a altura será maior que a do container.
+      // Usamos o fator de escala máximo entre width/16 e height/9.
+
+      // Cálculo mais claro:
+      const requiredWidth = containerWidth;
+      const requiredHeight = containerWidth / videoRatio; // altura baseada na largura
+      // Se essa altura for menor que a altura do container, precisamos escalar baseado na altura.
+      const scaleWidth = requiredWidth / 16;
+      const scaleHeight = containerHeight / 9;
+      const finalScale = Math.max(scaleWidth, scaleHeight);
+
+      // Aplica as dimensões ao iframe
+      const videoWidth = 16 * finalScale;
+      const videoHeight = 9 * finalScale;
+
+      iframe.style.width = `${videoWidth}px`;
+      iframe.style.height = `${videoHeight}px`;
+      iframe.style.position = 'absolute';
+      iframe.style.top = '50%';
+      iframe.style.left = '50%';
+      iframe.style.transform = 'translate(-50%, -50%)';
+      iframe.style.maxWidth = 'none';
+      iframe.style.maxHeight = 'none';
+      iframe.style.border = '0';
+    };
+
+    // Cria o ResizeObserver
+    const resizeObserver = new ResizeObserver(() => {
+      updateIframeSize();
+    });
+    resizeObserver.observe(container);
+
+    // Executa uma primeira vez
+    updateIframeSize();
+
+    // Limpeza
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [playerReady]);
+
+  // ============================================================
+  // Carregamento da API do YouTube
+  // ============================================================
+  useEffect(() => {
     const loadAPI = () => {
       if (window.YT && window.YT.Player) {
         tryInitialize();
@@ -147,7 +215,6 @@ export default function HeroVideo() {
           },
           events: {
             onReady: (event: YT.OnReadyEvent) => {
-              console.log('[HeroVideo] player pronto');
               event.target.mute();
               setMuted(true);
               setPlayerReady(true);
@@ -174,7 +241,6 @@ export default function HeroVideo() {
         });
 
         playerRef.current = player;
-        console.log('[HeroVideo] player criado');
       } catch (err) {
         console.error('[HeroVideo] erro ao criar player:', err);
         setError(true);
@@ -195,7 +261,6 @@ export default function HeroVideo() {
 
   const toggleMute = () => {
     if (!playerRef.current) return;
-
     if (muted) {
       playerRef.current.unMute();
       setMuted(false);
@@ -245,41 +310,12 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
-      
-      {/* Container do vídeo */}
-      <div ref={containerRef} className="hero-video-container absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }} />
-
-      {/* ESTILO DO IFRAME DO YOUTUBE – CORRIGIDO COM 100vw E 100vh */}
-      <style jsx global>{`
-        .hero-video-container {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-        }
-
-        .hero-video-container iframe {
-          position: absolute !important;
-          top: 50% !important;
-          left: 50% !important;
-          /* CORREÇÃO DEFINITIVA: usa a viewport inteira, não o container */
-          width: 100vw !important;
-          height: 100vh !important;
-          max-width: none !important;
-          max-height: none !important;
-          /* Ajuste de enquadramento: -60% desloca o vídeo para baixo */
-          transform: translate(-50%, -60%) !important;
-          border: 0 !important;
-        }
-
-        /* Ajuste para telas muito altas (retrato) */
-        @media (max-aspect-ratio: 9/16) {
-          .hero-video-container iframe {
-            transform: translate(-50%, -65%) !important;
-          }
-        }
-      `}</style>
+      {/* Container do vídeo – o iframe será inserido aqui */}
+      <div
+        ref={containerRef}
+        className="hero-video-container absolute inset-0 w-full h-full"
+        style={{ pointerEvents: 'none' }}
+      />
 
       {loading && (
         <div className="absolute inset-0 z-10 bg-primary-dark flex items-center justify-center">
