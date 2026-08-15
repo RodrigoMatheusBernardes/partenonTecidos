@@ -73,74 +73,7 @@ export default function HeroVideo() {
   const [showFallback, setShowFallback] = useState(false);
 
   // ============================================================
-  // Lógica de dimensionamento do iframe com ResizeObserver
-  // ============================================================
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !playerReady) return;
-
-    // Encontra o iframe dentro do container (criado pelo YouTube)
-    const iframe = container.querySelector('iframe');
-    if (!iframe) return;
-
-    // Função para atualizar as dimensões do iframe baseado no container
-    const updateIframeSize = () => {
-      const rect = container.getBoundingClientRect();
-      const containerWidth = rect.width;
-      const containerHeight = rect.height;
-      const videoRatio = 16 / 9;
-
-      // Calcula o fator de escala para cobrir o container (cover)
-      const scale = Math.max(
-        containerWidth / videoRatio,
-        containerHeight / 1
-      );
-      // Equivalente a: scale = Math.max(containerWidth / 16, containerHeight / 9)
-      // Mas como o vídeo é 16:9, podemos calcular diretamente:
-      // largura ideal = containerWidth, altura ideal = containerWidth / videoRatio
-      // se container for mais largo que alto, a altura será maior que a do container.
-      // Usamos o fator de escala máximo entre width/16 e height/9.
-
-      // Cálculo mais claro:
-      const requiredWidth = containerWidth;
-      const requiredHeight = containerWidth / videoRatio; // altura baseada na largura
-      // Se essa altura for menor que a altura do container, precisamos escalar baseado na altura.
-      const scaleWidth = requiredWidth / 16;
-      const scaleHeight = containerHeight / 9;
-      const finalScale = Math.max(scaleWidth, scaleHeight);
-
-      // Aplica as dimensões ao iframe
-      const videoWidth = 16 * finalScale;
-      const videoHeight = 9 * finalScale;
-
-      iframe.style.width = `${videoWidth}px`;
-      iframe.style.height = `${videoHeight}px`;
-      iframe.style.position = 'absolute';
-      iframe.style.top = '50%';
-      iframe.style.left = '50%';
-      iframe.style.transform = 'translate(-50%, -50%)';
-      iframe.style.maxWidth = 'none';
-      iframe.style.maxHeight = 'none';
-      iframe.style.border = '0';
-    };
-
-    // Cria o ResizeObserver
-    const resizeObserver = new ResizeObserver(() => {
-      updateIframeSize();
-    });
-    resizeObserver.observe(container);
-
-    // Executa uma primeira vez
-    updateIframeSize();
-
-    // Limpeza
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [playerReady]);
-
-  // ============================================================
-  // Carregamento da API do YouTube
+  // Carregamento da API do YouTube (mesmo código original)
   // ============================================================
   useEffect(() => {
     const loadAPI = () => {
@@ -272,7 +205,7 @@ export default function HeroVideo() {
 
   if (showFallback) {
     return (
-      <section className="relative w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center overflow-hidden">
+      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
         <div className="absolute inset-0 bg-primary-dark/90" />
         <div className="relative z-20 text-center px-6 max-w-2xl space-y-6">
           <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
@@ -300,7 +233,7 @@ export default function HeroVideo() {
 
   if (error) {
     return (
-      <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
+      <section className="w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
           <p className="text-red-500">Erro ao carregar o vídeo.</p>
         </div>
@@ -309,13 +242,28 @@ export default function HeroVideo() {
   }
 
   return (
-    <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
-      {/* Container do vídeo – o iframe será inserido aqui */}
+    <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
+      {/* Container do vídeo – agora ocupa exatamente a área 16:9 */}
       <div
         ref={containerRef}
-        className="hero-video-container absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full"
         style={{ pointerEvents: 'none' }}
       />
+
+      {/* 
+        ESTILO SIMPLIFICADO – SEM ResizeObserver, SEM 100vw/100vh, SEM translate
+        O iframe ocupa 100% do container, que já é 16:9.
+      */}
+      <style jsx global>{`
+        .hero-video-container iframe {
+          width: 100% !important;
+          height: 100% !important;
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          border: 0 !important;
+        }
+      `}</style>
 
       {loading && (
         <div className="absolute inset-0 z-10 bg-primary-dark flex items-center justify-center">
