@@ -393,9 +393,21 @@ export default function HeroVideo() {
           max-width: none !important;
           max-height: none !important;
 
-          transform: translate(-50%, -50%) !important;
+          /* 
+           * Ajuste de enquadramento:
+           * -60% desloca o vídeo para baixo, mostrando mais corpo e ambiente.
+           * Em telas muito altas (retrato), o deslocamento é aumentado para -65%.
+           */
+          transform: translate(-50%, -60%) !important;
 
           border: 0 !important;
+        }
+
+        /* Ajuste para telas muito altas (ex.: mobile em retrato) */
+        @media (max-aspect-ratio: 9/16) {
+          .hero-video-container iframe {
+            transform: translate(-50%, -65%) !important;
+          }
         }
       `}</style>
 
