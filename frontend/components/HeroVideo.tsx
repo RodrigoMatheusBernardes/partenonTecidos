@@ -63,22 +63,31 @@ declare namespace YT {
 
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 
-// ID do vídeo usado para o loop (pode ser o mesmo do primeiro, ou um específico)
-const LOOP_VIDEO_ID = '0OGYYD0XY9A'; // ou outro vídeo curto
+// ============================================================
+// CONFIGURAÇÃO DO LOOP E LOGOTIPO
+// ============================================================
+const LOOP_DURATION_MS = 10000; // 10 segundos
+const LOGO_APPEAR_DELAY = 1500; // 1.5s para começar a aparecer
+const LOGO_DISAPPEAR_DELAY = 8000; // 8s para começar a desaparecer
+const LOGO_IMAGE_PATH = '/images/img/logo-textil-partenon.png'; // Ajuste o caminho conforme necessário
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const currentIndexRef = useRef(0);
-  const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const loopTimerRef = useRef<NodeJS.Timeout | null>(null);
-
+  
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Estados do loop e transição
+  const [isLooping, setIsLooping] = useState(false);
+  const [showLogo, setShowLogo] = useState(false);
+  const loopTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const logoAppearTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const logoDisappearTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // ============================================================
   // Lógica de dimensionamento do iframe (INALTERADA)
@@ -221,9 +230,14 @@ export default function HeroVideo() {
 
               // Estado 0 = vídeo terminou
               if (state === 0) {
-                // Se não estiver em transição, inicia o loop
-                if (!isTransitioning) {
-                  startLoopSequence(player);
+                // Se o vídeo 2 terminou e não estamos em loop, inicia o Loop Premium
+                if (currentIndexRef.current === 1 && !isLooping) {
+                  startPremiumLoop(player);
+                } 
+                // Se o vídeo 1 terminou (e não estávamos no loop), vai para o vídeo 2
+                else if (currentIndexRef.current === 0) {
+                  currentIndexRef.current = 1;
+                  player.loadVideoById(VIDEO_IDS[1]);
                 }
               }
             },
@@ -246,54 +260,43 @@ export default function HeroVideo() {
         try { playerRef.current.destroy(); } catch {}
         playerRef.current = null;
       }
-      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+      // Limpeza de todos os timers
       if (loopTimerRef.current) clearTimeout(loopTimerRef.current);
+      if (logoAppearTimerRef.current) clearTimeout(logoAppearTimerRef.current);
+      if (logoDisappearTimerRef.current) clearTimeout(logoDisappearTimerRef.current);
     };
   }, []);
 
   // ============================================================
-  // Lógica de Transição e Loop
+  // Lógica do Loop Premium e Exibição do Logo
   // ============================================================
-  const startLoopSequence = (player: YT.Player) => {
-    // Evita múltiplas execuções
-    if (isTransitioning) return;
-    setIsTransitioning(true);
+  const startPremiumLoop = (player: YT.Player) => {
+    setIsLooping(true);
+    setShowLogo(false);
 
-    // 1. Inicia o fade out (0 → 1) do overlay
-    setIsTransitioning(true);
-    // O overlay terá a classe de transição (opacity: 1)
+    // 1. Agendamento para o aparecimento do logo (1.5s)
+    logoAppearTimerRef.current = setTimeout(() => {
+      setShowLogo(true);
+    }, LOGO_APPEAR_DELAY);
 
-    // 2. Após 500ms, carrega o vídeo de loop e faz fade in
-    transitionTimerRef.current = setTimeout(() => {
-      // Carrega um trecho do vídeo de loop (ex.: primeiros 5 segundos)
-      player.loadVideoById(LOOP_VIDEO_ID, 0, 5); // start=0, end=5
+    // 2. Agendamento para o desaparecimento do logo (8s)
+    logoDisappearTimerRef.current = setTimeout(() => {
+      setShowLogo(false);
+    }, LOGO_DISAPPEAR_DELAY);
 
-      // Inicia fade in (opacity volta a 0)
-      setIsTransitioning(false);
+    // 3. Agendamento para o fim do loop e reinício do vídeo 1 (10s)
+    loopTimerRef.current = setTimeout(() => {
+      setIsLooping(false);
+      setShowLogo(false);
+      
+      // Limpa a referência para o próximo ciclo
+      currentIndexRef.current = 0; 
+      player.loadVideoById(VIDEO_IDS[0]);
 
-      // 3. Após o loop terminar (controlado pelo player), volta ao vídeo principal
-      // Mas como o player não dispara evento de fim para um trecho com end,
-      // usamos um timer para controlar a duração do loop.
-      const LOOP_DURATION_MS = 5000; // 5 segundos
-      loopTimerRef.current = setTimeout(() => {
-        // Volta ao vídeo principal com fade
-        startFadeToMain(player);
-      }, LOOP_DURATION_MS);
-    }, 500); // duração do fade
-  };
-
-  const startFadeToMain = (player: YT.Player) => {
-    setIsTransitioning(true);
-    // Fade out (opacity 1)
-    transitionTimerRef.current = setTimeout(() => {
-      // Carrega o próximo vídeo da lista (ou o mesmo, se for o último)
-      const nextIndex = (currentIndexRef.current + 1) % VIDEO_IDS.length;
-      currentIndexRef.current = nextIndex;
-      player.loadVideoById(VIDEO_IDS[nextIndex]);
-
-      // Fade in (opacity 0)
-      setIsTransitioning(false);
-    }, 500);
+      // Limpeza dos timers do logo para evitar conflitos
+      if (logoAppearTimerRef.current) clearTimeout(logoAppearTimerRef.current);
+      if (logoDisappearTimerRef.current) clearTimeout(logoDisappearTimerRef.current);
+    }, LOOP_DURATION_MS);
   };
 
   const toggleMute = () => {
@@ -308,7 +311,7 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Render (INALTERADO, exceto pelo overlay de transição)
+  // Renderização com o Estado de Loop
   // ============================================================
   if (showFallback) {
     return (
@@ -327,12 +330,6 @@ export default function HeroVideo() {
               Conhecer a coleção
             </Link>
           </div>
-          <div className="pt-6">
-            <a href={`https://www.youtube.com/watch?v=${VIDEO_IDS[0]}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-gold hover:text-gold/80 transition-colors text-sm md:text-base">
-              <PlayCircle className="w-5 h-5" />
-              Assistir no YouTube
-            </a>
-          </div>
         </div>
       </section>
     );
@@ -350,31 +347,69 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
+      {/* Container do iframe do YouTube */}
       <div
         ref={containerRef}
-        className="absolute inset-0 w-full h-full"
-        style={{ pointerEvents: 'none' }}
+        className="absolute inset-0 w-full h-full z-10"
+        style={{ pointerEvents: isLooping ? 'none' : 'none' }} // Mantém pointer-events none
       />
 
-      {/* OVERLAY DE TRANSIÇÃO */}
+      {/* ======================================================
+          CAMADA DE LOOP (Sobreposto ao iframe quando ativo)
+      ====================================================== */}
       <div
-        className={`absolute inset-0 z-10 bg-primary-dark transition-opacity duration-500 ease-in-out ${
-          isTransitioning ? 'opacity-100' : 'opacity-0'
+        className={`absolute inset-0 z-20 transition-opacity duration-1000 ease-in-out ${
+          isLooping ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
-        style={{ pointerEvents: 'none' }}
-      />
+      >
+        {/* Fundo do loop com zoom lento */}
+        <div className="absolute inset-0 w-full h-full bg-primary-dark overflow-hidden">
+          <div
+            className="w-full h-full bg-cover bg-center animate-slow-zoom"
+            style={{
+              backgroundImage: "url('/images/img/meio rosto.webp')", // Substitua pela imagem estática do último frame ou uma foto da loja
+            }}
+          />
+        </div>
+
+        {/* Logo da Têxtil Parthenon */}
+        <div
+          className={`absolute inset-0 flex items-center justify-center transition-all duration-[2000ms] ease-in-out ${
+            showLogo ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          }`}
+        >
+          <img
+            src={LOGO_IMAGE_PATH}
+            alt="Têxtil Parthenon"
+            className="max-w-[60%] md:max-w-[40%] h-auto object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]"
+          />
+        </div>
+      </div>
+
+      {/* ======================================================
+          ANIMAÇÃO CSS PARA ZOOM LENTO
+      ====================================================== */}
+      <style jsx global>{`
+        @keyframes slowZoom {
+          0% { transform: scale(1); }
+          100% { transform: scale(1.04); }
+        }
+        .animate-slow-zoom {
+          animation: slowZoom 10s ease-in-out infinite alternate;
+        }
+      `}</style>
 
       {loading && (
-        <div className="absolute inset-0 z-20 bg-primary-dark flex items-center justify-center">
+        <div className="absolute inset-0 z-30 bg-primary-dark flex items-center justify-center">
           <div className="text-white text-center">
             <p className="text-gold">Carregando experiência...</p>
           </div>
         </div>
       )}
 
-      <div className="absolute inset-0 bg-primary-dark/20 z-30" />
+      <div className="absolute inset-0 bg-primary-dark/20 z-40" />
 
-      <div className="relative z-40 flex items-center justify-center h-full px-6">
+      <div className="relative z-50 flex items-center justify-center h-full px-6">
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
           <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-secondary font-medium text-white">
             Nova Coleção 2026
@@ -398,7 +433,7 @@ export default function HeroVideo() {
         <button
           onClick={toggleMute}
           aria-label={muted ? 'Ativar som do vídeo' : 'Desativar som do vídeo'}
-          className="absolute bottom-6 right-6 z-40 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
+          className="absolute bottom-6 right-6 z-50 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
         >
           {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
         </button>
