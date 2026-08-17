@@ -59,7 +59,7 @@ declare namespace YT {
   }
 }
 
-const VIDEO_IDS = ['0OGYYD0XY9A', '2fAYPuTEUvQ'];
+const VIDEO_IDS = ['0OGYYD0XY9A', 'BmLibpkdUeI'];
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -72,52 +72,9 @@ export default function HeroVideo() {
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !playerReady) return;
-
-    const iframe = container.querySelector('iframe');
-    if (!iframe) return;
-
-    const updateIframeSize = () => {
-      const rect = container.getBoundingClientRect();
-      const containerWidth = rect.width;
-      const containerHeight = rect.height;
-
-      const scale = Math.max(containerWidth / 16, containerHeight / 9);
-      const videoWidth = 16 * scale;
-      const videoHeight = 9 * scale;
-
-      iframe.style.width = `${videoWidth}px`;
-      iframe.style.height = `${videoHeight}px`;
-      iframe.style.position = 'absolute';
-      iframe.style.top = '50%';
-      iframe.style.left = '50%';
-      iframe.style.maxWidth = 'none';
-      iframe.style.maxHeight = 'none';
-      iframe.style.border = '0';
-
-      // 👇 AJUSTE POR VÍDEO
-      const isVideo2 = currentIndexRef.current === 1;
-      if (isVideo2) {
-        // Vídeo 2: desce um pouco e zoom leve para eliminar barras pretas
-        iframe.style.transform = 'translate(-50%, -40%) scale(1.05)';
-      } else {
-        // Vídeo 1: enquadramento original aprovado
-        iframe.style.transform = 'translate(-50%, -50%)';
-      }
-    };
-
-    const resizeObserver = new ResizeObserver(updateIframeSize);
-    resizeObserver.observe(container);
-    updateIframeSize();
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [playerReady, currentIndexRef.current]);
-
-  // ===== Carregamento da YouTube API =====
+  // ============================================================
+  // Carregamento da API do YouTube (mesmo código original)
+  // ============================================================
   useEffect(() => {
     const loadAPI = () => {
       if (window.YT && window.YT.Player) {
@@ -126,6 +83,7 @@ export default function HeroVideo() {
       }
 
       const existingScript = document.querySelector('script[src="https://www.youtube.com/iframe_api"]');
+
       if (existingScript) {
         const check = setInterval(() => {
           if (window.YT && window.YT.Player) {
@@ -247,7 +205,7 @@ export default function HeroVideo() {
 
   if (showFallback) {
     return (
-      <section className="relative w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center overflow-hidden">
+      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
         <div className="absolute inset-0 bg-primary-dark/90" />
         <div className="relative z-20 text-center px-6 max-w-2xl space-y-6">
           <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
@@ -275,7 +233,7 @@ export default function HeroVideo() {
 
   if (error) {
     return (
-      <section className="w-full h-[85vh] min-h-[500px] bg-primary-dark flex items-center justify-center">
+      <section className="w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
           <p className="text-red-500">Erro ao carregar o vídeo.</p>
         </div>
@@ -284,12 +242,28 @@ export default function HeroVideo() {
   }
 
   return (
-    <section className="relative w-full h-[85vh] min-h-[500px] overflow-hidden bg-primary-dark group">
+    <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
+      {/* Container do vídeo – agora ocupa exatamente a área 16:9 */}
       <div
         ref={containerRef}
-        className="hero-video-container absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full"
         style={{ pointerEvents: 'none' }}
       />
+
+      {/* 
+        ESTILO SIMPLIFICADO – SEM ResizeObserver, SEM 100vw/100vh, SEM translate
+        O iframe ocupa 100% do container, que já é 16:9.
+      */}
+      <style jsx global>{`
+        .hero-video-container iframe {
+          width: 100% !important;
+          height: 100% !important;
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          border: 0 !important;
+        }
+      `}</style>
 
       {loading && (
         <div className="absolute inset-0 z-10 bg-primary-dark flex items-center justify-center">
