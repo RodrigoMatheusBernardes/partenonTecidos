@@ -70,7 +70,7 @@ export default function HeroVideo() {
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Estados React (para renderização)
+  // Estados React
   const [heroStage, setHeroStage] = useState<'video1' | 'video2' | 'final'>('video1');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [muted, setMuted] = useState(true);
@@ -80,7 +80,7 @@ export default function HeroVideo() {
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Refs para controle síncrono da máquina de estados (independe do React)
+  // Refs para controle síncrono da máquina de estados
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
 
@@ -331,7 +331,7 @@ export default function HeroVideo() {
       video2FinishedRef.current = false;
       setCurrentVideoIndex(0);
       setHeroStage('video1');
-      player.stopVideo();
+      // stopVideo não é necessário; loadVideoById já substitui o vídeo atual
       player.loadVideoById(VIDEO_IDS[0]);
       player.seekTo(0, true);
       player.playVideo();
