@@ -4,7 +4,7 @@ export type {};
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Volume2, VolumeX, PlayCircle } from 'lucide-react';
+import { Volume2, VolumeX } from 'lucide-react';
 
 declare global {
   interface Window {
@@ -27,8 +27,6 @@ declare namespace YT {
     origin?: string;
     modestbranding?: 0 | 1;
     iv_load_policy?: 3;
-    start?: number;
-    end?: number;
   }
 
   interface PlayerEvent {
@@ -57,34 +55,30 @@ declare namespace YT {
     mute(): void;
     unMute(): void;
     destroy(): void;
-    loadVideoById(videoId: string, startSeconds?: number, endSeconds?: number): void;
+    loadVideoById(videoId: string): void;
   }
 }
 
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 
-// ============================================================
-// CONFIGURAÇÃO DO LOOP
-// ============================================================
-const LOOP_DURATION_MS = 10000;
-
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const currentIndexRef = useRef(0);
-  
+  const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
 
-  // Estados do loop e transição
-  const [isLooping, setIsLooping] = useState(false);
-  const loopTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // Estados de transição e banner final
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
 
   // ============================================================
-  // Lógica de dimensionamento do iframe (INALTERADA)
+  // Lógica de dimensionamento do iframe (inalterada)
   // ============================================================
   useEffect(() => {
     const container = containerRef.current;
@@ -129,7 +123,7 @@ export default function HeroVideo() {
   }, [playerReady, currentIndexRef.current]);
 
   // ============================================================
-  // Carregamento da YouTube IFrame API (INALTERADO)
+  // Carregamento da YouTube IFrame API (inalterado)
   // ============================================================
   useEffect(() => {
     const loadAPI = () => {
@@ -224,14 +218,12 @@ export default function HeroVideo() {
 
               // Estado 0 = vídeo terminou
               if (state === 0) {
-                // Se o vídeo 2 terminou e não estamos em loop, inicia o Loop
-                if (currentIndexRef.current === 1 && !isLooping) {
-                  startLoop(player);
-                } 
-                // Se o vídeo 1 terminou (e não estávamos no loop), vai para o vídeo 2
-                else if (currentIndexRef.current === 0) {
-                  currentIndexRef.current = 1;
-                  player.loadVideoById(VIDEO_IDS[1]);
+                if (currentIndexRef.current === 0) {
+                  // Transição para o Vídeo 2
+                  transitionToVideo(player, 1);
+                } else if (currentIndexRef.current === 1) {
+                  // Transição para o banner final
+                  transitionToBanner();
                 }
               }
             },
@@ -254,22 +246,49 @@ export default function HeroVideo() {
         try { playerRef.current.destroy(); } catch {}
         playerRef.current = null;
       }
-      if (loopTimerRef.current) clearTimeout(loopTimerRef.current);
+      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
     };
   }, []);
 
   // ============================================================
-  // Lógica do Loop
+  // Funções de transição
   // ============================================================
-  const startLoop = (player: YT.Player) => {
-    setIsLooping(true);
+  const transitionToVideo = (player: YT.Player, nextIndex: number) => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
 
-    // Aguarda a duração do loop e reinicia o vídeo 1
-    loopTimerRef.current = setTimeout(() => {
-      setIsLooping(false);
-      currentIndexRef.current = 0; 
-      player.loadVideoById(VIDEO_IDS[0]);
-    }, LOOP_DURATION_MS);
+    // Fade out (overlay com opacidade 1)
+    setTimeout(() => {
+      // Carrega o próximo vídeo
+      currentIndexRef.current = nextIndex;
+      player.loadVideoById(VIDEO_IDS[nextIndex]);
+
+      // Fade in (overlay com opacidade 0) – será feito pelo estado
+      setIsTransitioning(false);
+    }, 500); // 500ms de fade out
+  };
+
+  const transitionToBanner = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+      // Mostra o banner final
+      setShowBanner(true);
+      setIsTransitioning(false);
+    }, 500);
+  };
+
+  const handleReplay = () => {
+    if (!playerRef.current) return;
+    setShowBanner(false);
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+      currentIndexRef.current = 0;
+      playerRef.current!.loadVideoById(VIDEO_IDS[0]);
+      setIsTransitioning(false);
+    }, 500);
   };
 
   const toggleMute = () => {
@@ -284,13 +303,26 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Renderização (com REMOÇÃO DOS TÍTULOS/TEXTOS)
+  // Renderização
   // ============================================================
   if (showFallback) {
     return (
       <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
         <div className="absolute inset-0 bg-primary-dark/90" />
-        {/* Fallback sem texto */}
+        <div className="relative z-20 text-center px-6 max-w-2xl space-y-6">
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
+            Parthenon<br />
+            <span className="font-primary font-medium tracking-[0.05em] text-white">Tecidos</span>
+          </h1>
+          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">
+            A elegância que tece histórias
+          </p>
+          <div className="pt-2">
+            <Link href="/loja" className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500">
+              Conhecer a coleção
+            </Link>
+          </div>
+        </div>
       </section>
     );
   }
@@ -307,54 +339,94 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do iframe do YouTube */}
+      {/* Container do iframe (visível apenas quando não está no banner) */}
       <div
         ref={containerRef}
-        className="absolute inset-0 w-full h-full z-10"
-        style={{ pointerEvents: isLooping ? 'none' : 'none' }}
+        className={`absolute inset-0 w-full h-full z-10 ${showBanner ? 'opacity-0' : 'opacity-100'}`}
+        style={{ pointerEvents: showBanner ? 'none' : 'none' }}
       />
 
-      {/* ======================================================
-          CAMADA DE LOOP (Sobreposto ao iframe quando ativo)
-      ====================================================== */}
+      {/* OVERLAY DE TRANSIÇÃO */}
       <div
-        className={`absolute inset-0 z-20 transition-opacity duration-1000 ease-in-out ${
-          isLooping ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        className={`absolute inset-0 z-20 bg-primary-dark transition-opacity duration-500 ease-in-out ${
+          isTransitioning ? 'opacity-100' : 'opacity-0'
         }`}
-      >
-        <div className="absolute inset-0 w-full h-full bg-primary-dark overflow-hidden">
+        style={{ pointerEvents: 'none' }}
+      />
+
+      {/* BANNER FINAL */}
+      {showBanner && (
+        <div className="absolute inset-0 z-30 animate-fade-in-up">
+          {/* Fundo do banner */}
           <div
-            className="w-full h-full bg-cover bg-center animate-slow-zoom"
+            className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: "url('/images/img/meio rosto.webp')", // Placeholder
+              backgroundImage: "url('/images/fundohome.jpg')", // Substitua pelo caminho real do arquivo
             }}
           />
-        </div>
-      </div>
 
-      {/* ANIMAÇÃO CSS PARA ZOOM LENTO */}
-      <style jsx global>{`
-        @keyframes slowZoom {
-          0% { transform: scale(1); }
-          100% { transform: scale(1.04); }
-        }
-        .animate-slow-zoom {
-          animation: slowZoom 10s ease-in-out infinite alternate;
-        }
-      `}</style>
+          {/* Conteúdo do banner */}
+          <div className="absolute inset-0 bg-primary-dark/40 flex flex-col items-center justify-center px-6 text-center text-white">
+            {/* Título principal */}
+            <h2 className="font-primary font-bold text-5xl md:text-7xl tracking-[0.15em] leading-tight mb-4 drop-shadow-lg">
+              TÊXTIL PARTHENON
+            </h2>
+
+            {/* Slogan */}
+            <p className="font-secondary text-xl md:text-3xl font-light tracking-wide mb-2 drop-shadow-md">
+              Qualidade, textura e sofisticação em cada detalhe.
+            </p>
+
+            {/* Mensagem complementar (opcional) */}
+            <p className="text-sm md:text-lg text-white/80 font-light tracking-widest mb-10 drop-shadow-sm">
+              Tecidos que transformam espaços.
+            </p>
+
+            {/* Botão "ASSISTIR NOVAMENTE" */}
+            <button
+              onClick={handleReplay}
+              className="group inline-flex items-center gap-3 border-2 border-white/60 px-10 py-4 rounded-full text-sm md:text-base font-secondary font-medium tracking-widest uppercase text-white transition-all duration-500 hover:border-gold hover:text-gold hover:bg-white/10 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              Assistir Novamente
+            </button>
+          </div>
+        </div>
+      )}
 
       {loading && (
-        <div className="absolute inset-0 z-30 bg-primary-dark flex items-center justify-center">
+        <div className="absolute inset-0 z-40 bg-primary-dark flex items-center justify-center">
           <div className="text-white text-center">
             <p className="text-gold">Carregando experiência...</p>
           </div>
         </div>
       )}
 
-      {/* Overlay sutil */}
+      {/* OVERLAY ESCURO SEMPRE PRESENTE */}
       <div className="absolute inset-0 bg-primary-dark/20 z-40" />
 
-      {/* REMOVIDOS: Texto "Nova Coleção 2026", "Parthenon Tecidos", "A elegância que tece histórias" e botão "Conhecer a coleção" */}
+      {/* TEXTO DO HERO (sobreposto durante os vídeos e banner) */}
+      <div className="relative z-50 flex items-center justify-center h-full px-6">
+        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
+          <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-secondary font-medium text-white">
+            Nova Coleção 2026
+          </p>
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
+            Parthenon<br />
+            <span className="font-primary font-medium tracking-[0.05em] text-white">Tecidos</span>
+          </h1>
+          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">
+            A elegância que tece histórias
+          </p>
+          <div className="pt-2">
+            <Link href="/loja" className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500">
+              Conhecer a coleção
+            </Link>
+          </div>
+        </div>
+      </div>
 
       {playerReady && (
         <button
@@ -365,6 +437,22 @@ export default function HeroVideo() {
           {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
         </button>
       )}
+
+      <style jsx global>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in-up {
+          animation: fadeInUp 0.8s ease-out forwards;
+        }
+      `}</style>
     </section>
   );
 }
