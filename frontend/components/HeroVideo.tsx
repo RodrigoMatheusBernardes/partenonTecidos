@@ -81,11 +81,12 @@ export default function HeroVideo() {
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Flag para garantir que a transição para final ocorra apenas uma vez
-  const hasTransitionedRef = useRef(false);
+  // Refs para controle síncrono da máquina de estados
+  const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
+  const video2FinishedRef = useRef(false);
 
   // ============================================================
-  // Lógica de dimensionamento do iframe (depende do estado)
+  // Lógica de dimensionamento do iframe
   // ============================================================
   useEffect(() => {
     const container = containerRef.current;
@@ -211,7 +212,8 @@ export default function HeroVideo() {
               setLoading(false);
               event.target.playVideo();
               console.log('[HERO] VIDEO 1 START');
-              hasTransitionedRef.current = false;
+              stageRef.current = 'video1';
+              video2FinishedRef.current = false;
             },
             onError: (event: YT.OnErrorEvent) => {
               console.error('[HERO] erro do YouTube:', event.data);
@@ -225,34 +227,38 @@ export default function HeroVideo() {
             onStateChange: (event: YT.OnStateChangeEvent) => {
               const state = event.data;
               const player = event.target;
-              console.log(`[HERO] state change: ${state}, stage: ${heroStage}`);
+              console.log(`[HERO] state change: ${state}, stage: ${stageRef.current}`);
 
-              // Se já estamos no estado final, ignoramos qualquer evento
-              if (heroStage === 'final') {
+              // Ignora eventos se já estiver no estado final
+              if (stageRef.current === 'final') {
                 console.log('[HERO] ignoring event - already in final state');
                 return;
               }
 
-              // Estado 0 = vídeo terminou
-              if (state === 0) {
-                if (heroStage === 'video1') {
-                  console.log('[HERO] VIDEO 1 ENDED');
-                  transitionToVideo(player, 1);
-                } else if (heroStage === 'video2' && !hasTransitionedRef.current) {
-                  console.log('[HERO] VIDEO 2 ENDED');
-                  hasTransitionedRef.current = true;
-                  transitionToFinal();
+              // Apenas processa o evento ENDED (state === 0)
+              if (state !== 0) {
+                return;
+              }
+
+              // Vídeo 1 terminou
+              if (stageRef.current === 'video1') {
+                console.log('[HERO] VIDEO 1 ENDED');
+                transitionToVideo(player, 1);
+                return;
+              }
+
+              // Vídeo 2 terminou
+              if (stageRef.current === 'video2') {
+                // Se já foi finalizado, ignora
+                if (video2FinishedRef.current) {
+                  console.log('[HERO] video 2 already finished, ignoring');
+                  return;
                 }
-              } else if (state === 1) {
-                // Vídeo tocando
-                if (heroStage === 'video2') {
-                  console.log('[HERO] VIDEO 2 PLAYING');
-                }
-              } else if (state === 5) {
-                // Vídeo pronto para reprodução (não precisa forçar play)
-                if (heroStage === 'video2') {
-                  console.log('[HERO] VIDEO 2 READY');
-                }
+
+                console.log('[HERO] VIDEO 2 ENDED');
+                video2FinishedRef.current = true;
+                transitionToFinal();
+                return;
               }
             },
           },
@@ -276,7 +282,7 @@ export default function HeroVideo() {
       }
       if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
     };
-  }, []); // Dependência vazia, pois o efeito não depende de heroStage
+  }, []);
 
   // ============================================================
   // Funções de transição
@@ -288,6 +294,7 @@ export default function HeroVideo() {
     console.log(`[HERO] LOADING VIDEO ${nextIndex + 1}`);
 
     transitionTimerRef.current = setTimeout(() => {
+      stageRef.current = nextIndex === 0 ? 'video1' : 'video2';
       setCurrentVideoIndex(nextIndex);
       setHeroStage(nextIndex === 0 ? 'video1' : 'video2');
       player.loadVideoById(VIDEO_IDS[nextIndex]);
@@ -302,9 +309,10 @@ export default function HeroVideo() {
     setIsTransitioning(true);
 
     transitionTimerRef.current = setTimeout(() => {
+      stageRef.current = 'final';
       setHeroStage('final');
       setIsTransitioning(false);
-      console.log('[HERO] SHOWING FINAL BANNER');
+      console.log('[HERO] ENTERING FINAL');
       transitionTimerRef.current = null;
     }, 500);
   };
@@ -318,9 +326,11 @@ export default function HeroVideo() {
 
     transitionTimerRef.current = setTimeout(() => {
       const player = playerRef.current!;
-      hasTransitionedRef.current = false; // Resetar flag
+      stageRef.current = 'video1';
+      video2FinishedRef.current = false;
       setCurrentVideoIndex(0);
       setHeroStage('video1');
+      player.stopVideo();
       player.loadVideoById(VIDEO_IDS[0]);
       player.seekTo(0, true);
       player.playVideo();
@@ -404,7 +414,6 @@ export default function HeroVideo() {
               backgroundImage: `url('${FUNDOHOME_IMAGE}')`,
             }}
           />
-          {/* Overlay muito sutil para legibilidade */}
           <div className="absolute inset-0 bg-black/10" />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-8 text-center text-white">
