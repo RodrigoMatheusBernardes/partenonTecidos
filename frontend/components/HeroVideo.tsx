@@ -64,12 +64,9 @@ declare namespace YT {
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 
 // ============================================================
-// CONFIGURAÇÃO DO LOOP E LOGOTIPO
+// CONFIGURAÇÃO DO LOOP
 // ============================================================
-const LOOP_DURATION_MS = 10000; // 10 segundos
-const LOGO_APPEAR_DELAY = 1500; // 1.5s para começar a aparecer
-const LOGO_DISAPPEAR_DELAY = 8000; // 8s para começar a desaparecer
-const LOGO_IMAGE_PATH = '/images/img/logo-textil-partenon.png'; // Ajuste o caminho conforme necessário
+const LOOP_DURATION_MS = 10000;
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -84,10 +81,7 @@ export default function HeroVideo() {
 
   // Estados do loop e transição
   const [isLooping, setIsLooping] = useState(false);
-  const [showLogo, setShowLogo] = useState(false);
   const loopTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const logoAppearTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const logoDisappearTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // ============================================================
   // Lógica de dimensionamento do iframe (INALTERADA)
@@ -230,9 +224,9 @@ export default function HeroVideo() {
 
               // Estado 0 = vídeo terminou
               if (state === 0) {
-                // Se o vídeo 2 terminou e não estamos em loop, inicia o Loop Premium
+                // Se o vídeo 2 terminou e não estamos em loop, inicia o Loop
                 if (currentIndexRef.current === 1 && !isLooping) {
-                  startPremiumLoop(player);
+                  startLoop(player);
                 } 
                 // Se o vídeo 1 terminou (e não estávamos no loop), vai para o vídeo 2
                 else if (currentIndexRef.current === 0) {
@@ -260,42 +254,21 @@ export default function HeroVideo() {
         try { playerRef.current.destroy(); } catch {}
         playerRef.current = null;
       }
-      // Limpeza de todos os timers
       if (loopTimerRef.current) clearTimeout(loopTimerRef.current);
-      if (logoAppearTimerRef.current) clearTimeout(logoAppearTimerRef.current);
-      if (logoDisappearTimerRef.current) clearTimeout(logoDisappearTimerRef.current);
     };
   }, []);
 
   // ============================================================
-  // Lógica do Loop Premium e Exibição do Logo
+  // Lógica do Loop
   // ============================================================
-  const startPremiumLoop = (player: YT.Player) => {
+  const startLoop = (player: YT.Player) => {
     setIsLooping(true);
-    setShowLogo(false);
 
-    // 1. Agendamento para o aparecimento do logo (1.5s)
-    logoAppearTimerRef.current = setTimeout(() => {
-      setShowLogo(true);
-    }, LOGO_APPEAR_DELAY);
-
-    // 2. Agendamento para o desaparecimento do logo (8s)
-    logoDisappearTimerRef.current = setTimeout(() => {
-      setShowLogo(false);
-    }, LOGO_DISAPPEAR_DELAY);
-
-    // 3. Agendamento para o fim do loop e reinício do vídeo 1 (10s)
+    // Aguarda a duração do loop e reinicia o vídeo 1
     loopTimerRef.current = setTimeout(() => {
       setIsLooping(false);
-      setShowLogo(false);
-      
-      // Limpa a referência para o próximo ciclo
       currentIndexRef.current = 0; 
       player.loadVideoById(VIDEO_IDS[0]);
-
-      // Limpeza dos timers do logo para evitar conflitos
-      if (logoAppearTimerRef.current) clearTimeout(logoAppearTimerRef.current);
-      if (logoDisappearTimerRef.current) clearTimeout(logoDisappearTimerRef.current);
     }, LOOP_DURATION_MS);
   };
 
@@ -311,26 +284,13 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Renderização com o Estado de Loop
+  // Renderização (com REMOÇÃO DOS TÍTULOS/TEXTOS)
   // ============================================================
   if (showFallback) {
     return (
       <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
         <div className="absolute inset-0 bg-primary-dark/90" />
-        <div className="relative z-20 text-center px-6 max-w-2xl space-y-6">
-          <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
-            Parthenon<br />
-            <span className="font-primary font-medium tracking-[0.05em] text-white">Tecidos</span>
-          </h1>
-          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">
-            A elegância que tece histórias
-          </p>
-          <div className="pt-2">
-            <Link href="/loja" className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500">
-              Conhecer a coleção
-            </Link>
-          </div>
-        </div>
+        {/* Fallback sem texto */}
       </section>
     );
   }
@@ -351,7 +311,7 @@ export default function HeroVideo() {
       <div
         ref={containerRef}
         className="absolute inset-0 w-full h-full z-10"
-        style={{ pointerEvents: isLooping ? 'none' : 'none' }} // Mantém pointer-events none
+        style={{ pointerEvents: isLooping ? 'none' : 'none' }}
       />
 
       {/* ======================================================
@@ -362,33 +322,17 @@ export default function HeroVideo() {
           isLooping ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
-        {/* Fundo do loop com zoom lento */}
         <div className="absolute inset-0 w-full h-full bg-primary-dark overflow-hidden">
           <div
             className="w-full h-full bg-cover bg-center animate-slow-zoom"
             style={{
-              backgroundImage: "url('/images/img/meio rosto.webp')", // Substitua pela imagem estática do último frame ou uma foto da loja
+              backgroundImage: "url('/images/img/meio rosto.webp')", // Placeholder
             }}
-          />
-        </div>
-
-        {/* Logo da Têxtil Parthenon */}
-        <div
-          className={`absolute inset-0 flex items-center justify-center transition-all duration-[2000ms] ease-in-out ${
-            showLogo ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-          }`}
-        >
-          <img
-            src={LOGO_IMAGE_PATH}
-            alt="Têxtil Parthenon"
-            className="max-w-[60%] md:max-w-[40%] h-auto object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]"
           />
         </div>
       </div>
 
-      {/* ======================================================
-          ANIMAÇÃO CSS PARA ZOOM LENTO
-      ====================================================== */}
+      {/* ANIMAÇÃO CSS PARA ZOOM LENTO */}
       <style jsx global>{`
         @keyframes slowZoom {
           0% { transform: scale(1); }
@@ -407,27 +351,10 @@ export default function HeroVideo() {
         </div>
       )}
 
+      {/* Overlay sutil */}
       <div className="absolute inset-0 bg-primary-dark/20 z-40" />
 
-      <div className="relative z-50 flex items-center justify-center h-full px-6">
-        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
-          <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-secondary font-medium text-white">
-            Nova Coleção 2026
-          </p>
-          <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
-            Parthenon<br />
-            <span className="font-primary font-medium tracking-[0.05em] text-white">Tecidos</span>
-          </h1>
-          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">
-            A elegância que tece histórias
-          </p>
-          <div className="pt-2">
-            <Link href="/loja" className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500">
-              Conhecer a coleção
-            </Link>
-          </div>
-        </div>
-      </div>
+      {/* REMOVIDOS: Texto "Nova Coleção 2026", "Parthenon Tecidos", "A elegância que tece histórias" e botão "Conhecer a coleção" */}
 
       {playerReady && (
         <button
