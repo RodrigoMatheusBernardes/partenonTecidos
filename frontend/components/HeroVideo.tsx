@@ -27,6 +27,8 @@ declare namespace YT {
     origin?: string;
     modestbranding?: 0 | 1;
     iv_load_policy?: 3;
+    start?: number;
+    end?: number;
   }
 
   interface PlayerEvent {
@@ -55,28 +57,31 @@ declare namespace YT {
     mute(): void;
     unMute(): void;
     destroy(): void;
-    loadVideoById(videoId: string): void;
+    loadVideoById(videoId: string, startSeconds?: number, endSeconds?: number): void;
   }
 }
 
-// ============================================================
-// IDs dos vídeos – mantendo ambos
-// ============================================================
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
+
+// ID do vídeo usado para o loop (pode ser o mesmo do primeiro, ou um específico)
+const LOOP_VIDEO_ID = '0OGYYD0XY9A'; // ou outro vídeo curto
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const currentIndexRef = useRef(0);
+  const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const loopTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // ============================================================
-  // Ajuste do iframe: escala e posição por vídeo
+  // Lógica de dimensionamento do iframe (INALTERADA)
   // ============================================================
   useEffect(() => {
     const container = containerRef.current;
@@ -85,12 +90,11 @@ export default function HeroVideo() {
     const iframe = container.querySelector('iframe');
     if (!iframe) return;
 
-    const updateIframe = () => {
+    const updateIframeSize = () => {
       const rect = container.getBoundingClientRect();
       const containerWidth = rect.width;
       const containerHeight = rect.height;
 
-      // Mantém o iframe sempre com 16:9 – é o container que define a área visível
       const scale = Math.max(containerWidth / 16, containerHeight / 9);
       const videoWidth = 16 * scale;
       const videoHeight = 9 * scale;
@@ -104,20 +108,17 @@ export default function HeroVideo() {
       iframe.style.maxHeight = 'none';
       iframe.style.border = '0';
 
-      // Ajustes específicos para cada vídeo
       const isVideo2 = currentIndexRef.current === 1;
       if (isVideo2) {
-        // Vídeo 2: zoom leve para eliminar barras pretas + deslocamento para mostrar o rosto
         iframe.style.transform = 'translate(-50%, -40%) scale(1.05)';
       } else {
-        // Vídeo 1: enquadramento original (centralizado, sem zoom)
         iframe.style.transform = 'translate(-50%, -50%)';
       }
     };
 
-    const resizeObserver = new ResizeObserver(updateIframe);
+    const resizeObserver = new ResizeObserver(updateIframeSize);
     resizeObserver.observe(container);
-    updateIframe();
+    updateIframeSize();
 
     return () => {
       resizeObserver.disconnect();
@@ -125,7 +126,7 @@ export default function HeroVideo() {
   }, [playerReady, currentIndexRef.current]);
 
   // ============================================================
-  // Carregamento da YouTube IFrame API (inalterado)
+  // Carregamento da YouTube IFrame API (INALTERADO)
   // ============================================================
   useEffect(() => {
     const loadAPI = () => {
@@ -215,10 +216,15 @@ export default function HeroVideo() {
               setShowFallback(true);
             },
             onStateChange: (event: YT.OnStateChangeEvent) => {
-              if (event.data === 0) {
-                const next = (currentIndexRef.current + 1) % VIDEO_IDS.length;
-                currentIndexRef.current = next;
-                event.target.loadVideoById(VIDEO_IDS[next]);
+              const state = event.data;
+              const player = event.target;
+
+              // Estado 0 = vídeo terminou
+              if (state === 0) {
+                // Se não estiver em transição, inicia o loop
+                if (!isTransitioning) {
+                  startLoopSequence(player);
+                }
               }
             },
           },
@@ -240,8 +246,55 @@ export default function HeroVideo() {
         try { playerRef.current.destroy(); } catch {}
         playerRef.current = null;
       }
+      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+      if (loopTimerRef.current) clearTimeout(loopTimerRef.current);
     };
   }, []);
+
+  // ============================================================
+  // Lógica de Transição e Loop
+  // ============================================================
+  const startLoopSequence = (player: YT.Player) => {
+    // Evita múltiplas execuções
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+
+    // 1. Inicia o fade out (0 → 1) do overlay
+    setIsTransitioning(true);
+    // O overlay terá a classe de transição (opacity: 1)
+
+    // 2. Após 500ms, carrega o vídeo de loop e faz fade in
+    transitionTimerRef.current = setTimeout(() => {
+      // Carrega um trecho do vídeo de loop (ex.: primeiros 5 segundos)
+      player.loadVideoById(LOOP_VIDEO_ID, 0, 5); // start=0, end=5
+
+      // Inicia fade in (opacity volta a 0)
+      setIsTransitioning(false);
+
+      // 3. Após o loop terminar (controlado pelo player), volta ao vídeo principal
+      // Mas como o player não dispara evento de fim para um trecho com end,
+      // usamos um timer para controlar a duração do loop.
+      const LOOP_DURATION_MS = 5000; // 5 segundos
+      loopTimerRef.current = setTimeout(() => {
+        // Volta ao vídeo principal com fade
+        startFadeToMain(player);
+      }, LOOP_DURATION_MS);
+    }, 500); // duração do fade
+  };
+
+  const startFadeToMain = (player: YT.Player) => {
+    setIsTransitioning(true);
+    // Fade out (opacity 1)
+    transitionTimerRef.current = setTimeout(() => {
+      // Carrega o próximo vídeo da lista (ou o mesmo, se for o último)
+      const nextIndex = (currentIndexRef.current + 1) % VIDEO_IDS.length;
+      currentIndexRef.current = nextIndex;
+      player.loadVideoById(VIDEO_IDS[nextIndex]);
+
+      // Fade in (opacity 0)
+      setIsTransitioning(false);
+    }, 500);
+  };
 
   const toggleMute = () => {
     if (!playerRef.current) return;
@@ -255,7 +308,7 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Fallback e estados de erro (inalterados)
+  // Render (INALTERADO, exceto pelo overlay de transição)
   // ============================================================
   if (showFallback) {
     return (
@@ -295,9 +348,6 @@ export default function HeroVideo() {
     );
   }
 
-  // ============================================================
-  // Render principal
-  // ============================================================
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
       <div
@@ -306,17 +356,25 @@ export default function HeroVideo() {
         style={{ pointerEvents: 'none' }}
       />
 
+      {/* OVERLAY DE TRANSIÇÃO */}
+      <div
+        className={`absolute inset-0 z-10 bg-primary-dark transition-opacity duration-500 ease-in-out ${
+          isTransitioning ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{ pointerEvents: 'none' }}
+      />
+
       {loading && (
-        <div className="absolute inset-0 z-10 bg-primary-dark flex items-center justify-center">
+        <div className="absolute inset-0 z-20 bg-primary-dark flex items-center justify-center">
           <div className="text-white text-center">
             <p className="text-gold">Carregando experiência...</p>
           </div>
         </div>
       )}
 
-      <div className="absolute inset-0 bg-primary-dark/20 z-20" />
+      <div className="absolute inset-0 bg-primary-dark/20 z-30" />
 
-      <div className="relative z-30 flex items-center justify-center h-full px-6">
+      <div className="relative z-40 flex items-center justify-center h-full px-6">
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
           <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-secondary font-medium text-white">
             Nova Coleção 2026
