@@ -3,7 +3,7 @@
 export type {};
 
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link'; // ✅ Import adicionado
+import Link from 'next/link';
 import { Volume2, VolumeX } from 'lucide-react';
 
 declare global {
@@ -67,8 +67,8 @@ const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 // ============================================================
 type HeroState = 'video1' | 'transition-video' | 'video2' | 'transition-banner' | 'final';
 
-// ✅ Constante para o caminho do fundohome – ajuste a extensão conforme o arquivo real
-const FUNDOHOME_IMAGE = '/img/fundohome.jpg'; // Altere para .png, .webp etc. se necessário
+// ✅ Caminho do fundohome – ajuste a extensão conforme o arquivo real
+const FUNDOHOME_IMAGE = '/img/fundohome.jpg'; // Verifique a extensão real
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -82,7 +82,7 @@ export default function HeroVideo() {
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
 
-  // Estado único da máquina
+  // Estado único
   const [heroState, setHeroState] = useState<HeroState>('video1');
 
   // ============================================================
@@ -131,7 +131,7 @@ export default function HeroVideo() {
   }, [playerReady, currentIndexRef.current]);
 
   // ============================================================
-  // Carregamento da YouTube IFrame API (inalterado)
+  // Carregamento da YouTube IFrame API
   // ============================================================
   useEffect(() => {
     const loadAPI = () => {
@@ -267,7 +267,7 @@ export default function HeroVideo() {
       player.loadVideoById(VIDEO_IDS[nextIndex]);
       setHeroState(nextIndex === 0 ? 'video1' : 'video2');
       transitionTimerRef.current = null;
-    }, 500);
+    }, 500); // fade 500ms
   };
 
   const transitionToBanner = () => {
@@ -309,7 +309,7 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Renderização com máquina de estados
+  // Renderização
   // ============================================================
   const isVideoActive = heroState === 'video1' || heroState === 'video2';
   const isTransition = heroState === 'transition-video' || heroState === 'transition-banner';
@@ -349,14 +349,14 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do iframe */}
+      {/* Container do iframe – visível apenas durante os vídeos */}
       <div
         ref={containerRef}
         className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${isFinal || isTransition ? 'opacity-0' : 'opacity-100'}`}
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* OVERLAY DE TRANSIÇÃO (somente para fades) */}
+      {/* Overlay de transição – escurece durante as trocas */}
       <div
         className={`absolute inset-0 z-20 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
           isTransition ? 'opacity-100' : 'opacity-0'
@@ -364,28 +364,37 @@ export default function HeroVideo() {
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* BANNER FINAL (fundohome + textos brancos + botão) */}
+      {/* BANNER FINAL – aparece apenas no estado 'final' */}
       {isFinal && (
         <div className="absolute inset-0 z-30 animate-fade-in-up">
+          {/* Fundo `fundohome` */}
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url('${FUNDOHOME_IMAGE}')`, // ✅ usa a constante
+              backgroundImage: `url('${FUNDOHOME_IMAGE}')`, // ajuste a extensão
             }}
           />
+          {/* Overlay muito sutil para legibilidade */}
           <div className="absolute inset-0 bg-black/10" />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-8 text-center text-white">
             <div className="max-w-4xl space-y-4 md:space-y-6">
+              {/* TÊXTIL PARTHENON */}
               <h2 className="font-primary font-bold text-3xl md:text-5xl lg:text-6xl tracking-[0.2em] leading-tight drop-shadow-md">
                 TÊXTIL PARTHENON
               </h2>
+
+              {/* Título / Slogan */}
               <h3 className="font-secondary text-2xl md:text-4xl lg:text-5xl font-light tracking-wide drop-shadow-md">
                 Tecidos que transformam espaços.
               </h3>
+
+              {/* Frase complementar */}
               <p className="text-sm md:text-lg lg:text-xl text-white/80 font-light tracking-widest drop-shadow-sm max-w-2xl mx-auto">
                 Qualidade, textura e sofisticação em cada detalhe.
               </p>
+
+              {/* Botão ASSISTIR DE NOVO – totalmente branco */}
               <div className="pt-6 md:pt-8">
                 <button
                   onClick={handleReplay}
@@ -402,6 +411,7 @@ export default function HeroVideo() {
         </div>
       )}
 
+      {/* Loading – apenas enquanto carrega o primeiro vídeo */}
       {loading && (
         <div className="absolute inset-0 z-40 bg-primary-dark flex items-center justify-center">
           <div className="text-white text-center">
@@ -410,6 +420,7 @@ export default function HeroVideo() {
         </div>
       )}
 
+      {/* Botão de mute – só aparece durante os vídeos */}
       {playerReady && isVideoActive && (
         <button
           onClick={toggleMute}
