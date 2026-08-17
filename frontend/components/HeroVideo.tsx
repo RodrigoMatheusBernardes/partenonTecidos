@@ -63,7 +63,6 @@ declare namespace YT {
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 
 // ✅ EXTENSÃO DO FUNDOHOME – AJUSTE CONFORME O ARQUIVO REAL
-// Verifique o arquivo em public/img/fundohome e altere a extensão abaixo.
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
 export default function HeroVideo() {
@@ -71,7 +70,7 @@ export default function HeroVideo() {
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Estados principais
+  // Estados React (para renderização)
   const [heroStage, setHeroStage] = useState<'video1' | 'video2' | 'final'>('video1');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [muted, setMuted] = useState(true);
@@ -81,7 +80,7 @@ export default function HeroVideo() {
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Refs para controle síncrono da máquina de estados
+  // Refs para controle síncrono da máquina de estados (independe do React)
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
 
@@ -249,7 +248,7 @@ export default function HeroVideo() {
 
               // Vídeo 2 terminou
               if (stageRef.current === 'video2') {
-                // Se já foi finalizado, ignora
+                // Se já foi finalizado, ignora (proteção contra eventos duplicados)
                 if (video2FinishedRef.current) {
                   console.log('[HERO] video 2 already finished, ignoring');
                   return;
@@ -294,6 +293,7 @@ export default function HeroVideo() {
     console.log(`[HERO] LOADING VIDEO ${nextIndex + 1}`);
 
     transitionTimerRef.current = setTimeout(() => {
+      // Atualiza o ref de estado antes de carregar o próximo vídeo
       stageRef.current = nextIndex === 0 ? 'video1' : 'video2';
       setCurrentVideoIndex(nextIndex);
       setHeroStage(nextIndex === 0 ? 'video1' : 'video2');
@@ -326,6 +326,7 @@ export default function HeroVideo() {
 
     transitionTimerRef.current = setTimeout(() => {
       const player = playerRef.current!;
+      // Resetar todas as flags de estado
       stageRef.current = 'video1';
       video2FinishedRef.current = false;
       setCurrentVideoIndex(0);
