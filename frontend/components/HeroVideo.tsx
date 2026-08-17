@@ -59,11 +59,7 @@ declare namespace YT {
   }
 }
 
-// ============================================================
-// IDs dos vídeos do YouTube
-// ============================================================
-// ALTERAÇÃO: Substituído o array pelos dois vídeos solicitados (apenas o Vídeo 2)
-const VIDEO_IDS = ['2fAYPuTEUvQ'];
+const VIDEO_IDS = ['0OGYYD0XY9A', '2fAYPuTEUvQ'];
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -76,9 +72,6 @@ export default function HeroVideo() {
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
 
-  // ============================================================
-  // Lógica de dimensionamento do iframe com ResizeObserver
-  // ============================================================
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !playerReady) return;
@@ -90,13 +83,8 @@ export default function HeroVideo() {
       const rect = container.getBoundingClientRect();
       const containerWidth = rect.width;
       const containerHeight = rect.height;
-      const videoRatio = 16 / 9;
 
-      const scale = Math.max(
-        containerWidth / 16,
-        containerHeight / 9
-      );
-
+      const scale = Math.max(containerWidth / 16, containerHeight / 9);
       const videoWidth = 16 * scale;
       const videoHeight = 9 * scale;
 
@@ -105,27 +93,31 @@ export default function HeroVideo() {
       iframe.style.position = 'absolute';
       iframe.style.top = '50%';
       iframe.style.left = '50%';
-      iframe.style.transform = 'translate(-50%, -50%)';
       iframe.style.maxWidth = 'none';
       iframe.style.maxHeight = 'none';
       iframe.style.border = '0';
+
+      // 👇 AJUSTE POR VÍDEO
+      const isVideo2 = currentIndexRef.current === 1;
+      if (isVideo2) {
+        // Vídeo 2: desce um pouco e zoom leve para eliminar barras pretas
+        iframe.style.transform = 'translate(-50%, -40%) scale(1.05)';
+      } else {
+        // Vídeo 1: enquadramento original aprovado
+        iframe.style.transform = 'translate(-50%, -50%)';
+      }
     };
 
-    const resizeObserver = new ResizeObserver(() => {
-      updateIframeSize();
-    });
+    const resizeObserver = new ResizeObserver(updateIframeSize);
     resizeObserver.observe(container);
-
     updateIframeSize();
 
     return () => {
       resizeObserver.disconnect();
     };
-  }, [playerReady]);
+  }, [playerReady, currentIndexRef.current]);
 
-  // ============================================================
-  // Carregamento da API do YouTube
-  // ============================================================
+  // ===== Carregamento da YouTube API =====
   useEffect(() => {
     const loadAPI = () => {
       if (window.YT && window.YT.Player) {
@@ -134,7 +126,6 @@ export default function HeroVideo() {
       }
 
       const existingScript = document.querySelector('script[src="https://www.youtube.com/iframe_api"]');
-
       if (existingScript) {
         const check = setInterval(() => {
           if (window.YT && window.YT.Player) {
