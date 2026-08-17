@@ -56,6 +56,7 @@ declare namespace YT {
     unMute(): void;
     destroy(): void;
     loadVideoById(videoId: string): void;
+    seekTo(seconds: number, allowSeekAhead: boolean): void;
   }
 }
 
@@ -73,7 +74,6 @@ export default function HeroVideo() {
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
 
-  // Estados de transição e banner final
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
 
@@ -216,13 +216,10 @@ export default function HeroVideo() {
               const state = event.data;
               const player = event.target;
 
-              // Estado 0 = vídeo terminou
               if (state === 0) {
                 if (currentIndexRef.current === 0) {
-                  // Transição para o Vídeo 2
                   transitionToVideo(player, 1);
                 } else if (currentIndexRef.current === 1) {
-                  // Transição para o banner final
                   transitionToBanner();
                 }
               }
@@ -251,21 +248,17 @@ export default function HeroVideo() {
   }, []);
 
   // ============================================================
-  // Funções de transição
+  // Funções de transição e controle
   // ============================================================
   const transitionToVideo = (player: YT.Player, nextIndex: number) => {
     if (isTransitioning) return;
     setIsTransitioning(true);
 
-    // Fade out (overlay com opacidade 1)
     setTimeout(() => {
-      // Carrega o próximo vídeo
       currentIndexRef.current = nextIndex;
       player.loadVideoById(VIDEO_IDS[nextIndex]);
-
-      // Fade in (overlay com opacidade 0) – será feito pelo estado
       setIsTransitioning(false);
-    }, 500); // 500ms de fade out
+    }, 500); // Fade de 500ms
   };
 
   const transitionToBanner = () => {
@@ -273,7 +266,6 @@ export default function HeroVideo() {
     setIsTransitioning(true);
 
     setTimeout(() => {
-      // Mostra o banner final
       setShowBanner(true);
       setIsTransitioning(false);
     }, 500);
@@ -285,8 +277,12 @@ export default function HeroVideo() {
     setIsTransitioning(true);
 
     setTimeout(() => {
+      const player = playerRef.current!;
       currentIndexRef.current = 0;
-      playerRef.current!.loadVideoById(VIDEO_IDS[0]);
+      // Recarrega o vídeo do início e toca
+      player.loadVideoById(VIDEO_IDS[0]);
+      player.seekTo(0, true);
+      player.playVideo();
       setIsTransitioning(false);
     }, 500);
   };
@@ -339,59 +335,67 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do iframe (visível apenas quando não está no banner) */}
+      {/* Container do iframe */}
       <div
         ref={containerRef}
-        className={`absolute inset-0 w-full h-full z-10 ${showBanner ? 'opacity-0' : 'opacity-100'}`}
-        style={{ pointerEvents: showBanner ? 'none' : 'none' }}
+        className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${showBanner ? 'opacity-0' : 'opacity-100'}`}
+        style={{ pointerEvents: 'none' }}
       />
 
       {/* OVERLAY DE TRANSIÇÃO */}
       <div
-        className={`absolute inset-0 z-20 bg-primary-dark transition-opacity duration-500 ease-in-out ${
+        className={`absolute inset-0 z-20 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
           isTransitioning ? 'opacity-100' : 'opacity-0'
         }`}
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* BANNER FINAL */}
+      {/* BANNER FINAL (fundohome) */}
       {showBanner && (
         <div className="absolute inset-0 z-30 animate-fade-in-up">
-          {/* Fundo do banner */}
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: "url('/images/fundohome.jpg')", // Substitua pelo caminho real do arquivo
+              // Substitua pelo caminho real do arquivo fundohome
+              backgroundImage: "url('/images/fundohome.jpg')",
+              // Caso a imagem precise de um ajuste de posição:
+              // backgroundPosition: 'center center',
             }}
           />
 
-          {/* Conteúdo do banner */}
-          <div className="absolute inset-0 bg-primary-dark/40 flex flex-col items-center justify-center px-6 text-center text-white">
-            {/* Título principal */}
-            <h2 className="font-primary font-bold text-5xl md:text-7xl tracking-[0.15em] leading-tight mb-4 drop-shadow-lg">
-              TÊXTIL PARTHENON
-            </h2>
+          {/* Overlay escuro muito sutil para legibilidade */}
+          <div className="absolute inset-0 bg-black/10" />
 
-            {/* Slogan */}
-            <p className="font-secondary text-xl md:text-3xl font-light tracking-wide mb-2 drop-shadow-md">
-              Qualidade, textura e sofisticação em cada detalhe.
-            </p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-8 text-center text-white">
+            <div className="max-w-5xl space-y-4 md:space-y-6">
+              {/* TÊXTIL PARTHENON (Marca) */}
+              <h2 className="font-primary font-bold text-3xl md:text-5xl lg:text-6xl tracking-[0.2em] leading-tight drop-shadow-md text-white uppercase">
+                TÊXTIL PARTHENON
+              </h2>
 
-            {/* Mensagem complementar (opcional) */}
-            <p className="text-sm md:text-lg text-white/80 font-light tracking-widest mb-10 drop-shadow-sm">
-              Tecidos que transformam espaços.
-            </p>
+              {/* Título Principal */}
+              <h3 className="font-secondary text-2xl md:text-4xl lg:text-5xl font-light tracking-wide drop-shadow-md text-white">
+                Tecidos que transformam espaços.
+              </h3>
 
-            {/* Botão "ASSISTIR NOVAMENTE" */}
-            <button
-              onClick={handleReplay}
-              className="group inline-flex items-center gap-3 border-2 border-white/60 px-10 py-4 rounded-full text-sm md:text-base font-secondary font-medium tracking-widest uppercase text-white transition-all duration-500 hover:border-gold hover:text-gold hover:bg-white/10 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-              Assistir Novamente
-            </button>
+              {/* Frase de Apoio */}
+              <p className="text-sm md:text-lg lg:text-xl text-white/80 font-light tracking-widest drop-shadow-sm max-w-2xl mx-auto">
+                Qualidade, textura e sofisticação em cada detalhe.
+              </p>
+
+              {/* Botão "ASSISTIR NOVAMENTE" */}
+              <div className="pt-6 md:pt-8">
+                <button
+                  onClick={handleReplay}
+                  className="group inline-flex items-center gap-3 border-2 border-white/40 px-8 md:px-12 py-3 md:py-4 rounded-full text-sm md:text-base font-secondary font-medium tracking-widest uppercase text-white transition-all duration-500 hover:border-gold hover:text-gold hover:bg-white/10 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2"
+                >
+                  <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  Assistir Novamente
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -404,10 +408,9 @@ export default function HeroVideo() {
         </div>
       )}
 
-      {/* OVERLAY ESCURO SEMPRE PRESENTE */}
       <div className="absolute inset-0 bg-primary-dark/20 z-40" />
 
-      {/* TEXTO DO HERO (sobreposto durante os vídeos e banner) */}
+      {/* TEXTO DO HERO (Sempre visível) */}
       <div className="relative z-50 flex items-center justify-center h-full px-6">
         <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
           <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-secondary font-medium text-white">
@@ -442,7 +445,7 @@ export default function HeroVideo() {
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
