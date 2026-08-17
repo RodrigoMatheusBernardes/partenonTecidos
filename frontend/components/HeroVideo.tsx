@@ -59,7 +59,10 @@ declare namespace YT {
   }
 }
 
-const VIDEO_IDS = ['0OGYYD0XY9A', 'BmLibpkdUeI'];
+// ============================================================
+// IDs dos vídeos – mantendo ambos
+// ============================================================
+const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -73,7 +76,56 @@ export default function HeroVideo() {
   const [showFallback, setShowFallback] = useState(false);
 
   // ============================================================
-  // Carregamento da API do YouTube (mesmo código original)
+  // Ajuste do iframe: escala e posição por vídeo
+  // ============================================================
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !playerReady) return;
+
+    const iframe = container.querySelector('iframe');
+    if (!iframe) return;
+
+    const updateIframe = () => {
+      const rect = container.getBoundingClientRect();
+      const containerWidth = rect.width;
+      const containerHeight = rect.height;
+
+      // Mantém o iframe sempre com 16:9 – é o container que define a área visível
+      const scale = Math.max(containerWidth / 16, containerHeight / 9);
+      const videoWidth = 16 * scale;
+      const videoHeight = 9 * scale;
+
+      iframe.style.width = `${videoWidth}px`;
+      iframe.style.height = `${videoHeight}px`;
+      iframe.style.position = 'absolute';
+      iframe.style.top = '50%';
+      iframe.style.left = '50%';
+      iframe.style.maxWidth = 'none';
+      iframe.style.maxHeight = 'none';
+      iframe.style.border = '0';
+
+      // Ajustes específicos para cada vídeo
+      const isVideo2 = currentIndexRef.current === 1;
+      if (isVideo2) {
+        // Vídeo 2: zoom leve para eliminar barras pretas + deslocamento para mostrar o rosto
+        iframe.style.transform = 'translate(-50%, -40%) scale(1.05)';
+      } else {
+        // Vídeo 1: enquadramento original (centralizado, sem zoom)
+        iframe.style.transform = 'translate(-50%, -50%)';
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(updateIframe);
+    resizeObserver.observe(container);
+    updateIframe();
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [playerReady, currentIndexRef.current]);
+
+  // ============================================================
+  // Carregamento da YouTube IFrame API (inalterado)
   // ============================================================
   useEffect(() => {
     const loadAPI = () => {
@@ -83,7 +135,6 @@ export default function HeroVideo() {
       }
 
       const existingScript = document.querySelector('script[src="https://www.youtube.com/iframe_api"]');
-
       if (existingScript) {
         const check = setInterval(() => {
           if (window.YT && window.YT.Player) {
@@ -203,6 +254,9 @@ export default function HeroVideo() {
     }
   };
 
+  // ============================================================
+  // Fallback e estados de erro (inalterados)
+  // ============================================================
   if (showFallback) {
     return (
       <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
@@ -241,29 +295,16 @@ export default function HeroVideo() {
     );
   }
 
+  // ============================================================
+  // Render principal
+  // ============================================================
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do vídeo – agora ocupa exatamente a área 16:9 */}
       <div
         ref={containerRef}
         className="absolute inset-0 w-full h-full"
         style={{ pointerEvents: 'none' }}
       />
-
-      {/* 
-        ESTILO SIMPLIFICADO – SEM ResizeObserver, SEM 100vw/100vh, SEM translate
-        O iframe ocupa 100% do container, que já é 16:9.
-      */}
-      <style jsx global>{`
-        .hero-video-container iframe {
-          width: 100% !important;
-          height: 100% !important;
-          position: absolute !important;
-          top: 0 !important;
-          left: 0 !important;
-          border: 0 !important;
-        }
-      `}</style>
 
       {loading && (
         <div className="absolute inset-0 z-10 bg-primary-dark flex items-center justify-center">
