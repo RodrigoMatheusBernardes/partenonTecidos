@@ -3,7 +3,6 @@
 export type {};
 
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import { Volume2, VolumeX } from 'lucide-react';
 
 declare global {
@@ -279,7 +278,6 @@ export default function HeroVideo() {
     setTimeout(() => {
       const player = playerRef.current!;
       currentIndexRef.current = 0;
-      // Recarrega o vídeo do início e toca
       player.loadVideoById(VIDEO_IDS[0]);
       player.seekTo(0, true);
       player.playVideo();
@@ -342,7 +340,7 @@ export default function HeroVideo() {
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* OVERLAY DE TRANSIÇÃO */}
+      {/* OVERLAY DE TRANSIÇÃO (somente para fades) */}
       <div
         className={`absolute inset-0 z-20 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
           isTransitioning ? 'opacity-100' : 'opacity-0'
@@ -350,40 +348,36 @@ export default function HeroVideo() {
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* BANNER FINAL (fundohome) */}
+      {/* BANNER FINAL (fundohome + textos brancos + botão) */}
       {showBanner && (
         <div className="absolute inset-0 z-30 animate-fade-in-up">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              // Substitua pelo caminho real do arquivo fundohome
-              backgroundImage: "url('/images/fundohome.jpg')",
-              // Caso a imagem precise de um ajuste de posição:
-              // backgroundPosition: 'center center',
+              backgroundImage: "url('/img/fundohome.jpg')", // Ajuste a extensão conforme o arquivo real
             }}
           />
-
-          {/* Overlay escuro muito sutil para legibilidade */}
+          {/* Overlay escuro sutil para legibilidade */}
           <div className="absolute inset-0 bg-black/10" />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-8 text-center text-white">
-            <div className="max-w-5xl space-y-4 md:space-y-6">
-              {/* TÊXTIL PARTHENON (Marca) */}
-              <h2 className="font-primary font-bold text-3xl md:text-5xl lg:text-6xl tracking-[0.2em] leading-tight drop-shadow-md text-white uppercase">
+            <div className="max-w-4xl space-y-4 md:space-y-6">
+              {/* TÊXTIL PARTHENON */}
+              <h2 className="font-primary font-bold text-3xl md:text-5xl lg:text-6xl tracking-[0.2em] leading-tight drop-shadow-md">
                 TÊXTIL PARTHENON
               </h2>
 
-              {/* Título Principal */}
-              <h3 className="font-secondary text-2xl md:text-4xl lg:text-5xl font-light tracking-wide drop-shadow-md text-white">
+              {/* Título / Slogan */}
+              <h3 className="font-secondary text-2xl md:text-4xl lg:text-5xl font-light tracking-wide drop-shadow-md">
                 Tecidos que transformam espaços.
               </h3>
 
-              {/* Frase de Apoio */}
+              {/* Frase complementar (opcional) */}
               <p className="text-sm md:text-lg lg:text-xl text-white/80 font-light tracking-widest drop-shadow-sm max-w-2xl mx-auto">
                 Qualidade, textura e sofisticação em cada detalhe.
               </p>
 
-              {/* Botão "ASSISTIR NOVAMENTE" */}
+              {/* Botão ASSISTIR DE NOVO */}
               <div className="pt-6 md:pt-8">
                 <button
                   onClick={handleReplay}
@@ -392,7 +386,7 @@ export default function HeroVideo() {
                   <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
-                  Assistir Novamente
+                  Assistir de Novo
                 </button>
               </div>
             </div>
@@ -400,6 +394,7 @@ export default function HeroVideo() {
         </div>
       )}
 
+      {/* Loading (aparece apenas enquanto carrega) */}
       {loading && (
         <div className="absolute inset-0 z-40 bg-primary-dark flex items-center justify-center">
           <div className="text-white text-center">
@@ -408,29 +403,7 @@ export default function HeroVideo() {
         </div>
       )}
 
-      <div className="absolute inset-0 bg-primary-dark/20 z-40" />
-
-      {/* TEXTO DO HERO (Sempre visível) */}
-      <div className="relative z-50 flex items-center justify-center h-full px-6">
-        <div className="text-center max-w-2xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
-          <p className="text-xs md:text-sm tracking-[0.3em] uppercase font-secondary font-medium text-white">
-            Nova Coleção 2026
-          </p>
-          <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
-            Parthenon<br />
-            <span className="font-primary font-medium tracking-[0.05em] text-white">Tecidos</span>
-          </h1>
-          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">
-            A elegância que tece histórias
-          </p>
-          <div className="pt-2">
-            <Link href="/loja" className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500">
-              Conhecer a coleção
-            </Link>
-          </div>
-        </div>
-      </div>
-
+      {/* Botão de mute (sempre visível) */}
       {playerReady && (
         <button
           onClick={toggleMute}
