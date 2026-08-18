@@ -124,7 +124,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
           )}
 
           {/* Grupo de preço */}
-          <div className="flex flex-col gap-0.5 mb-1">
+          <div className="flex flex-col gap-0.5 mb-0.5">
             {precoOriginal && (
               <span className="text-[13px] text-text-light line-through font-light">
                 R$ {precoOriginal.toFixed(2)}
@@ -134,11 +134,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
               <span className="font-serif text-[20px] md:text-[22px] font-bold text-metallic-navy">
                 R$ {preco.toFixed(2)}
               </span>
-              {descontoPercentual > 0 && (
-                <span className="text-[12px] font-medium text-error bg-error/10 px-1.5 py-0.5 rounded">
-                  {descontoPercentual}% OFF
-                </span>
-              )}
+              {/* Não repetir o desconto aqui; já está na imagem */}
             </div>
           </div>
 
