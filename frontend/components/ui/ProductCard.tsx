@@ -41,13 +41,19 @@ export default function ProductCard({ produto }: { produto?: any }) {
   const estoque = typeof produto.estoque === 'number' ? produto.estoque : 0;
   const descontoPercentual = precoOriginal && precoOriginal > preco ? Math.round(((precoOriginal - preco) / precoOriginal) * 100) : 0;
 
-  // Categoria: suporta objeto ou string
-  const categoriaLabel = 
-    produto.categoria && typeof produto.categoria === 'object' 
-      ? produto.categoria.nome 
-      : typeof produto.categoria === 'string' 
-        ? produto.categoria 
-        : null;
+  // ✅ CORREÇÃO: Verifica se é um ObjectId (24 caracteres hex) e ignora
+  const isObjectId = (str: string) => /^[0-9a-fA-F]{24}$/.test(str);
+
+  let categoriaLabel = null;
+  if (produto.categoria && typeof produto.categoria === 'object') {
+    // Se for um objeto, tenta pegar o nome
+    categoriaLabel = produto.categoria.nome || null;
+  } else if (typeof produto.categoria === 'string') {
+    // Se for string, só mostra se NÃO for um ID do MongoDB
+    if (!isObjectId(produto.categoria)) {
+      categoriaLabel = produto.categoria;
+    }
+  }
 
   // Composição: se existir nos atributos
   const composicao = produto.atributos?.composicao || null;
@@ -104,7 +110,7 @@ export default function ProductCard({ produto }: { produto?: any }) {
         </div>
 
         <div className="p-4 md:p-5 flex flex-col flex-1">
-          {/* Categoria (11px) */}
+          {/* Categoria (11px) - CORRIGIDO PARA NÃO MOSTRAR IDs */}
           {categoriaLabel && (
             <span className="text-[11px] uppercase tracking-wider text-text-light font-medium mb-1">
               {categoriaLabel}
@@ -134,7 +140,6 @@ export default function ProductCard({ produto }: { produto?: any }) {
               <span className="font-serif text-[20px] md:text-[22px] font-bold text-metallic-navy">
                 R$ {preco.toFixed(2)}
               </span>
-              {/* Não repetir o desconto aqui; já está na imagem */}
             </div>
           </div>
 
