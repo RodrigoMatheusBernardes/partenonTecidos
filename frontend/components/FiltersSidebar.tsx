@@ -61,7 +61,7 @@ export default function FiltersSidebar({
     <div className="w-full flex flex-col gap-7 p-5">
       {/* HEADER */}
       <div className="flex items-center justify-between pb-3 border-b border-gray-mid/30">
-        <h2 className="font-primary font-bold text-[10px] text-primary-dark flex items-center gap-3 tracking-tight">
+        <h2 className="font-primary font-bold text-[16px] text-primary-dark flex items-center gap-3 tracking-tight">
           <SlidersHorizontal className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Filtros
         </h2>
