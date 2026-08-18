@@ -59,8 +59,8 @@ export default function FiltersSidebar({
 
   return (
     <div className="w-full flex flex-col gap-6 p-4">
-      {/* HEADER - Título "Filtros" em 16px, sem uppercase */}
-      <div className="flex items-center justify-between pb-2 border-b border-gray-mid/30">
+      {/* HEADER */}
+      <div className="flex items-center justify-between pb-3 border-b border-gray-mid/30">
         <h2 className="font-primary font-bold text-[16px] text-primary-dark flex items-center gap-2 tracking-tight">
           <SlidersHorizontal className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Filtros
@@ -86,7 +86,7 @@ export default function FiltersSidebar({
       </div>
 
       {/* PREÇO */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-3">
         <h3 className="font-primary font-semibold text-[13px] uppercase tracking-wider text-primary-dark flex items-center gap-2">
           <DollarSign className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Preço
@@ -149,7 +149,7 @@ export default function FiltersSidebar({
       </div>
 
       {/* CATEGORIAS */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-3">
         <h3 className="font-primary font-semibold text-[13px] uppercase tracking-wider text-primary-dark flex items-center gap-2">
           <Layers className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Categorias
@@ -173,7 +173,7 @@ export default function FiltersSidebar({
       </div>
 
       {/* COLEÇÕES */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-3">
         <h3 className="font-primary font-semibold text-[13px] uppercase tracking-wider text-primary-dark flex items-center gap-2">
           <Tag className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Coleções
