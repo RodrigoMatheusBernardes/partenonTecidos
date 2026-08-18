@@ -41,6 +41,17 @@ export default function ProductCard({ produto }: { produto?: any }) {
   const estoque = typeof produto.estoque === 'number' ? produto.estoque : 0;
   const descontoPercentual = precoOriginal && precoOriginal > preco ? Math.round(((precoOriginal - preco) / precoOriginal) * 100) : 0;
 
+  // Categoria: suporta objeto ou string
+  const categoriaLabel = 
+    produto.categoria && typeof produto.categoria === 'object' 
+      ? produto.categoria.nome 
+      : typeof produto.categoria === 'string' 
+        ? produto.categoria 
+        : null;
+
+  // Composição: se existir nos atributos
+  const composicao = produto.atributos?.composicao || null;
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -92,49 +103,71 @@ export default function ProductCard({ produto }: { produto?: any }) {
           </div>
         </div>
 
-        <div className="p-4 md:p-6 flex flex-col flex-1 gap-3">
-          {/* 
-            CORREÇÃO DEFINITIVA: 
-            - text-primary-dark com !important para garantir a cor
-            - font-normal para hierarquia visual
-          */}
-          <h3 className="font-serif font-normal text-lg md:text-xl leading-tight tracking-wide text-primary-dark !text-primary-dark line-clamp-2">
+        <div className="p-4 md:p-5 flex flex-col flex-1">
+          {/* Categoria (11px) */}
+          {categoriaLabel && (
+            <span className="text-[11px] uppercase tracking-wider text-text-light font-medium mb-1">
+              {categoriaLabel}
+            </span>
+          )}
+
+          {/* Nome (15px/16px) */}
+          <h3 className="font-serif font-normal text-[15px] md:text-[16px] leading-tight tracking-wide text-primary-dark !text-primary-dark line-clamp-2 mb-1">
             {nome}
           </h3>
 
-          <div className="flex flex-col gap-1">
+          {/* Composição (12px) */}
+          {composicao && (
+            <p className="text-[12px] text-text-secondary font-light mb-2">
+              {composicao}
+            </p>
+          )}
+
+          {/* Grupo de preço */}
+          <div className="flex flex-col gap-0.5 mb-1">
+            {precoOriginal && (
+              <span className="text-[13px] text-text-light line-through font-light">
+                R$ {precoOriginal.toFixed(2)}
+              </span>
+            )}
             <div className="flex items-baseline gap-2">
-              <span className="font-serif text-2xl md:text-3xl font-bold text-metallic-navy">
+              <span className="font-serif text-[20px] md:text-[22px] font-bold text-metallic-navy">
                 R$ {preco.toFixed(2)}
               </span>
-              {precoOriginal && (
-                <span className="text-sm text-text-light line-through font-light">
-                  R$ {precoOriginal.toFixed(2)}
+              {descontoPercentual > 0 && (
+                <span className="text-[12px] font-medium text-error bg-error/10 px-1.5 py-0.5 rounded">
+                  {descontoPercentual}% OFF
                 </span>
               )}
             </div>
-            <p className="text-xs text-text-light font-light mt-1">
-              ou 3x de R$ {(preco / 3).toFixed(2)}
-            </p>
           </div>
 
+          {/* Parcelamento (13px) */}
+          <p className="text-[13px] text-text-light font-light mt-0.5">
+            3x de R$ {(preco / 3).toFixed(2)}
+          </p>
+
+          {/* Disponibilidade */}
           {estoque > 0 && estoque <= 5 && (
-            <p className="text-xs text-error font-medium">⚠️ Últimas unidades!</p>
+            <p className="text-[12px] text-error font-medium mt-1.5">
+              Últimas unidades
+            </p>
           )}
 
-          <div className="mt-auto w-full" onClick={(e) => e.stopPropagation()}>
+          {/* Botão com mt-auto para alinhar na base */}
+          <div className="mt-auto pt-2" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={handleAddToCart}
               disabled={estoque <= 0}
               className={`
-                w-full text-sm font-medium tracking-wide
-                py-3.5 px-5 rounded-full
+                w-full text-[13px] font-medium tracking-wide
+                py-2.5 px-4 rounded-full
                 border-2 border-primary-dark
                 bg-transparent text-primary-dark
                 hover:bg-primary-dark hover:text-white
                 hover:-translate-y-0.5 hover:shadow-md
                 transition-all duration-300 ease-out
-                flex items-center justify-center gap-2.5
+                flex items-center justify-center gap-2
                 ${estoque <= 0 ? '!border-gray-200 !text-gray-400 cursor-not-allowed hover:!translate-y-0 hover:!shadow-none' : ''}
                 relative z-10
               `}
