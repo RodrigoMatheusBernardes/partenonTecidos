@@ -53,8 +53,8 @@ export default function TrendingBar() {
     return (
       <div className="w-full py-16 md:py-20">
         <div className="main-container">
-          <div className="text-center mb-10 md:mb-12">
-            <h2 className="font-primary font-bold text-2xl md:text-4xl text-metallic-navy">
+          <div className="text-center mb-8 md:mb-10">
+            <h2 className="font-primary font-bold text-[20px] md:text-[24px] text-metallic-navy">
               Produtos em Alta
             </h2>
             <p className="font-secondary text-text-secondary text-sm mt-2">
@@ -77,8 +77,8 @@ export default function TrendingBar() {
   return (
     <div className="w-full py-16 md:py-20">
       <div className="main-container">
-        <div className="text-center mb-10 md:mb-12">
-          <h2 className="font-primary font-bold text-2xl md:text-4xl text-metallic-navy">
+        <div className="text-center mb-8 md:mb-10">
+          <h2 className="font-primary font-bold text-[20px] md:text-[24px] text-metallic-navy">
             Produtos em Alta
           </h2>
           <p className="font-secondary text-text-secondary text-sm mt-2">
