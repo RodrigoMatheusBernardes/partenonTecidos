@@ -58,10 +58,10 @@ export default function FiltersSidebar({
   };
 
   return (
-    <div className="w-full flex flex-col gap-6 p-4">
+    <div className="w-full flex flex-col gap-7 p-5">
       {/* HEADER */}
       <div className="flex items-center justify-between pb-3 border-b border-gray-mid/30">
-        <h2 className="font-primary font-bold text-[16px] text-primary-dark flex items-center gap-2 tracking-tight">
+        <h2 className="font-primary font-bold text-[16px] text-primary-dark flex items-center gap-3 tracking-tight">
           <SlidersHorizontal className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Filtros
         </h2>
@@ -86,19 +86,19 @@ export default function FiltersSidebar({
       </div>
 
       {/* PREÇO */}
-      <div className="flex flex-col gap-3">
-        <h3 className="font-primary font-semibold text-[13px] uppercase tracking-wider text-primary-dark flex items-center gap-2">
+      <div className="flex flex-col gap-4">
+        <h3 className="font-primary font-semibold text-[14px] text-primary-dark flex items-center gap-3 tracking-normal">
           <DollarSign className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Preço
         </h3>
 
-        <div className="flex items-center gap-1 mb-1">
+        <div className="flex items-center gap-2">
           <input
             type="number"
             value={minInput}
             onChange={(e) => setMinInput(e.target.value)}
             placeholder="Mín"
-            className="w-20 border border-gray-mid/60 rounded-button bg-transparent px-2 py-1.5 text-[14px] font-normal text-dark-light placeholder:text-text-light/70 focus:outline-none focus:border-gold transition-colors"
+            className="w-24 border border-gray-mid/60 rounded-button bg-transparent px-3 py-1.5 text-[14px] font-normal text-dark-light placeholder:text-text-light/70 focus:outline-none focus:border-gold transition-colors"
           />
           <span className="text-[14px] text-text-light">—</span>
           <input
@@ -106,19 +106,19 @@ export default function FiltersSidebar({
             value={maxInput}
             onChange={(e) => setMaxInput(e.target.value)}
             placeholder="Máx"
-            className="w-20 border border-gray-mid/60 rounded-button bg-transparent px-2 py-1.5 text-[14px] font-normal text-dark-light placeholder:text-text-light/70 focus:outline-none focus:border-gold transition-colors"
+            className="w-24 border border-gray-mid/60 rounded-button bg-transparent px-3 py-1.5 text-[14px] font-normal text-dark-light placeholder:text-text-light/70 focus:outline-none focus:border-gold transition-colors"
           />
           <button
             onClick={handlePrecoManual}
-            className="bg-primary-dark text-white text-[13px] font-medium px-3 py-1.5 rounded-button hover:bg-primary-dark/80 transition-colors"
+            className="bg-primary-dark text-white text-[13px] font-medium px-4 py-1.5 rounded-button hover:bg-primary-dark/80 transition-colors"
           >
             OK
           </button>
         </div>
 
-        <div className="flex flex-col gap-1 pl-1">
+        <div className="flex flex-col gap-1.5 pl-1">
           {faixasPreco.map((faixa) => (
-            <label key={faixa.label} className="flex items-center gap-2.5 text-[14px] font-normal text-text-secondary cursor-pointer group transition-colors duration-200 hover:text-primary-dark">
+            <label key={faixa.label} className="flex items-center gap-3 text-[14px] font-normal text-text-secondary cursor-pointer group transition-colors duration-200 hover:text-primary-dark">
               <input
                 type="radio"
                 name="faixa-preco"
@@ -132,7 +132,7 @@ export default function FiltersSidebar({
               <span>{faixa.label}</span>
             </label>
           ))}
-          <label className="flex items-center gap-2.5 text-[14px] font-normal text-text-secondary cursor-pointer group transition-colors duration-200 hover:text-primary-dark">
+          <label className="flex items-center gap-3 text-[14px] font-normal text-text-secondary cursor-pointer group transition-colors duration-200 hover:text-primary-dark">
             <input
               type="radio"
               name="faixa-preco"
@@ -149,14 +149,14 @@ export default function FiltersSidebar({
       </div>
 
       {/* CATEGORIAS */}
-      <div className="flex flex-col gap-3">
-        <h3 className="font-primary font-semibold text-[13px] uppercase tracking-wider text-primary-dark flex items-center gap-2">
+      <div className="flex flex-col gap-4">
+        <h3 className="font-primary font-semibold text-[14px] text-primary-dark flex items-center gap-3 tracking-normal">
           <Layers className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Categorias
         </h3>
-        <div className="flex flex-col gap-1 max-h-60 overflow-y-auto pr-1 pl-1">
+        <div className="flex flex-col gap-1.5 max-h-60 overflow-y-auto pr-1 pl-1">
           {categorias.map((cat) => (
-            <label key={cat._id} className="flex items-center gap-2.5 text-[14px] font-normal text-text-secondary cursor-pointer group transition-colors duration-200 hover:text-primary-dark">
+            <label key={cat._id} className="flex items-center gap-3 text-[14px] font-normal text-text-secondary cursor-pointer group transition-colors duration-200 hover:text-primary-dark">
               <input
                 type="checkbox"
                 checked={categoriasSelecionadas.includes(cat._id)}
@@ -173,20 +173,20 @@ export default function FiltersSidebar({
       </div>
 
       {/* COLEÇÕES */}
-      <div className="flex flex-col gap-3">
-        <h3 className="font-primary font-semibold text-[13px] uppercase tracking-wider text-primary-dark flex items-center gap-2">
+      <div className="flex flex-col gap-4">
+        <h3 className="font-primary font-semibold text-[14px] text-primary-dark flex items-center gap-3 tracking-normal">
           <Tag className="w-4 h-4 text-text-light" strokeWidth={1.5} />
           Coleções
         </h3>
-        <div className="flex flex-col gap-1 pl-1">
-          <label className="flex items-center gap-2.5 text-[14px] font-normal text-text-secondary cursor-pointer group transition-colors duration-200 hover:text-primary-dark">
+        <div className="flex flex-col gap-1.5 pl-1">
+          <label className="flex items-center gap-3 text-[14px] font-normal text-text-secondary cursor-pointer group transition-colors duration-200 hover:text-primary-dark">
             <input type="checkbox" className="hidden peer" />
             <span className="w-4 h-4 border border-gray-mid/70 rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
               <Check className="w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
             </span>
             <span>Premium</span>
           </label>
-          <label className="flex items-center gap-2.5 text-[14px] font-normal text-text-secondary cursor-pointer group transition-colors duration-200 hover:text-primary-dark">
+          <label className="flex items-center gap-3 text-[14px] font-normal text-text-secondary cursor-pointer group transition-colors duration-200 hover:text-primary-dark">
             <input type="checkbox" className="hidden peer" />
             <span className="w-4 h-4 border border-gray-mid/70 rounded-sm bg-white flex items-center justify-center peer-checked:border-gold peer-checked:bg-gold group-hover:border-gold transition-colors duration-200 flex-shrink-0">
               <Check className="w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200" strokeWidth={3} />
