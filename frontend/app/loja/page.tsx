@@ -101,7 +101,6 @@ function LojaContent() {
 
   const activeFilters = categoriasSelecionadas.length + (precoMin > 0 || precoMax < precoMaxGlobal ? 1 : 0);
 
-  // Categorias populares (exemplo – as 5 primeiras)
   const categoriasPopulares = categorias.slice(0, 5);
 
   return (
@@ -109,7 +108,7 @@ function LojaContent() {
       {/* HERO DA LOJA */}
       <div className="bg-light border-b border-gray-mid py-16 md:py-20">
         <div className="main-container text-center">
-          <h1 className="font-serif font-semibold text-4xl md:text-5xl text-metallic-navy tracking-wide mb-3">
+          <h1 className="font-serif font-semibold text-[30px] md:text-[36px] text-metallic-navy tracking-wide mb-3">
             Nossa Coleção
           </h1>
           <p className="text-text-secondary text-sm md:text-base max-w-lg mx-auto">
@@ -120,8 +119,8 @@ function LojaContent() {
 
       <div className="main-container py-16 md:py-20">
         <div className="flex gap-8 lg:gap-12">
-          {/* SIDEBAR – CORRIGIDA (REMOVIDO bg-white, border E shadow) */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
+          {/* SIDEBAR */}
+          <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
               <FiltersSidebar
                 precoMin={precoMin}
@@ -134,7 +133,7 @@ function LojaContent() {
                 limparFiltros={limparFiltros}
               />
 
-              {/* CONTEÚDO ABAIXO DO FILTRO – preenche o espaço vazio */}
+              {/* CONTEÚDO ABAIXO DO FILTRO */}
               <div className="mt-8 pt-6 border-t border-gray-mid/30 space-y-6">
                 
                 {/* Categorias Populares */}
@@ -208,9 +207,8 @@ function LojaContent() {
             </div>
           </aside>
 
-          {/* CONTEÚDO PRINCIPAL – lista de produtos */}
+          {/* CONTEÚDO PRINCIPAL */}
           <div className="flex-1 min-w-0">
-            {/* Barra de controles (busca, ordenação, contador) */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12">
               <div className="w-full sm:max-w-xs">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
@@ -244,7 +242,6 @@ function LojaContent() {
               </div>
             </div>
 
-            {/* Grid de produtos */}
             {carregando ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                 {Array.from({ length: 8 }).map((_, i) => (
@@ -341,7 +338,6 @@ function LojaContent() {
   );
 }
 
-// Página principal com Suspense
 export default function LojaPage() {
   return (
     <Suspense fallback={<div className="p-8 text-center">Carregando...</div>}>
