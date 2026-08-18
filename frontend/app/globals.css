@@ -1,23 +1,19 @@
+/* ============================================================
+   IMPORTS E TAILWIND
+   ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Asap:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* ============================================================
+   DESIGN TOKENS (mantidos)
+   ============================================================ */
 @theme {
-  /* ═══════════════════════════════════════════════════════════════
-     FONTES (identidade visual)
-     ═══════════════════════════════════════════════════════════════ */
   --font-primary: 'Gotham Ultra', 'Helvetica Neue', Arial, sans-serif;
   --font-secondary: 'Asap', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-
-  /* Mantidas para compatibilidade com componentes existentes */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-product: 'Cormorant Garamond', Georgia, serif;
 
-  /* ═══════════════════════════════════════════════════════════════
-     CORES – mantidas + novas do manual
-     ═══════════════════════════════════════════════════════════════ */
-  
-  /* Cores existentes (mantidas) */
   --color-text-primary: #1a1a1a;
   --color-text-secondary: #5c5c5c;
   --color-text-light: #8a8a8a;
@@ -33,17 +29,13 @@
   --color-warning: #f59e0b;
   --color-error: #ef4444;
 
-  /* ═══════════════════════════════════════════════════════════════
-     NOVAS CORES (manual da marca – complementares)
-     ═══════════════════════════════════════════════════════════════ */
-  --color-primary-dark: #0B1742;   /* Azul escuro institucional */
-  --color-secondary-gray: #A9ABAE; /* Cinza institucional */
+  --color-primary-dark: #0B1742;
+  --color-secondary-gray: #A9ABAE;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   RESET & BASE
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ============================================================
+   RESET
+   ============================================================ */
 * {
   margin: 0;
   padding: 0;
@@ -79,48 +71,19 @@ ul, ol {
   list-style: none;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   TIPOGRAFIA – herdam cor (permite classes como text-white)
-   ═══════════════════════════════════════════════════════════════════════════ */
-/* ═══════════════════════════════════════════════════════════════════════════
-    */
-
+/* ============================================================
+   TIPOGRAFIA BASE
+   ============================================================ */
+/* Títulos – apenas identidade, sem tamanho fixo */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-primary);
   font-weight: 700;
-  color: #0B1742;   /* ← AGORA DEFINIDO EXPLICITAMENTE (AZUL ROYAL) */
+  color: #0B1742;
   line-height: 1.3;
   letter-spacing: -0.01em;
 }
 
-h1 {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  margin-bottom: clamp(1rem, 3vw, 2rem);
-}
-h2 {
-  font-size: clamp(2rem, 4.5vw, 3.5rem);
-  margin-bottom: clamp(0.75rem, 2.5vw, 1.5rem);
-}
-h3 {
-  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
-  margin-bottom: clamp(0.5rem, 2vw, 1rem);
-}
-h4 {
-  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-  margin-bottom: 0.5rem;
-}
-h5 {
-  font-size: 1rem;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-}
-h6 {
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-
+/* Parágrafos – tamanho responsivo, mas sem clamp agressivo */
 p {
   font-family: var(--font-secondary);
   font-weight: 400;
@@ -134,10 +97,9 @@ small {
   color: inherit;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   SISTEMA DE ESPAÇAMENTO (múltiplos de 8px)
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ============================================================
+   SISTEMA DE ESPAÇAMENTO (mantido)
+   ============================================================ */
 :root {
   --space-xs: 0.5rem;   /* 8px */
   --space-sm: 1rem;     /* 16px */
@@ -149,20 +111,10 @@ small {
   --space-4xl: 6rem;    /* 96px */
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   CONTAINERS
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.main-container {
-  width: 100%;
-  max-width: 1280px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
-/* Alias para compatibilidade */
+/* ============================================================
+   CONTAINERS E LAYOUT
+   ============================================================ */
+.main-container,
 .container-main {
   width: 100%;
   max-width: 1280px;
@@ -171,10 +123,6 @@ small {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
 }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   PADDING PADRÃO PARA SEÇÕES
-   ═══════════════════════════════════════════════════════════════════════════ */
 
 .section-padding {
   padding-top: var(--space-2xl, 4rem);
@@ -191,10 +139,9 @@ small {
   padding-bottom: var(--space-xl, 3rem);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ============================================================
    GRIDS
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+   ============================================================ */
 .grid-responsive {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -207,34 +154,9 @@ small {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   UTILITÁRIOS
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   LINKS & INTERAÇÃO
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ============================================================
+   LINKS
+   ============================================================ */
 a {
   color: inherit;
   text-decoration: none;
@@ -251,55 +173,19 @@ a:focus {
   border-radius: 2px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   IMAGENS
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   SCROLLBAR
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 10px;
-  transition: background 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-light);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   FORMULÁRIOS
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ============================================================
+   FORMULÁRIOS – BASE (sem tamanhos rígidos)
+   ============================================================ */
 input,
 textarea,
 select {
   font-family: var(--font-secondary);
-  font-size: 1rem;
   border: 1px solid var(--color-border);
   border-radius: 0.375rem;
-  padding: 0.75rem 1rem;
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  /* font-size, padding, etc. são deixados para os componentes */
 }
 
 input::placeholder,
@@ -320,17 +206,44 @@ textarea {
   min-height: 120px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   UTILITÁRIOS – CINZA CHUMBO (PADRÃO DA LOJA) – mantido
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ============================================================
+   IMAGENS
+   ============================================================ */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
 
+/* ============================================================
+   SCROLLBAR (mantido)
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-light);
+}
+
+/* ============================================================
+   UTILITÁRIOS CUSTOMIZADOS (mantidos)
+   ============================================================ */
 @utility text-lead-gray {
   color: #262626;
 }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   UTILITÁRIOS – METALLIC NAVY (EFEITO ESCURO E METÁLICO) – MANTIDO
-   ═══════════════════════════════════════════════════════════════════════════ */
 
 @utility text-metallic-navy {
   background: linear-gradient(145deg, #0A1420 10%, #1A3A5C 40%, #4C8BBB 70%, #1A3A5C 85%, #0A1420 95%);
@@ -348,10 +261,9 @@ textarea {
   background: linear-gradient(145deg, #1A3A5C 10%, #2E5F8E 40%, #6CA0C8 70%, #2E5F8E 85%, #1A3A5C 95%);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ============================================================
    ACESSIBILIDADE
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+   ============================================================ */
 .skip-to-main {
   position: absolute;
   top: -40px;
@@ -378,10 +290,9 @@ textarea {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   ANIMAÇÕES
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ============================================================
+   ANIMAÇÕES (mantidas)
+   ============================================================ */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -397,10 +308,9 @@ textarea {
   animation: fadeInUp 0.6s ease-out;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   FAMÍLIAS DE FONTES (utilitários)
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ============================================================
+   UTILITÁRIOS DE FONTE (mantidos)
+   ============================================================ */
 @utility font-primary {
   font-family: var(--font-primary);
 }
