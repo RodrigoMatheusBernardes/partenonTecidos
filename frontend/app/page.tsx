@@ -8,7 +8,7 @@ import { extractDataArray, getApiUrl } from '@/lib/api';
 import SearchBar from '@/components/SearchBar';
 import FiltersSidebar from '@/components/FiltersSidebar';
 import ProductCard from '@/components/ui/ProductCard';
-import HeroVideo from '@/components/HeroVideo'; // <-- Import adicionado
+import HeroVideo from '@/components/HeroVideo';
 import TrendingBar from '@/components/TrendingBar';
 import { SlidersHorizontal, Tag, Sparkles, Star } from 'lucide-react';
 
@@ -130,14 +130,14 @@ export default function Home() {
 
   return (
     <>
-      <HeroVideo /> {/* <-- Substituição do HomeBanner */}
+      <HeroVideo />
 
       <section className="w-full bg-[#F7F7F7] py-16 md:py-20">
         <div className="main-container">
           <div className="flex flex-col md:flex-row gap-8">
             
-            {/* SIDEBAR - CORRIGIDA (Removido bg-white, shadow e border) */}
-            <aside className="hidden md:block w-64 flex-shrink-0">
+            {/* SIDEBAR */}
+            <aside className="hidden md:block w-[280px] flex-shrink-0">
               <div className="sticky top-8">
                 <FiltersSidebar
                   precoMin={precoMin}
@@ -240,8 +240,9 @@ export default function Home() {
                 </div>
               )}
 
-              <div className="text-center mb-12 md:mb-16">
-                <h2 className="font-serif font-light text-3xl md:text-4xl text-metallic-navy">
+              {/* TÍTULO "NOSSA COLEÇÃO" — REFINADO */}
+              <div className="text-center mb-6 md:mb-10">
+                <h2 className="font-serif font-light text-[24px] md:text-[28px] text-metallic-navy">
                   Nossa Coleção
                 </h2>
                 <p className="text-text-secondary font-light text-sm mt-2 tracking-wide">
