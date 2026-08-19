@@ -106,23 +106,16 @@ function LojaContent() {
   return (
     <div className="min-h-screen bg-white">
       {/* ============================================================ */}
-      {/* CABEÇALHO - Alinhado à área de produtos */}
+      {/* CABEÇALHO - REMOVIDA A COLUNA FANTASMA */}
       {/* ============================================================ */}
       <div className="bg-primary-dark border-b border-secondary-gray/20 py-16 md:py-20">
-        <div className="w-full max-w-[1440px] mx-auto px-6">
-          <div className="flex gap-8 lg:gap-12">
-            {/* Coluna fantasma para alinhar com a Sidebar */}
-            <div className="hidden lg:block w-[280px] flex-shrink-0" />
-            {/* Conteúdo do Cabeçalho */}
-            <div className="flex-1 min-w-0 text-center">
-              <h1 className="font-serif font-semibold text-[30px] md:text-[36px] text-white tracking-wide mb-3">
-                Nossa Coleção
-              </h1>
-              <p className="text-white/80 text-sm md:text-base max-w-lg mx-auto font-light">
-                Explore nossos tecidos selecionados com a elegância que você merece.
-              </p>
-            </div>
-          </div>
+        <div className="w-full max-w-[1440px] mx-auto px-6 text-center">
+          <h1 className="font-serif font-semibold text-[30px] md:text-[36px] text-white tracking-wide mb-3">
+            Nossa Coleção
+          </h1>
+          <p className="text-white/80 text-sm md:text-base max-w-lg mx-auto font-light">
+            Explore nossos tecidos selecionados com a elegância que você merece.
+          </p>
         </div>
       </div>
 
@@ -271,7 +264,6 @@ function LojaContent() {
                   ))}
                 </div>
 
-                {/* Paginação com mb-24 para criar espaço antes do Footer */}
                 {totalPaginas > 1 && (
                   <div className="mt-16 flex flex-wrap items-center justify-center gap-2 mb-24">
                     <button
