@@ -105,7 +105,9 @@ function LojaContent() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* ============================================================ */}
       {/* CABEÇALHO - Mantido */}
+      {/* ============================================================ */}
       <section className="bg-white border-b border-secondary-gray/20 py-10 md:py-12">
         <div className="mx-auto flex w-full max-w-[1440px] justify-center px-6">
           <div className="flex w-full max-w-[620px] flex-col items-center text-center">
@@ -120,11 +122,10 @@ function LojaContent() {
       </section>
 
       {/* ============================================================ */}
-      {/* CONTEÚDO PRINCIPAL - COM AS DUAS CORREÇÕES DE ESPAÇAMENTO */}
+      {/* CONTEÚDO PRINCIPAL - Versão refatorada e limpa */}
       {/* ============================================================ */}
-      <div className="w-full max-w-[1440px] mx-auto px-6 pb-20 md:pb-24">
-        {/* ✅ Alteração 1: pt-5 substitui pt-14 md:pt-16 (20px de respiro) */}
-        <div className="flex gap-8 lg:gap-12 pt-5">
+      <div className="w-full max-w-[1440px] mx-auto px-6 pb-24 md:pb-28">
+        <div className="flex gap-8 lg:gap-12 pt-16 md:pt-24">
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
               <FiltersSidebar
@@ -208,8 +209,7 @@ function LojaContent() {
           </aside>
 
           <div className="flex-1 min-w-0">
-            {/* ✅ Alteração 2: mb-5 substitui mb-6 md:mb-8 (20px de respiro antes dos produtos) */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
               <div className="w-full sm:max-w-xs">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
               </div>
@@ -269,8 +269,9 @@ function LojaContent() {
                   ))}
                 </div>
 
+                {/* PAGINAÇÃO - Com espaçamento ajustado */}
                 {totalPaginas > 1 && (
-                  <div className="mt-16 flex flex-wrap items-center justify-center gap-2 mb-24">
+                  <div className="mt-12 flex flex-wrap items-center justify-center gap-2 mb-8 md:mb-12">
                     <button
                       onClick={() => { setPagina(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                       disabled={pagina === 1}
