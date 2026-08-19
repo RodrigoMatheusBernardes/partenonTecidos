@@ -105,9 +105,7 @@ function LojaContent() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* ============================================================ */}
-      {/* CABEÇALHO - Levemente mais compacto */}
-      {/* ============================================================ */}
+      {/* CABEÇALHO - Mantido */}
       <section className="bg-white border-b border-secondary-gray/20 py-10 md:py-12">
         <div className="mx-auto flex w-full max-w-[1440px] justify-center px-6">
           <div className="flex w-full max-w-[620px] flex-col items-center text-center">
@@ -121,11 +119,9 @@ function LojaContent() {
         </div>
       </section>
 
-      {/* ============================================================ */}
-      {/* CONTEÚDO PRINCIPAL - Estrutura de espaçamento reorganizada */}
-      {/* ============================================================ */}
-      <div className="w-full max-w-[1440px] mx-auto px-6 pb-16 md:pb-20">
-        <div className="flex gap-8 lg:gap-12 pt-12 md:pt-14">
+      {/* CONTEÚDO PRINCIPAL - Ajuste de pt e pb */}
+      <div className="w-full max-w-[1440px] mx-auto px-6 pb-20 md:pb-24">
+        <div className="flex gap-8 lg:gap-12 pt-14 md:pt-16">
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
               <FiltersSidebar
