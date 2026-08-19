@@ -104,22 +104,20 @@ function LojaContent() {
   const categoriasPopulares = categorias.slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-white pb-24">
+    <div className="min-h-screen bg-white">
       {/* ============================================================ */}
-      {/* CABEÇALHO - AGORA ALINHADO COM A ÁREA DE PRODUTOS */}
+      {/* CABEÇALHO - Alinhado à área de produtos */}
       {/* ============================================================ */}
       <div className="bg-primary-dark border-b border-secondary-gray/20 py-16 md:py-20">
         <div className="w-full max-w-[1440px] mx-auto px-6">
           <div className="flex gap-8 lg:gap-12">
             {/* Coluna fantasma para alinhar com a Sidebar */}
             <div className="hidden lg:block w-[280px] flex-shrink-0" />
-            
-            {/* Conteúdo do Cabeçalho - Centralizado na área de produtos */}
+            {/* Conteúdo do Cabeçalho */}
             <div className="flex-1 min-w-0 text-center">
               <h1 className="font-serif font-semibold text-[30px] md:text-[36px] text-white tracking-wide mb-3">
                 Nossa Coleção
               </h1>
-              {/* CORRIGIDO: Cor alterada para branco transparente */}
               <p className="text-white/80 text-sm md:text-base max-w-lg mx-auto font-light">
                 Explore nossos tecidos selecionados com a elegância que você merece.
               </p>
@@ -129,11 +127,10 @@ function LojaContent() {
       </div>
 
       {/* ============================================================ */}
-      {/* CONTEÚDO PRINCIPAL - GRID E SIDEBAR */}
+      {/* CONTEÚDO PRINCIPAL */}
       {/* ============================================================ */}
       <div className="w-full max-w-[1440px] mx-auto px-6 py-16 md:py-20">
         <div className="flex gap-8 lg:gap-12">
-          {/* SIDEBAR */}
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
               <FiltersSidebar
@@ -146,7 +143,6 @@ function LojaContent() {
                 onCategoriaChange={handleCategoriaChange}
                 limparFiltros={limparFiltros}
               />
-
               <div className="mt-8 pt-6 border-t border-gray-mid/30 space-y-6">
                 {categoriasPopulares.length > 0 && (
                   <div>
@@ -168,7 +164,6 @@ function LojaContent() {
                     </ul>
                   </div>
                 )}
-
                 <div>
                   <h4 className="text-xs font-primary font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
                     <Sparkles className="w-3.5 h-3.5" strokeWidth={2} />
@@ -206,7 +201,6 @@ function LojaContent() {
                     Ver todos →
                   </Link>
                 </div>
-
                 <div className="bg-gold/5 border border-gold/20 rounded-card p-4 text-center">
                   <Star className="w-5 h-5 text-gold mx-auto mb-1" strokeWidth={2} />
                   <p className="text-xs font-medium text-dark-light">Qualidade Premium</p>
@@ -216,7 +210,6 @@ function LojaContent() {
             </div>
           </aside>
 
-          {/* ÁREA DE PRODUTOS */}
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12">
               <div className="w-full sm:max-w-xs">
@@ -278,8 +271,8 @@ function LojaContent() {
                   ))}
                 </div>
 
+                {/* Paginação com mb-24 para criar espaço antes do Footer */}
                 {totalPaginas > 1 && (
-                  {/* CORREÇÃO DE ESPAÇAMENTO: mb-24 aplicado aqui para gerar espaço antes do Footer */}
                   <div className="mt-16 flex flex-wrap items-center justify-center gap-2 mb-24">
                     <button
                       onClick={() => { setPagina(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
@@ -317,7 +310,7 @@ function LojaContent() {
         </div>
       </div>
 
-      {/* FILTRO MOBILE DRAWER (inalterado) */}
+      {/* FILTRO MOBILE DRAWER */}
       {sidebarAberta && (
         <>
           <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setSidebarAberta(false)} />
