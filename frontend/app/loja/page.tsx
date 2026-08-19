@@ -122,10 +122,10 @@ function LojaContent() {
       </section>
 
       {/* ============================================================ */}
-      {/* CONTEÚDO PRINCIPAL - Padding assimétrico */}
+      {/* CONTEÚDO PRINCIPAL - Estrutura de espaçamento reorganizada */}
       {/* ============================================================ */}
-      <div className="w-full max-w-[1440px] mx-auto px-6 pt-14 md:pt-16 pb-16 md:pb-20">
-        <div className="flex gap-8 lg:gap-12">
+      <div className="w-full max-w-[1440px] mx-auto px-6 pb-16 md:pb-20">
+        <div className="flex gap-8 lg:gap-12 pt-12 md:pt-14">
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
               <FiltersSidebar
@@ -209,7 +209,7 @@ function LojaContent() {
           </aside>
 
           <div className="flex-1 min-w-0">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
               <div className="w-full sm:max-w-xs">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
               </div>
