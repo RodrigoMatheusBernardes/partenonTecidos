@@ -119,9 +119,9 @@ function LojaContent() {
         </div>
       </section>
 
-      {/* CONTEÚDO PRINCIPAL - Ajuste de pt e pb */}
-      <div className="w-full max-w-[1440px] mx-auto px-6 pb-20 md:pb-24">
-        <div className="flex gap-8 lg:gap-12 pt-14 md:pt-16">
+      {/* CONTEÚDO PRINCIPAL - Ajustes aplicados */}
+      <div className="w-full max-w-[1440px] mx-auto px-6 pb-20 md:pb-28">
+        <div className="flex gap-8 lg:gap-12 pt-24 md:pt-28">
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
               <FiltersSidebar
@@ -265,8 +265,9 @@ function LojaContent() {
                   ))}
                 </div>
 
+                {/* Paginação - mb ajustado */}
                 {totalPaginas > 1 && (
-                  <div className="mt-16 flex flex-wrap items-center justify-center gap-2 mb-24">
+                  <div className="mt-16 flex flex-wrap items-center justify-center gap-2 mb-12 md:mb-16">
                     <button
                       onClick={() => { setPagina(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                       disabled={pagina === 1}
