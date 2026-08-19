@@ -105,7 +105,7 @@ function LojaContent() {
 
   return (
     <main className="min-h-screen bg-white pb-24">
-      {/* HERO DA LOJA */}
+      {/* HERO DA LOJA (mantido com main-container) */}
       <div className="bg-light border-b border-gray-mid py-16 md:py-20">
         <div className="main-container text-center">
           <h1 className="font-serif font-semibold text-[30px] md:text-[36px] text-metallic-navy tracking-wide mb-3">
@@ -117,7 +117,8 @@ function LojaContent() {
         </div>
       </div>
 
-      <div className="main-container py-16 md:py-20">
+      {/* CONTEÚDO PRINCIPAL — NOVO CONTAINER COM 1440px */}
+      <div className="w-full max-w-[1440px] mx-auto px-6 py-16 md:py-20">
         <div className="flex gap-8 lg:gap-12">
           {/* SIDEBAR */}
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
@@ -133,10 +134,7 @@ function LojaContent() {
                 limparFiltros={limparFiltros}
               />
 
-              {/* CONTEÚDO ABAIXO DO FILTRO */}
               <div className="mt-8 pt-6 border-t border-gray-mid/30 space-y-6">
-                
-                {/* Categorias Populares */}
                 {categoriasPopulares.length > 0 && (
                   <div>
                     <h4 className="text-xs font-primary font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
@@ -158,7 +156,6 @@ function LojaContent() {
                   </div>
                 )}
 
-                {/* Produtos em Alta (mini versão) */}
                 <div>
                   <h4 className="text-xs font-primary font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
                     <Sparkles className="w-3.5 h-3.5" strokeWidth={2} />
@@ -197,7 +194,6 @@ function LojaContent() {
                   </Link>
                 </div>
 
-                {/* Selo de qualidade */}
                 <div className="bg-gold/5 border border-gold/20 rounded-card p-4 text-center">
                   <Star className="w-5 h-5 text-gold mx-auto mb-1" strokeWidth={2} />
                   <p className="text-xs font-medium text-dark-light">Qualidade Premium</p>
@@ -207,7 +203,7 @@ function LojaContent() {
             </div>
           </aside>
 
-          {/* CONTEÚDO PRINCIPAL */}
+          {/* ÁREA DE PRODUTOS */}
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12">
               <div className="w-full sm:max-w-xs">
@@ -307,7 +303,7 @@ function LojaContent() {
         </div>
       </div>
 
-      {/* FILTRO MOBILE DRAWER */}
+      {/* FILTRO MOBILE DRAWER (inalterado) */}
       {sidebarAberta && (
         <>
           <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setSidebarAberta(false)} />
