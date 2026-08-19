@@ -106,15 +106,15 @@ function LojaContent() {
   return (
     <div className="min-h-screen bg-white">
       {/* ============================================================ */}
-      {/* CABEÇALHO DA COLEÇÃO - Bloco editorial controlado */}
+      {/* CABEÇALHO - Versão clara e editorial */}
       {/* ============================================================ */}
-      <section className="bg-primary-dark border-b border-secondary-gray/20 py-14 md:py-16">
+      <section className="bg-white border-b border-secondary-gray/20 py-12 md:py-14">
         <div className="mx-auto flex w-full max-w-[1440px] justify-center px-6">
           <div className="flex w-full max-w-[620px] flex-col items-center text-center">
-            <h1 className="font-serif text-[30px] font-semibold leading-tight text-white md:text-[36px]">
+            <h1 className="font-serif text-[30px] font-semibold leading-tight text-dark-light md:text-[36px]">
               Nossa Coleção
             </h1>
-            <p className="mt-3 max-w-[520px] text-sm font-light leading-relaxed text-white/80 md:text-base">
+            <p className="mt-3 max-w-[520px] text-sm font-light leading-relaxed text-text-secondary md:text-base">
               Explore nossos tecidos selecionados com a elegância que você merece.
             </p>
           </div>
@@ -122,7 +122,7 @@ function LojaContent() {
       </section>
 
       {/* ============================================================ */}
-      {/* CONTEÚDO PRINCIPAL - Mantido intacto */}
+      {/* CONTEÚDO PRINCIPAL */}
       {/* ============================================================ */}
       <div className="w-full max-w-[1440px] mx-auto px-6 py-16 md:py-20">
         <div className="flex gap-8 lg:gap-12">
