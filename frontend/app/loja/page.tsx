@@ -106,7 +106,7 @@ function LojaContent() {
   return (
     <div className="min-h-screen bg-white">
       {/* ============================================================ */}
-      {/* CABEÇALHO - REMOVIDA A COLUNA FANTASMA */}
+      {/* CABEÇALHO - Simplificado, sem caixas ou estruturas artificiais */}
       {/* ============================================================ */}
       <div className="bg-primary-dark border-b border-secondary-gray/20 py-16 md:py-20">
         <div className="w-full max-w-[1440px] mx-auto px-6 text-center">
@@ -136,6 +136,7 @@ function LojaContent() {
                 onCategoriaChange={handleCategoriaChange}
                 limparFiltros={limparFiltros}
               />
+
               <div className="mt-8 pt-6 border-t border-gray-mid/30 space-y-6">
                 {categoriasPopulares.length > 0 && (
                   <div>
@@ -157,6 +158,7 @@ function LojaContent() {
                     </ul>
                   </div>
                 )}
+
                 <div>
                   <h4 className="text-xs font-primary font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
                     <Sparkles className="w-3.5 h-3.5" strokeWidth={2} />
@@ -194,6 +196,7 @@ function LojaContent() {
                     Ver todos →
                   </Link>
                 </div>
+
                 <div className="bg-gold/5 border border-gold/20 rounded-card p-4 text-center">
                   <Star className="w-5 h-5 text-gold mx-auto mb-1" strokeWidth={2} />
                   <p className="text-xs font-medium text-dark-light">Qualidade Premium</p>
