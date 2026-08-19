@@ -41,21 +41,16 @@ export default function ProductCard({ produto }: { produto?: any }) {
   const estoque = typeof produto.estoque === 'number' ? produto.estoque : 0;
   const descontoPercentual = precoOriginal && precoOriginal > preco ? Math.round(((precoOriginal - preco) / precoOriginal) * 100) : 0;
 
-  // ✅ CORREÇÃO: Verifica se é um ObjectId (24 caracteres hex) e ignora
   const isObjectId = (str: string) => /^[0-9a-fA-F]{24}$/.test(str);
-
   let categoriaLabel = null;
   if (produto.categoria && typeof produto.categoria === 'object') {
-    // Se for um objeto, tenta pegar o nome
     categoriaLabel = produto.categoria.nome || null;
   } else if (typeof produto.categoria === 'string') {
-    // Se for string, só mostra se NÃO for um ID do MongoDB
     if (!isObjectId(produto.categoria)) {
       categoriaLabel = produto.categoria;
     }
   }
 
-  // Composição: se existir nos atributos
   const composicao = produto.atributos?.composicao || null;
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -78,10 +73,12 @@ export default function ProductCard({ produto }: { produto?: any }) {
         hover:-translate-y-[4px]
         transition-all duration-300 ease-out
         flex flex-col
+        w-full max-w-full
       "
     >
-      <Link href={`/produto/${id}`} className="block relative">
-        <div className="relative aspect-[3/4] overflow-hidden bg-[#fcfcfc] rounded-t-2xl">
+      <Link href={`/produto/${id}`} className="block relative flex flex-col flex-1">
+        {/* Imagem - aspect ajustado para [4/5] */}
+        <div className="relative aspect-[4/5] overflow-hidden bg-[#fcfcfc] rounded-t-2xl flex-shrink-0">
           <img
             src={displayImage}
             alt={nome}
@@ -109,42 +106,48 @@ export default function ProductCard({ produto }: { produto?: any }) {
           </div>
         </div>
 
+        {/* Conteúdo - padding reduzido e espaçamentos ajustados */}
         <div className="p-4 md:p-5 flex flex-col flex-1">
-          {/* Categoria (11px) - CORRIGIDO PARA NÃO MOSTRAR IDs */}
+          {/* Categoria */}
           {categoriaLabel && (
             <span className="text-[11px] uppercase tracking-wider text-text-light font-medium mb-1">
               {categoriaLabel}
             </span>
           )}
 
-          {/* Nome (15px/16px) */}
+          {/* Nome */}
           <h3 className="font-serif font-normal text-[15px] md:text-[16px] leading-tight tracking-wide text-primary-dark !text-primary-dark line-clamp-2 mb-1">
             {nome}
           </h3>
 
-          {/* Composição (12px) */}
+          {/* Composição */}
           {composicao && (
-            <p className="text-[12px] text-text-secondary font-light mb-2">
+            <p className="text-[12px] text-text-secondary font-light mb-2.5">
               {composicao}
             </p>
           )}
 
           {/* Grupo de preço */}
-          <div className="flex flex-col gap-0.5 mb-0.5">
+          <div className="flex flex-col gap-0.5 mb-1">
             {precoOriginal && (
               <span className="text-[13px] text-text-light line-through font-light">
                 R$ {precoOriginal.toFixed(2)}
               </span>
             )}
-            <div className="flex items-baseline gap-2">
+            <div className="flex items-baseline gap-3 flex-wrap">
               <span className="font-serif text-[20px] md:text-[22px] font-bold text-metallic-navy">
                 R$ {preco.toFixed(2)}
               </span>
+              {descontoPercentual > 0 && (
+                <span className="text-[14px] font-medium text-error bg-error/5 px-2 py-0.5 rounded">
+                  −{descontoPercentual}%
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Parcelamento (13px) */}
-          <p className="text-[13px] text-text-light font-light mt-0.5">
+          {/* Parcelamento */}
+          <p className="text-[13px] text-text-light font-light">
             3x de R$ {(preco / 3).toFixed(2)}
           </p>
 
@@ -155,8 +158,8 @@ export default function ProductCard({ produto }: { produto?: any }) {
             </p>
           )}
 
-          {/* Botão com mt-auto para alinhar na base */}
-          <div className="mt-auto pt-2" onClick={(e) => e.stopPropagation()}>
+          {/* Botão - altura e padding ajustados */}
+          <div className="mt-auto pt-2.5" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={handleAddToCart}
               disabled={estoque <= 0}
