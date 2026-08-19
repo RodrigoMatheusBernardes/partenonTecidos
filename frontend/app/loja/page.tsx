@@ -119,9 +119,12 @@ function LojaContent() {
         </div>
       </section>
 
-      {/* CONTEÚDO PRINCIPAL - Ajustes aplicados */}
-      <div className="w-full max-w-[1440px] mx-auto px-6 pb-20 md:pb-28">
-        <div className="flex gap-8 lg:gap-12 pt-24 md:pt-28">
+      {/* ============================================================ */}
+      {/* CONTEÚDO PRINCIPAL - COM AS DUAS CORREÇÕES DE ESPAÇAMENTO */}
+      {/* ============================================================ */}
+      <div className="w-full max-w-[1440px] mx-auto px-6 pb-20 md:pb-24">
+        {/* ✅ Alteração 1: pt-5 substitui pt-14 md:pt-16 (20px de respiro) */}
+        <div className="flex gap-8 lg:gap-12 pt-5">
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
               <FiltersSidebar
@@ -205,7 +208,8 @@ function LojaContent() {
           </aside>
 
           <div className="flex-1 min-w-0">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
+            {/* ✅ Alteração 2: mb-5 substitui mb-6 md:mb-8 (20px de respiro antes dos produtos) */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
               <div className="w-full sm:max-w-xs">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
               </div>
@@ -265,9 +269,8 @@ function LojaContent() {
                   ))}
                 </div>
 
-                {/* Paginação - mb ajustado */}
                 {totalPaginas > 1 && (
-                  <div className="mt-16 flex flex-wrap items-center justify-center gap-2 mb-12 md:mb-16">
+                  <div className="mt-16 flex flex-wrap items-center justify-center gap-2 mb-24">
                     <button
                       onClick={() => { setPagina(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                       disabled={pagina === 1}
