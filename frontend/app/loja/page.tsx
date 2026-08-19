@@ -104,7 +104,7 @@ function LojaContent() {
   const categoriasPopulares = categorias.slice(0, 5);
 
   return (
-    <main className="min-h-screen bg-white pb-28"> {/* pb-24 → pb-28 */}
+    <main className="min-h-screen bg-white">
       {/* HERO DA LOJA — Container 1440px */}
       <div className="bg-light border-b border-gray-mid py-16 md:py-20">
         <div className="w-full max-w-[1440px] mx-auto px-6 text-center">
@@ -302,6 +302,9 @@ function LojaContent() {
           </div>
         </div>
       </div>
+
+      {/* Espaço extra antes do Footer */}
+      <div className="pt-16 md:pt-24" aria-hidden="true" />
 
       {/* FILTRO MOBILE DRAWER (inalterado) */}
       {sidebarAberta && (
