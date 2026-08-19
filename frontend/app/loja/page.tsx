@@ -104,20 +104,33 @@ function LojaContent() {
   const categoriasPopulares = categorias.slice(0, 5);
 
   return (
-    <main className="min-h-screen bg-white">
-      {/* HERO DA LOJA — Container 1440px */}
-      <div className="bg-light border-b border-gray-mid py-16 md:py-20">
-        <div className="w-full max-w-[1440px] mx-auto px-6 text-center">
-          <h1 className="font-serif font-semibold text-[30px] md:text-[36px] text-metallic-navy tracking-wide mb-3">
-            Nossa Coleção
-          </h1>
-          <p className="text-text-secondary text-sm md:text-base max-w-lg mx-auto">
-            Explore nossos tecidos selecionados com a elegância que você merece.
-          </p>
+    <div className="min-h-screen bg-white pb-24">
+      {/* ============================================================ */}
+      {/* CABEÇALHO - AGORA ALINHADO COM A ÁREA DE PRODUTOS */}
+      {/* ============================================================ */}
+      <div className="bg-primary-dark border-b border-secondary-gray/20 py-16 md:py-20">
+        <div className="w-full max-w-[1440px] mx-auto px-6">
+          <div className="flex gap-8 lg:gap-12">
+            {/* Coluna fantasma para alinhar com a Sidebar */}
+            <div className="hidden lg:block w-[280px] flex-shrink-0" />
+            
+            {/* Conteúdo do Cabeçalho - Centralizado na área de produtos */}
+            <div className="flex-1 min-w-0 text-center">
+              <h1 className="font-serif font-semibold text-[30px] md:text-[36px] text-white tracking-wide mb-3">
+                Nossa Coleção
+              </h1>
+              {/* CORRIGIDO: Cor alterada para branco transparente */}
+              <p className="text-white/80 text-sm md:text-base max-w-lg mx-auto font-light">
+                Explore nossos tecidos selecionados com a elegância que você merece.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* CONTEÚDO PRINCIPAL — Container 1440px */}
+      {/* ============================================================ */}
+      {/* CONTEÚDO PRINCIPAL - GRID E SIDEBAR */}
+      {/* ============================================================ */}
       <div className="w-full max-w-[1440px] mx-auto px-6 py-16 md:py-20">
         <div className="flex gap-8 lg:gap-12">
           {/* SIDEBAR */}
@@ -266,7 +279,8 @@ function LojaContent() {
                 </div>
 
                 {totalPaginas > 1 && (
-                  <div className="mt-16 flex flex-wrap items-center justify-center gap-2">
+                  {/* CORREÇÃO DE ESPAÇAMENTO: mb-24 aplicado aqui para gerar espaço antes do Footer */}
+                  <div className="mt-16 flex flex-wrap items-center justify-center gap-2 mb-24">
                     <button
                       onClick={() => { setPagina(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                       disabled={pagina === 1}
@@ -303,9 +317,6 @@ function LojaContent() {
         </div>
       </div>
 
-      {/* Espaço extra antes do Footer */}
-      <div className="pt-16 md:pt-24" aria-hidden="true" />
-
       {/* FILTRO MOBILE DRAWER (inalterado) */}
       {sidebarAberta && (
         <>
@@ -333,7 +344,7 @@ function LojaContent() {
           </div>
         </>
       )}
-    </main>
+    </div>
   );
 }
 
