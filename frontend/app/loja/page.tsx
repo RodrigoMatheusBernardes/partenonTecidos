@@ -106,9 +106,9 @@ function LojaContent() {
   return (
     <div className="min-h-screen bg-white">
       {/* ============================================================ */}
-      {/* CABEÇALHO - Versão clara e editorial */}
+      {/* CABEÇALHO - Levemente mais compacto */}
       {/* ============================================================ */}
-      <section className="bg-white border-b border-secondary-gray/20 py-12 md:py-14">
+      <section className="bg-white border-b border-secondary-gray/20 py-10 md:py-12">
         <div className="mx-auto flex w-full max-w-[1440px] justify-center px-6">
           <div className="flex w-full max-w-[620px] flex-col items-center text-center">
             <h1 className="font-serif text-[30px] font-semibold leading-tight text-dark-light md:text-[36px]">
@@ -122,9 +122,9 @@ function LojaContent() {
       </section>
 
       {/* ============================================================ */}
-      {/* CONTEÚDO PRINCIPAL */}
+      {/* CONTEÚDO PRINCIPAL - Padding assimétrico */}
       {/* ============================================================ */}
-      <div className="w-full max-w-[1440px] mx-auto px-6 py-16 md:py-20">
+      <div className="w-full max-w-[1440px] mx-auto px-6 pt-14 md:pt-16 pb-16 md:pb-20">
         <div className="flex gap-8 lg:gap-12">
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
