@@ -105,9 +105,9 @@ function LojaContent() {
 
   return (
     <main className="min-h-screen bg-white pb-24">
-      {/* HERO DA LOJA (mantido com main-container) */}
+      {/* HERO DA LOJA — AGORA COM O MESMO CONTAINER DE 1440px */}
       <div className="bg-light border-b border-gray-mid py-16 md:py-20">
-        <div className="main-container text-center">
+        <div className="w-full max-w-[1440px] mx-auto px-6 text-center">
           <h1 className="font-serif font-semibold text-[30px] md:text-[36px] text-metallic-navy tracking-wide mb-3">
             Nossa Coleção
           </h1>
@@ -117,7 +117,7 @@ function LojaContent() {
         </div>
       </div>
 
-      {/* CONTEÚDO PRINCIPAL — NOVO CONTAINER COM 1440px */}
+      {/* CONTEÚDO PRINCIPAL — MANTIDO COM 1440px */}
       <div className="w-full max-w-[1440px] mx-auto px-6 py-16 md:py-20">
         <div className="flex gap-8 lg:gap-12">
           {/* SIDEBAR */}
