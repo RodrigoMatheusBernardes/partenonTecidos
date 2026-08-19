@@ -104,8 +104,8 @@ function LojaContent() {
   const categoriasPopulares = categorias.slice(0, 5);
 
   return (
-    <main className="min-h-screen bg-white pb-24">
-      {/* HERO DA LOJA — AGORA COM O MESMO CONTAINER DE 1440px */}
+    <main className="min-h-screen bg-white pb-28"> {/* pb-24 → pb-28 */}
+      {/* HERO DA LOJA — Container 1440px */}
       <div className="bg-light border-b border-gray-mid py-16 md:py-20">
         <div className="w-full max-w-[1440px] mx-auto px-6 text-center">
           <h1 className="font-serif font-semibold text-[30px] md:text-[36px] text-metallic-navy tracking-wide mb-3">
@@ -117,7 +117,7 @@ function LojaContent() {
         </div>
       </div>
 
-      {/* CONTEÚDO PRINCIPAL — MANTIDO COM 1440px */}
+      {/* CONTEÚDO PRINCIPAL — Container 1440px */}
       <div className="w-full max-w-[1440px] mx-auto px-6 py-16 md:py-20">
         <div className="flex gap-8 lg:gap-12">
           {/* SIDEBAR */}
