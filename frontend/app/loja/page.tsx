@@ -122,10 +122,12 @@ function LojaContent() {
       </section>
 
       {/* ============================================================ */}
-      {/* CONTEÚDO PRINCIPAL - Versão refatorada e limpa */}
+      {/* CONTEÚDO PRINCIPAL - Ajustes finais de espaçamento */}
       {/* ============================================================ */}
       <div className="w-full max-w-[1440px] mx-auto px-6 pb-24 md:pb-28">
-        <div className="flex gap-8 lg:gap-12 pt-16 md:pt-24">
+        
+        {/* ✅ ALTERAÇÃO 1: pt-8 md:pt-10 (32px mobile / 40px desktop) */}
+        <div className="flex gap-8 lg:gap-12 pt-8 md:pt-10">
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
               <FiltersSidebar
@@ -209,7 +211,8 @@ function LojaContent() {
           </aside>
 
           <div className="flex-1 min-w-0">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
+            {/* ✅ ALTERAÇÃO 2: mb-8 md:mb-10 (32px mobile / 40px desktop) */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-10">
               <div className="w-full sm:max-w-xs">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
               </div>
@@ -269,7 +272,7 @@ function LojaContent() {
                   ))}
                 </div>
 
-                {/* PAGINAÇÃO - Com espaçamento ajustado */}
+                {/* PAGINAÇÃO - Mantida como estava (mt-12 / mb-8 md:mb-12) */}
                 {totalPaginas > 1 && (
                   <div className="mt-12 flex flex-wrap items-center justify-center gap-2 mb-8 md:mb-12">
                     <button
