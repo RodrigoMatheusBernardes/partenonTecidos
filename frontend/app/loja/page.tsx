@@ -125,7 +125,7 @@ function LojaContent() {
       {/* CONTEÚDO PRINCIPAL - Versão refatorada e limpa */}
       {/* ============================================================ */}
       <div className="w-full max-w-[1440px] mx-auto px-6 pb-24 md:pb-28">
-        <div className="flex gap-8 lg:gap-12 pt-16 md:pt-24">
+        <div className="flex gap-8 lg:gap-12 pt-5 md:pt-24">
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
               <FiltersSidebar
