@@ -210,9 +210,9 @@ function LojaContent() {
           </aside>
 
           <div className="flex-1 min-w-0">
-            {/* Espaço entre controles e grid - ajustado para maior respiro */}
+            {/* Toolbar: SearchBar expandida + controles à direita */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-10">
-              <div className="w-full sm:max-w-xs">
+              <div className="w-full sm:flex-1 min-w-0">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
               </div>
               <div className="flex items-center gap-3 w-full sm:w-auto">
