@@ -7,7 +7,6 @@ import { extractDataArray, getApiUrl } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import FiltersSidebar from '@/components/FiltersSidebar';
 import SearchBar from '@/components/SearchBar';
-import TrendingBar from '@/components/TrendingBar';
 import { SlidersHorizontal, Tag, Sparkles, Star } from 'lucide-react';
 import Link from 'next/link';
 
@@ -211,9 +210,9 @@ function LojaContent() {
 
           <div className="flex-1 min-w-0">
             {/* ============================================================ */}
-            {/* NÍVEL 1 – SEARCHBAR (linha independente) */}
+            {/* NÍVEL 1 – SEARCHBAR (linha independente, largura total) */}
             {/* ============================================================ */}
-            <div className="w-full max-w-2xl mb-4 md:mb-5">
+            <div className="w-full mb-4 md:mb-5">
               <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
             </div>
 
