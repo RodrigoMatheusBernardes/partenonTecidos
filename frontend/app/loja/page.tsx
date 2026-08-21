@@ -122,7 +122,7 @@ function LojaContent() {
       </section>
 
       {/* ============================================================ */}
-      {/* CONTEÚDO PRINCIPAL - Sistema de espaçamento aplicado */}
+      {/* CONTEÚDO PRINCIPAL - Nova hierarquia de toolbar */}
       {/* ============================================================ */}
       <div className="w-full max-w-[1440px] mx-auto px-6 pb-6 md:pb-8">
         {/* Espaço moderado entre cabeçalho e catálogo */}
@@ -210,40 +210,47 @@ function LojaContent() {
           </aside>
 
           <div className="flex-1 min-w-0">
-            {/* Toolbar: SearchBar expandida + controles à direita */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-10">
-              <div className="w-full sm:flex-1 min-w-0">
-                <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
-              </div>
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <button
-                  onClick={() => setSidebarAberta(true)}
-                  className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-mid rounded-button text-sm font-medium text-dark-light hover:bg-light hover:border-[#0B1F33] transition-all"
-                >
-                  <SlidersHorizontal className="w-4 h-4" strokeWidth={2} />
-                  Filtros
-                  {activeFilters > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-metallic-navy text-white text-xs flex items-center justify-center font-bold">
-                      {activeFilters}
-                    </span>
-                  )}
-                </button>
-                <p className="text-sm text-text-secondary font-medium whitespace-nowrap ml-auto sm:ml-0">
-                  {produtosFiltrados.length} produto{produtosFiltrados.length !== 1 ? 's' : ''}
-                </p>
-                <select
-                  value={ordenacao}
-                  onChange={e => { setOrdenacao(e.target.value); setPagina(1); }}
-                  className="border border-gray-mid rounded-button px-4 py-2.5 text-sm font-medium bg-white text-dark-light focus:outline-none focus:ring-2 focus:ring-gold transition"
-                >
-                  <option value="">Mais relevantes</option>
-                  <option value="menor-preco">Menor Preço</option>
-                  <option value="maior-preco">Maior Preço</option>
-                  <option value="nome">Nome (A-Z)</option>
-                </select>
-              </div>
+            {/* ============================================================ */}
+            {/* NÍVEL 1 – SEARCHBAR (linha independente) */}
+            {/* ============================================================ */}
+            <div className="w-full max-w-2xl mb-4 md:mb-5">
+              <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
             </div>
 
+            {/* ============================================================ */}
+            {/* NÍVEL 2 – CONTROLES (filtros, quantidade, ordenação) */}
+            {/* ============================================================ */}
+            <div className="flex flex-wrap items-center gap-3 mb-8 md:mb-10">
+              <button
+                onClick={() => setSidebarAberta(true)}
+                className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-mid rounded-button text-sm font-medium text-dark-light hover:bg-light hover:border-[#0B1F33] transition-all"
+              >
+                <SlidersHorizontal className="w-4 h-4" strokeWidth={2} />
+                Filtros
+                {activeFilters > 0 && (
+                  <span className="w-5 h-5 rounded-full bg-metallic-navy text-white text-xs flex items-center justify-center font-bold">
+                    {activeFilters}
+                  </span>
+                )}
+              </button>
+              <p className="text-sm text-text-secondary font-medium whitespace-nowrap">
+                {produtosFiltrados.length} produto{produtosFiltrados.length !== 1 ? 's' : ''}
+              </p>
+              <select
+                value={ordenacao}
+                onChange={e => { setOrdenacao(e.target.value); setPagina(1); }}
+                className="border border-gray-mid rounded-button px-4 py-2.5 text-sm font-medium bg-white text-dark-light focus:outline-none focus:ring-2 focus:ring-gold transition"
+              >
+                <option value="">Mais relevantes</option>
+                <option value="menor-preco">Menor Preço</option>
+                <option value="maior-preco">Maior Preço</option>
+                <option value="nome">Nome (A-Z)</option>
+              </select>
+            </div>
+
+            {/* ============================================================ */}
+            {/* NÍVEL 3 – PRODUCT GRID */}
+            {/* ============================================================ */}
             {carregando ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                 {Array.from({ length: 8 }).map((_, i) => (
@@ -271,7 +278,7 @@ function LojaContent() {
                   ))}
                 </div>
 
-                {/* Paginação - com espaçamento equilibrado */}
+                {/* Paginação */}
                 {totalPaginas > 1 && (
                   <div className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-2 mb-3 md:mb-4">
                     <button
