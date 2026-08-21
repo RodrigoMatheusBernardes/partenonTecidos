@@ -250,34 +250,42 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                <div className="w-full sm:max-w-md">
-                  <SearchBar
-                    value={busca}
-                    onChange={setBusca}
-                    onSearch={handleSearch}
-                  />
-                </div>
-                <div className="flex items-center gap-3">
-                  <p className="text-sm text-text-secondary font-light whitespace-nowrap">
-                    {produtosFiltrados.length} produto(s)
-                  </p>
-                  <select
-                    value={ordenacao}
-                    onChange={e => {
-                      setOrdenacao(e.target.value);
-                      setPagina(1);
-                    }}
-                    className="border border-gray-mid rounded-lg px-3 py-2 text-sm bg-white text-dark-light font-light focus:outline-none focus:ring-1 focus:ring-gold"
-                  >
-                    <option value="">Mais relevantes</option>
-                    <option value="menor-preco">Menor Preço</option>
-                    <option value="maior-preco">Maior Preço</option>
-                    <option value="nome">Nome (A-Z)</option>
-                  </select>
-                </div>
+              {/* ============================================================ */}
+              {/* NÍVEL 1 – SEARCHBAR (largura total, sem max-w-md) */}
+              {/* ============================================================ */}
+              <div className="w-full">
+                <SearchBar
+                  value={busca}
+                  onChange={setBusca}
+                  onSearch={handleSearch}
+                />
               </div>
 
+              {/* ============================================================ */}
+              {/* NÍVEL 2 – CONTROLES (quantidade + select, alinhados à direita) */}
+              {/* ============================================================ */}
+              <div className="flex items-center justify-end gap-3 mt-5">
+                <p className="text-sm text-text-secondary font-light whitespace-nowrap">
+                  {produtosFiltrados.length} produto(s)
+                </p>
+                <select
+                  value={ordenacao}
+                  onChange={e => {
+                    setOrdenacao(e.target.value);
+                    setPagina(1);
+                  }}
+                  className="border border-gray-mid rounded-lg px-3 py-2 text-sm bg-white text-dark-light font-light focus:outline-none focus:ring-1 focus:ring-gold"
+                >
+                  <option value="">Mais relevantes</option>
+                  <option value="menor-preco">Menor Preço</option>
+                  <option value="maior-preco">Maior Preço</option>
+                  <option value="nome">Nome (A-Z)</option>
+                </select>
+              </div>
+
+              {/* ============================================================ */}
+              {/* NÍVEL 3 – PRODUCT GRID (com respiro dos controles) */}
+              {/* ============================================================ */}
               {carregando ? (
                 <div className="col-span-full flex justify-center items-center min-h-[50vh] py-12">
                   <div className="w-12 h-12 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
@@ -294,7 +302,7 @@ export default function Home() {
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mt-6">
                     {paginaAtual.map(produto => (
                       <ProductCard key={produto._id} produto={produto} />
                     ))}
