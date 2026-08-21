@@ -211,7 +211,7 @@ function LojaContent() {
             {/* ============================================================ */}
             {/* NÍVEL 1 – SEARCHBAR (largura total) */}
             {/* ============================================================ */}
-            <div className="w-full mb-5 md:mb-6">
+            <div className="w-full mb-4 md:mb-5">
               <SearchBar
                 value={busca}
                 onChange={v => {
@@ -224,7 +224,7 @@ function LojaContent() {
             {/* ============================================================ */}
             {/* NÍVEL 2 – CONTROLES (alinhados à direita) */}
             {/* ============================================================ */}
-            <div className="flex flex-wrap items-center justify-end gap-3 mb-6 md:mb-8">
+            <div className="flex flex-wrap items-center justify-end gap-3 mb-5 md:mb-6">
               <button
                 onClick={() => setSidebarAberta(true)}
                 className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-mid rounded-button text-sm font-medium text-dark-light hover:bg-light hover:border-[#0B1F33] transition-all"
