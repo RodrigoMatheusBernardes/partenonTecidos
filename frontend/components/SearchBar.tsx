@@ -1,7 +1,6 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import Button from '@/components/ui/Button';
 
 interface SearchBarProps {
   value?: string;
@@ -15,7 +14,7 @@ export default function SearchBar({
   value,
   onChange,
   onSearch,
-  placeholder = 'Buscar tecidos...',
+  placeholder = 'Buscar tecidos, coleções...',
   className = '',
 }: SearchBarProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,12 +39,15 @@ export default function SearchBar({
     <form
       onSubmit={handleSubmit}
       className={`
-        flex items-center gap-3
-        bg-light rounded-full
-        border border-gray-mid
-        px-4 py-2.5 md:px-5 md:py-3
-        transition-all duration-300
-        focus-within:border-dark-light focus-within:shadow-md-luxury
+        flex items-center
+        bg-white
+        border border-[#d1d1d1]
+        rounded-full
+        px-4
+        py-2 md:py-2.5
+        transition-all duration-200
+        focus-within:border-[#0B1742]
+        focus-within:shadow-[0_2px_12px_rgba(11,23,66,0.06)]
         ${className}
       `}
     >
@@ -55,18 +57,33 @@ export default function SearchBar({
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="flex-1 bg-transparent text-sm font-medium outline-none placeholder:text-text-light"
+        className="
+          flex-1
+          bg-transparent
+          border-none
+          outline-none
+          text-sm
+          font-medium
+          text-[#1a1a1a]
+          placeholder:text-[#8a8a8a]
+          min-w-0
+        "
         aria-label="Buscar produtos"
       />
-      <Button
+      <button
         type="submit"
-        variant="ghost"
-        size="sm"
-        className="!p-2 !h-auto !w-auto text-text-secondary hover:text-gold"
+        className="
+          flex-shrink-0
+          text-[#8a8a8a]
+          hover:text-[#0B1742]
+          transition-colors
+          duration-200
+          ml-2
+        "
         aria-label="Pesquisar"
       >
         <Search className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2} />
-      </Button>
+      </button>
     </form>
   );
 }
