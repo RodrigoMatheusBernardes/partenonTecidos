@@ -51,9 +51,9 @@ export default function TrendingBar() {
 
   if (loading) {
     return (
-      <div className="w-full py-16 md:py-20">
+      <div className="w-full py-6 md:py-8">
         <div className="main-container">
-          <div className="text-center mb-8 md:mb-10">
+          <div className="text-center mb-4 md:mb-6">
             <h2 className="font-primary font-bold text-[20px] md:text-[24px] text-metallic-navy">
               Produtos em Alta
             </h2>
@@ -75,9 +75,9 @@ export default function TrendingBar() {
   const produtosVisiveis = produtos.slice(currentIndex, currentIndex + itemsPerView);
 
   return (
-    <div className="w-full py-16 md:py-20">
+    <div className="w-full py-6 md:py-8">
       <div className="main-container">
-        <div className="text-center mb-8 md:mb-10">
+        <div className="text-center mb-4 md:mb-6">
           <h2 className="font-primary font-bold text-[20px] md:text-[24px] text-metallic-navy">
             Produtos em Alta
           </h2>
@@ -87,7 +87,6 @@ export default function TrendingBar() {
         </div>
 
         <div className="relative">
-          {/* Setas de navegação */}
           {produtos.length > itemsPerView && (
             <>
               <button
@@ -121,7 +120,6 @@ export default function TrendingBar() {
             </>
           )}
 
-          {/* Grid de produtos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
             {produtosVisiveis.map((produto) => (
               <ProductCard key={produto._id} produto={produto} />
@@ -130,7 +128,7 @@ export default function TrendingBar() {
         </div>
 
         {maxIndex > 0 && (
-          <div className="flex justify-center mt-8 gap-2">
+          <div className="flex justify-center mt-6 gap-2">
             {Array.from({ length: maxIndex + 1 }).map((_, i) => (
               <button
                 key={i}
