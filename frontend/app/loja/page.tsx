@@ -108,7 +108,7 @@ function LojaContent() {
       {/* ============================================================ */}
       {/* CABEÇALHO - Compactado */}
       {/* ============================================================ */}
-      <section className="bg-white border-b border-secondary-gray/20 pt-5 md:pt-6 pb-4 md:pb-5">
+      <section className="bg-white border-b border-secondary-gray/20 pt-5 md:pt-6 pb-3 md:pb-4">
         <div className="mx-auto flex w-full max-w-[1440px] justify-center px-6">
           <div className="flex w-full max-w-[620px] flex-col items-center text-center">
             <h1 className="font-serif text-[30px] font-semibold leading-tight text-dark-light md:text-[36px]">
@@ -124,9 +124,9 @@ function LojaContent() {
       {/* ============================================================ */}
       {/* CONTEÚDO PRINCIPAL - Sistema de espaçamento aplicado */}
       {/* ============================================================ */}
-      <div className="w-full max-w-[1440px] mx-auto px-6 pb-8 md:pb-10">
+      <div className="w-full max-w-[1440px] mx-auto px-6 pb-6 md:pb-8">
         {/* Espaço moderado entre cabeçalho e catálogo */}
-        <div className="flex gap-8 lg:gap-12 pt-5 md:pt-6">
+        <div className="flex gap-8 lg:gap-12 pt-4 md:pt-5">
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
               <FiltersSidebar
@@ -211,7 +211,7 @@ function LojaContent() {
 
           <div className="flex-1 min-w-0">
             {/* Espaço moderado entre controles e grid - agora com respiro adequado */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-7 md:mb-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
               <div className="w-full sm:max-w-xs">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
               </div>
