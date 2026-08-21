@@ -132,7 +132,7 @@ export default function Home() {
     <>
       <HeroVideo />
 
-      <section className="w-full bg-[#F7F7F7] py-16 md:py-20">
+      <section className="w-full bg-[#F7F7F7] py-8 md:py-10">
         <div className="main-container">
           <div className="flex flex-col md:flex-row gap-8">
             
@@ -231,7 +231,7 @@ export default function Home() {
             <div className="flex-1">
               {!temFiltroAtivo && <TrendingBar />}
 
-              <div className="text-center mb-6 md:mb-10">
+              <div className="text-center mb-5 md:mb-7">
                 <h2 className="font-serif font-light text-[24px] md:text-[28px] text-metallic-navy">
                   Nossa Coleção
                 </h2>
