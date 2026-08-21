@@ -229,11 +229,7 @@ export default function Home() {
             </aside>
 
             <div className="flex-1">
-              {!temFiltroAtivo && (
-                <div className="mb-8 md:mb-10">
-                  <TrendingBar />
-                </div>
-              )}
+              {!temFiltroAtivo && <TrendingBar />}
 
               <div className="text-center mb-6 md:mb-10">
                 <h2 className="font-serif font-light text-[24px] md:text-[28px] text-metallic-navy">
