@@ -104,9 +104,7 @@ function LojaContent() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* ============================================================ */}
       {/* CABEÇALHO */}
-      {/* ============================================================ */}
       <section className="bg-white border-b border-secondary-gray/20 pt-5 md:pt-6 pb-3 md:pb-4">
         <div className="mx-auto flex w-full max-w-[1440px] justify-center px-6">
           <div className="flex w-full max-w-[620px] flex-col items-center text-center">
@@ -120,11 +118,10 @@ function LojaContent() {
         </div>
       </section>
 
-      {/* ============================================================ */}
       {/* CONTEÚDO PRINCIPAL */}
-      {/* ============================================================ */}
       <div className="w-full max-w-[1440px] mx-auto px-6 pb-6 md:pb-8">
         <div className="flex gap-8 lg:gap-12 pt-4 md:pt-5">
+          {/* SIDEBAR */}
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-8">
               <FiltersSidebar
@@ -207,11 +204,10 @@ function LojaContent() {
             </div>
           </aside>
 
+          {/* ÁREA DE CONTEÚDO */}
           <div className="flex-1 min-w-0">
-            {/* ============================================================ */}
-            {/* NÍVEL 1 – SEARCHBAR (largura total) */}
-            {/* ============================================================ */}
-            <div className="w-full mb-4 md:mb-5">
+            {/* SEARCHBAR – sem margem inferior (o espaço virá do padding/margem dos controles) */}
+            <div className="w-full">
               <SearchBar
                 value={busca}
                 onChange={v => {
@@ -221,10 +217,8 @@ function LojaContent() {
               />
             </div>
 
-            {/* ============================================================ */}
-            {/* NÍVEL 2 – CONTROLES (alinhados à direita) */}
-            {/* ============================================================ */}
-            <div className="flex flex-wrap items-center justify-end gap-3 mb-5 md:mb-6">
+            {/* CONTROLES – com margem superior e inferior para criar os respiros */}
+            <div className="flex flex-wrap items-center justify-end gap-3 mt-6 md:mt-7 mb-6 md:mb-8 pt-1">
               <button
                 onClick={() => setSidebarAberta(true)}
                 className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-mid rounded-button text-sm font-medium text-dark-light hover:bg-light hover:border-[#0B1F33] transition-all"
@@ -252,9 +246,7 @@ function LojaContent() {
               </select>
             </div>
 
-            {/* ============================================================ */}
-            {/* NÍVEL 3 – PRODUCT GRID */}
-            {/* ============================================================ */}
+            {/* PRODUCT GRID */}
             {carregando ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                 {Array.from({ length: 8 }).map((_, i) => (
