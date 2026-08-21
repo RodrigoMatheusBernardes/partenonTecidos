@@ -159,10 +159,7 @@ export default function Home() {
                   limparFiltros={limparFiltros}
                 />
 
-                {/* CONTEÚDO ABAIXO DO FILTRO */}
                 <div className="mt-8 pt-6 border-t border-gray-mid/30 space-y-6">
-                  
-                  {/* Categorias Populares */}
                   {categorias.length > 0 && (
                     <div>
                       <h4 className="text-xs font-primary font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
@@ -184,7 +181,6 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Produtos em Alta (mini versão) */}
                   <div>
                     <h4 className="text-xs font-primary font-medium uppercase tracking-wider text-text-light mb-3 flex items-center gap-2">
                       <Sparkles className="w-3.5 h-3.5" strokeWidth={2} />
@@ -223,7 +219,6 @@ export default function Home() {
                     </Link>
                   </div>
 
-                  {/* Selo de qualidade */}
                   <div className="bg-gold/5 border border-gold/20 rounded-card p-4 text-center">
                     <Star className="w-5 h-5 text-gold mx-auto mb-1" strokeWidth={2} />
                     <p className="text-xs font-medium text-dark-light">Qualidade Premium</p>
@@ -240,7 +235,6 @@ export default function Home() {
                 </div>
               )}
 
-              {/* TÍTULO "NOSSA COLEÇÃO" — REFINADO */}
               <div className="text-center mb-6 md:mb-10">
                 <h2 className="font-serif font-light text-[24px] md:text-[28px] text-metallic-navy">
                   Nossa Coleção
@@ -250,7 +244,6 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* SEARCHBAR (largura total) */}
               <div className="w-full">
                 <SearchBar
                   value={busca}
@@ -259,8 +252,7 @@ export default function Home() {
                 />
               </div>
 
-              {/* CONTROLES (quantidade + select) */}
-              <div className="flex items-center justify-end gap-3 mt-5">
+              <div className="flex items-center justify-between gap-3 mt-5">
                 <p className="text-sm text-text-secondary font-light whitespace-nowrap">
                   {produtosFiltrados.length} produto(s)
                 </p>
@@ -279,7 +271,6 @@ export default function Home() {
                 </select>
               </div>
 
-              {/* PRODUCT GRID */}
               {carregando ? (
                 <div className="col-span-full flex justify-center items-center min-h-[50vh] py-12">
                   <div className="w-12 h-12 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
@@ -363,7 +354,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SEÇÃO DE QUALIDADES */}
       <section className="py-16 md:py-20 border-t border-gray-mid">
         <div className="main-container flex flex-col justify-center min-h-[300px] md:min-h-[400px]">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 text-center">
@@ -373,37 +363,29 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="font-serif font-medium text-xl text-dark-light mb-2">
-                Qualidade Premium
-              </h3>
+              <h3 className="font-serif font-medium text-xl text-dark-light mb-2">Qualidade Premium</h3>
               <p className="text-text-secondary font-light text-sm leading-relaxed max-w-xs mx-auto">
                 Tecidos selecionados dos melhores fornecedores do mundo.
               </p>
             </div>
-
             <div className="flex flex-col items-center">
               <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mb-4">
                 <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                 </svg>
               </div>
-              <h3 className="font-serif font-medium text-xl text-dark-light mb-2">
-                Entrega Rápida
-              </h3>
+              <h3 className="font-serif font-medium text-xl text-dark-light mb-2">Entrega Rápida</h3>
               <p className="text-text-secondary font-light text-sm leading-relaxed max-w-xs mx-auto">
                 Enviamos para todo o Brasil com agilidade e segurança.
               </p>
             </div>
-
             <div className="flex flex-col items-center">
               <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mb-4">
                 <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
                 </svg>
               </div>
-              <h3 className="font-serif font-medium text-xl text-dark-light mb-2">
-                Atendimento Especial
-              </h3>
+              <h3 className="font-serif font-medium text-xl text-dark-light mb-2">Atendimento Especial</h3>
               <p className="text-text-secondary font-light text-sm leading-relaxed max-w-xs mx-auto">
                 Suporte personalizado para suas necessidades.
               </p>
@@ -412,7 +394,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FILTRO MOBILE */}
       <div className="md:hidden fixed bottom-6 right-6 z-30">
         <button
           onClick={() => setSidebarAberta(true)}
