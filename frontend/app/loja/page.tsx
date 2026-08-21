@@ -210,8 +210,8 @@ function LojaContent() {
           </aside>
 
           <div className="flex-1 min-w-0">
-            {/* Espaço moderado entre controles e grid - agora com respiro adequado */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
+            {/* Espaço entre controles e grid - ajustado para maior respiro */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-10">
               <div className="w-full sm:max-w-xs">
                 <SearchBar value={busca} onChange={v => { setBusca(v); setPagina(1); }} />
               </div>
