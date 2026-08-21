@@ -105,7 +105,7 @@ function LojaContent() {
   return (
     <div className="min-h-screen bg-white">
       {/* ============================================================ */}
-      {/* CABEÇALHO - Compactado */}
+      {/* CABEÇALHO */}
       {/* ============================================================ */}
       <section className="bg-white border-b border-secondary-gray/20 pt-5 md:pt-6 pb-3 md:pb-4">
         <div className="mx-auto flex w-full max-w-[1440px] justify-center px-6">
@@ -121,7 +121,7 @@ function LojaContent() {
       </section>
 
       {/* ============================================================ */}
-      {/* CONTEÚDO PRINCIPAL - Nova hierarquia de toolbar */}
+      {/* CONTEÚDO PRINCIPAL */}
       {/* ============================================================ */}
       <div className="w-full max-w-[1440px] mx-auto px-6 pb-6 md:pb-8">
         <div className="flex gap-8 lg:gap-12 pt-4 md:pt-5">
@@ -208,8 +208,10 @@ function LojaContent() {
           </aside>
 
           <div className="flex-1 min-w-0">
-            {/* NÍVEL 1 – SEARCHBAR (com respiro para controles) */}
-            <div className="w-full max-w-2xl mb-7 md:mb-8">
+            {/* ============================================================ */}
+            {/* NÍVEL 1 – SEARCHBAR (largura total) */}
+            {/* ============================================================ */}
+            <div className="w-full mb-5 md:mb-6">
               <SearchBar
                 value={busca}
                 onChange={v => {
@@ -219,8 +221,10 @@ function LojaContent() {
               />
             </div>
 
-            {/* NÍVEL 2 – CONTROLES */}
-            <div className="flex flex-wrap items-center gap-3 mb-8 md:mb-10">
+            {/* ============================================================ */}
+            {/* NÍVEL 2 – CONTROLES (alinhados à direita) */}
+            {/* ============================================================ */}
+            <div className="flex flex-wrap items-center justify-end gap-3 mb-6 md:mb-8">
               <button
                 onClick={() => setSidebarAberta(true)}
                 className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-mid rounded-button text-sm font-medium text-dark-light hover:bg-light hover:border-[#0B1F33] transition-all"
@@ -248,7 +252,9 @@ function LojaContent() {
               </select>
             </div>
 
+            {/* ============================================================ */}
             {/* NÍVEL 3 – PRODUCT GRID */}
+            {/* ============================================================ */}
             {carregando ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                 {Array.from({ length: 8 }).map((_, i) => (
