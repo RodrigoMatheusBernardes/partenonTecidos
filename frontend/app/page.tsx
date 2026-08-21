@@ -235,7 +235,7 @@ export default function Home() {
 
             <div className="flex-1">
               {!temFiltroAtivo && (
-                <div className="mb-16">
+                <div className="mb-8 md:mb-10">
                   <TrendingBar />
                 </div>
               )}
@@ -250,9 +250,7 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* ============================================================ */}
-              {/* NÍVEL 1 – SEARCHBAR (largura total, sem max-w-md) */}
-              {/* ============================================================ */}
+              {/* SEARCHBAR (largura total) */}
               <div className="w-full">
                 <SearchBar
                   value={busca}
@@ -261,9 +259,7 @@ export default function Home() {
                 />
               </div>
 
-              {/* ============================================================ */}
-              {/* NÍVEL 2 – CONTROLES (quantidade + select, alinhados à direita) */}
-              {/* ============================================================ */}
+              {/* CONTROLES (quantidade + select) */}
               <div className="flex items-center justify-end gap-3 mt-5">
                 <p className="text-sm text-text-secondary font-light whitespace-nowrap">
                   {produtosFiltrados.length} produto(s)
@@ -283,15 +279,13 @@ export default function Home() {
                 </select>
               </div>
 
-              {/* ============================================================ */}
-              {/* NÍVEL 3 – PRODUCT GRID (com respiro dos controles) */}
-              {/* ============================================================ */}
+              {/* PRODUCT GRID */}
               {carregando ? (
                 <div className="col-span-full flex justify-center items-center min-h-[50vh] py-12">
                   <div className="w-12 h-12 border-4 border-[#e8e3dc] border-t-[#C5A880] rounded-full animate-spin" />
                 </div>
               ) : produtosFiltrados.length === 0 ? (
-                <div className="text-center py-12 bg-white/60 rounded-2xl">
+                <div className="text-center py-12 bg-white/60 rounded-2xl mt-6">
                   <p className="text-text-secondary font-light">Nenhum produto encontrado.</p>
                   <button
                     onClick={limparFiltros}
