@@ -132,7 +132,7 @@ export default function Home() {
     <>
       <HeroVideo />
 
-      <section className="w-full bg-[#F7F7F7] py-8 md:py-10">
+      <section className="w-full bg-[#F7F7F7] py-5 md:py-7">
         <div className="main-container">
           <div className="flex flex-col md:flex-row gap-8">
             
