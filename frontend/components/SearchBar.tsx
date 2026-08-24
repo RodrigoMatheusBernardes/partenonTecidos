@@ -43,7 +43,7 @@ export default function SearchBar({
         bg-white
         border border-[#d1d1d1]
         rounded-full
-        px-3 md:px-4
+        px-4
         py-2 md:py-2.5
         transition-colors duration-200
         focus-within:border-[#0B1742]
@@ -66,9 +66,15 @@ export default function SearchBar({
         placeholder={placeholder}
         className="
           flex-1
-          bg-transparent
-          border-none
-          outline-none
+          !border-0
+          !rounded-none
+          !bg-transparent
+          !shadow-none
+          !outline-none
+          !ring-0
+          focus:!border-0
+          focus:!ring-0
+          focus:!shadow-none
           text-sm
           font-medium
           text-[#1a1a1a]
