@@ -7,26 +7,23 @@ export default function Footer() {
   return (
     <footer className="bg-primary-dark border-t border-white/20 text-white">
       
-      {/* NEWSLETTER - REFINAMENTO DEFINITIVO (prioridade mobile) */}
-      <div className="border-y border-white/20 py-8 md:py-16">
-        <div className="main-container flex flex-col items-center justify-center text-center gap-6 md:gap-10">
+      {/* NEWSLETTER - com espaçamento reduzido */}
+      <div className="border-y border-white/20 py-6 md:py-12">
+        <div className="main-container flex flex-col items-center justify-center text-center gap-4 md:gap-8">
           
-          {/* Título - ajustado para mobile */}
           <h2 className="font-primary font-bold text-3xl md:text-5xl tracking-tight text-white">
             Receba informações exclusivas
           </h2>
 
-          {/* Frase - ajustada para mobile */}
           <p className="font-secondary text-xl md:text-3xl leading-snug text-white/80 max-w-4xl mx-auto">
             Cadastre-se para receber novidades, lançamentos e ofertas especiais.
           </p>
 
-          {/* Input e Botão de Envio - mais compactos no mobile */}
-          <div className="w-full max-w-xl md:max-w-2xl relative mt-2">
+          <div className="w-full max-w-xl md:max-w-2xl relative mt-1">
             <input
               type="email"
               placeholder="Seu melhor e-mail"
-              className="w-full border-2 border-white/30 rounded-full px-5 py-4 md:px-8 md:py-5 text-base md:text-lg font-secondary text-white placeholder:text-white/60 bg-white/10 focus:outline-none focus:border-gold transition-colors pr-14 md:pr-16"
+              className="w-full border-2 border-white/30 rounded-full px-4 py-3 md:px-8 md:py-5 text-base md:text-lg font-secondary text-white placeholder:text-white/60 bg-white/10 focus:outline-none focus:border-gold transition-colors pr-14 md:pr-16"
             />
             <button
               className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 bg-gold text-primary-dark p-3 md:p-4 rounded-full hover:bg-gold-light transition-colors"
@@ -36,7 +33,6 @@ export default function Footer() {
             </button>
           </div>
 
-          {/* Botão Criar Conta - mais compacto no mobile */}
           <div className="flex justify-center mt-1">
             <Link
               href="/cadastro"
@@ -49,8 +45,8 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* COLUNAS - grid com gap reduzido */}
-      <div className="main-container py-12 md:py-16">
+      {/* COLUNAS - padding reduzido */}
+      <div className="main-container py-8 md:py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           
           {/* Institucional */}
@@ -92,22 +88,22 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contato - com melhor alinhamento e espaçamento */}
+          {/* Contato - com melhor alinhamento e ícones ligeiramente maiores */}
           <div>
             <h4 className="font-primary font-bold text-base md:text-lg mb-4 md:mb-5 tracking-wide text-white">
               Contato
             </h4>
             <ul className="space-y-3 font-secondary text-sm text-white/80">
               <li className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 md:w-5 md:h-5 text-gold flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                <MapPin className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                 <span className="leading-tight">Rua dos Tecidos, 123<br />São Paulo – SP</span>
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="w-4 h-4 md:w-5 md:h-5 text-gold flex-shrink-0" strokeWidth={1.5} />
+                <Mail className="w-5 h-5 text-gold flex-shrink-0" strokeWidth={1.5} />
                 <a href="mailto:contato@parthenon.com" className="hover:text-gold transition-colors break-all">contato@parthenon.com</a>
               </li>
               <li className="flex items-center gap-2">
-                <Phone className="w-4 h-4 md:w-5 md:h-5 text-gold flex-shrink-0" strokeWidth={1.5} />
+                <Phone className="w-5 h-5 text-gold flex-shrink-0" strokeWidth={1.5} />
                 <a href="tel:5511999999999" className="hover:text-gold transition-colors">(11) 99999-9999</a>
               </li>
             </ul>
