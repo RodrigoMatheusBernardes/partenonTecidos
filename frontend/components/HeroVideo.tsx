@@ -69,6 +69,7 @@ export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const revealTimerRef = useRef<NodeJS.Timeout | null>(null);
   const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Estados React
@@ -77,6 +78,7 @@ export default function HeroVideo() {
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
   const [videoStarted, setVideoStarted] = useState(false);
+  const [revealVideo, setRevealVideo] = useState(false); // controla se o iframe está visível
   const [error, setError] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -131,6 +133,23 @@ export default function HeroVideo() {
   }, [playerReady, currentVideoIndex]);
 
   // ============================================================
+  // Função para iniciar o vídeo e revelar o iframe com segurança
+  // ============================================================
+  const startVideo = () => {
+    if (!playerRef.current || videoStarted) return;
+
+    // Inicia o vídeo mutado
+    playerRef.current.playVideo();
+    setVideoStarted(true);
+
+    // Aguarda um pequeno tempo para garantir que o primeiro frame do vídeo esteja visível
+    // antes de revelar o iframe. Isso evita que o logo/interface do YouTube apareça.
+    revealTimerRef.current = setTimeout(() => {
+      setRevealVideo(true);
+    }, 300);
+  };
+
+  // ============================================================
   // Listener de scroll para iniciar o vídeo
   // ============================================================
   useEffect(() => {
@@ -143,16 +162,6 @@ export default function HeroVideo() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [playerReady, videoStarted]);
-
-  // ============================================================
-  // Função para iniciar o vídeo e fazer a transição
-  // ============================================================
-  const startVideo = () => {
-    if (!playerRef.current || videoStarted) return;
-    setVideoStarted(true);
-    playerRef.current.playVideo();
-    setMuted(true);
-  };
 
   // ============================================================
   // Carregamento da YouTube IFrame API
@@ -232,11 +241,11 @@ export default function HeroVideo() {
               event.target.mute();
               setMuted(true);
               setPlayerReady(true);
-              // NÃO iniciar o vídeo ainda; aguardar scroll ou fallback
-              // Agendar fallback de 2 segundos para iniciar automaticamente
+
+              // Fallback: se o usuário não rolar, inicia o vídeo após 5 segundos
               fallbackTimerRef.current = setTimeout(() => {
                 startVideo();
-              }, 2000);
+              }, 5000);
             },
             onError: (event: YT.OnErrorEvent) => {
               console.error('[HERO] erro do YouTube:', event.data);
@@ -289,6 +298,7 @@ export default function HeroVideo() {
         playerRef.current = null;
       }
       if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+      if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
       if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
     };
   }, []);
@@ -392,36 +402,43 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do iframe */}
+      {/* Container do iframe - INVISÍVEL até revealVideo ser true */}
       <div
         ref={containerRef}
-        className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}`}
-        style={{ pointerEvents: 'none' }}
+        className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
+          revealVideo ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          visibility: revealVideo ? 'visible' : 'hidden',
+          pointerEvents: revealVideo ? 'auto' : 'none',
+          zIndex: 10,
+        }}
       />
 
-      {/* Banner inicial que cobre o iframe e desaparece suavemente quando videoStarted é true */}
+      {/* Banner inicial - VISÍVEL até revealVideo ser true */}
       <div
-        className={`absolute inset-0 z-20 transition-opacity duration-800 ease-in-out ${
-          videoStarted ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+          revealVideo ? 'opacity-0' : 'opacity-100'
         }`}
         style={{
           backgroundImage: `url('${FUNDOHOME_IMAGE}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          zIndex: 20,
         }}
       />
 
       {/* Overlay de transição entre vídeos */}
       <div
-        className={`absolute inset-0 z-30 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
+        className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
           isTransitioning ? 'opacity-100' : 'opacity-0'
         }`}
-        style={{ pointerEvents: 'none' }}
+        style={{ pointerEvents: 'none', zIndex: 30 }}
       />
 
       {/* BANNER FINAL */}
       {heroStage === 'final' && (
-        <div className="absolute inset-0 z-30 animate-fade-in-up">
+        <div className="absolute inset-0 animate-fade-in-up" style={{ zIndex: 30 }}>
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
@@ -457,12 +474,13 @@ export default function HeroVideo() {
         </div>
       )}
 
-      {/* Botão de mute (aparece apenas quando o vídeo está ativo) */}
-      {playerReady && videoStarted && isVideoActive && (
+      {/* Botão de mute (aparece apenas quando o vídeo está ativo e revelado) */}
+      {playerReady && videoStarted && isVideoActive && revealVideo && (
         <button
           onClick={toggleMute}
           aria-label={muted ? 'Ativar som do vídeo' : 'Desativar som do vídeo'}
-          className="absolute bottom-6 right-6 z-40 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
+          className="absolute bottom-6 right-6 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
+          style={{ zIndex: 40 }}
         >
           {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
         </button>
