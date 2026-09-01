@@ -106,12 +106,12 @@ export default function Footer() {
                   contato@parthenon.com
                 </a>
               </li>
-              <li className="flex items-start gap-3 md:gap-2.5">
-                <Phone className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" strokeWidth={1.5} />
-                <a href="tel:5511999999999" className="hover:text-gold transition-colors">
-                  (11) 99999-9999
-                </a>
-              </li>
+              <li className="flex items-start gap-4 md:gap-2.5">
+  <Phone className="w-5 h-5 text-gold flex-shrink-0 mt-0" strokeWidth={1.5} />
+  <a href="tel:5511999999999" className="hover:text-gold transition-colors">
+    (11) 99999-9999
+  </a>
+</li>
             </ul>
 
             <div className="mt-5 pt-3 md:mt-6 md:pt-5 border-t border-white/20">
