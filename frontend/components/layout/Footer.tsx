@@ -7,9 +7,9 @@ export default function Footer() {
   return (
     <footer className="bg-primary-dark border-t border-white/20 text-white">
       
-      {/* NEWSLETTER - espaçamento equilibrado */}
-      <div className="border-y border-white/20 py-6 md:py-8">
-        <div className="main-container flex flex-col items-center justify-center text-center gap-4 md:gap-6">
+      {/* NEWSLETTER - espaçamento compacto no mobile */}
+      <div className="border-y border-white/20 py-5 md:py-8">
+        <div className="main-container flex flex-col items-center justify-center text-center gap-3 md:gap-6">
           
           <h2 className="font-primary font-bold text-3xl md:text-4xl tracking-tight text-white">
             Receba informações exclusivas
@@ -36,7 +36,7 @@ export default function Footer() {
           <div className="flex justify-center mt-1">
             <Link
               href="/cadastro"
-              className="inline-block border-2 border-transparent bg-primary-dark text-white px-6 py-3 md:px-10 md:py-4 rounded-full text-base md:text-lg font-secondary font-bold transition-all duration-300 hover:bg-[#1A2A4A] hover:shadow-lg hover:scale-105"
+              className="inline-block border-2 border-transparent bg-primary-dark text-white px-5 py-2.5 md:px-10 md:py-4 rounded-full text-base md:text-lg font-secondary font-bold transition-all duration-300 hover:bg-[#1A2A4A] hover:shadow-lg hover:scale-105"
             >
               Criar sua conta
             </Link>
@@ -45,9 +45,9 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* COLUNAS - espaçamento compacto e organizado */}
-      <div className="main-container py-6 md:py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+      {/* COLUNAS - menos espaço entre blocos no mobile */}
+      <div className="main-container py-5 md:py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
           
           {/* Institucional */}
           <div>
@@ -88,12 +88,12 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contato - melhor alinhamento e respiro */}
+          {/* Contato - com mais respiro e alinhamento no mobile */}
           <div>
             <h4 className="font-primary font-bold text-base md:text-lg mb-3 md:mb-4 tracking-wide text-white">
               Contato
             </h4>
-            <ul className="space-y-4 font-secondary text-sm text-white/80">
+            <ul className="space-y-4 md:space-y-3 font-secondary text-sm text-white/80">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-gold flex-shrink-0 mt-1" strokeWidth={1.5} />
                 <span className="leading-relaxed break-words">
@@ -102,7 +102,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-gold flex-shrink-0" strokeWidth={1.5} />
-                <a href="mailto:contato@parthenon.com" className="hover:text-gold transition-colors break-all">
+                <a href="mailto:contato@parthenon.com" className="hover:text-gold transition-colors break-words">
                   contato@parthenon.com
                 </a>
               </li>
@@ -114,7 +114,7 @@ export default function Footer() {
               </li>
             </ul>
 
-            <div className="mt-6 pt-5 border-t border-white/20">
+            <div className="mt-5 pt-4 md:mt-6 md:pt-5 border-t border-white/20">
               <span className="font-primary text-[10px] md:text-xs font-bold uppercase tracking-widest block mb-3 text-white">
                 Siga-nos
               </span>
@@ -137,13 +137,13 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* COPYRIGHT */}
+      {/* COPYRIGHT - final mais compacto */}
       <div className="border-t border-white/20 bg-primary-dark/90">
         <div className="main-container py-4 md:py-5 flex flex-col md:flex-row items-center justify-between gap-2 font-secondary text-xs text-white/80">
           <p>
             &copy; {new Date().getFullYear()} Parthenon Tecidos. Todos os direitos reservados.
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <Link href="/politica-privacidade" className="hover:text-gold transition-colors">Política de Privacidade</Link>
             <span className="text-white/30">|</span>
             <Link href="/termos" className="hover:text-gold transition-colors">Termos de Uso</Link>
