@@ -7,9 +7,9 @@ export default function Footer() {
   return (
     <footer className="bg-primary-dark border-t border-white/20 text-white">
       
-      {/* NEWSLETTER - espaçamento compacto no mobile */}
+      {/* NEWSLETTER - compacto no mobile */}
       <div className="border-y border-white/20 py-4 md:py-8">
-        <div className="main-container flex flex-col items-center justify-center text-center gap-3 md:gap-6">
+        <div className="main-container flex flex-col items-center justify-center text-center gap-2 md:gap-6">
           
           <h2 className="font-primary font-bold text-2xl md:text-4xl tracking-tight text-white">
             Receba informações exclusivas
@@ -45,9 +45,9 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* COLUNAS - espaçamento vertical reduzido no mobile */}
-      <div className="main-container py-4 md:py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+      {/* COLUNAS - gap reduzido no mobile para aproximar blocos */}
+      <div className="main-container py-3 md:py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-8">
           
           {/* Institucional */}
           <div>
@@ -88,33 +88,33 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contato - com mais respiro e alinhamento no mobile */}
+          {/* Contato - com mais respiro e alinhamento */}
           <div>
             <h4 className="font-primary font-bold text-sm md:text-lg mb-2 md:mb-4 tracking-wide text-white">
               Contato
             </h4>
-            <ul className="space-y-3 md:space-y-4 font-secondary text-sm text-white/80">
+            <ul className="space-y-4 md:space-y-3 font-secondary text-sm text-white/80">
               <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" strokeWidth={1.5} />
-                <span className="leading-relaxed break-words min-w-0">
+                <MapPin className="w-5 h-5 text-gold flex-shrink-0 mt-0" strokeWidth={1.5} />
+                <span className="leading-normal break-words min-w-0">
                   Rua dos Tecidos, 123<br />São Paulo – SP
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                <Mail className="w-5 h-5 text-gold flex-shrink-0 mt-0" strokeWidth={1.5} />
                 <a href="mailto:contato@parthenon.com" className="hover:text-gold transition-colors break-words min-w-0">
                   contato@parthenon.com
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                <Phone className="w-5 h-5 text-gold flex-shrink-0 mt-0" strokeWidth={1.5} />
                 <a href="tel:5511999999999" className="hover:text-gold transition-colors">
                   (11) 99999-9999
                 </a>
               </li>
             </ul>
 
-            <div className="mt-4 pt-3 md:mt-6 md:pt-5 border-t border-white/20">
+            <div className="mt-3 pt-2 md:mt-6 md:pt-5 border-t border-white/20">
               <span className="font-primary text-[10px] md:text-xs font-bold uppercase tracking-widest block mb-2 text-white">
                 Siga-nos
               </span>
@@ -137,9 +137,9 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* COPYRIGHT - final mais compacto */}
+      {/* COPYRIGHT - final compacto */}
       <div className="border-t border-white/20 bg-primary-dark/90">
-        <div className="main-container py-3 md:py-5 flex flex-col md:flex-row items-center justify-between gap-2 font-secondary text-xs text-white/80">
+        <div className="main-container py-2 md:py-5 flex flex-col md:flex-row items-center justify-between gap-2 font-secondary text-xs text-white/80">
           <p>
             &copy; {new Date().getFullYear()} Parthenon Tecidos. Todos os direitos reservados.
           </p>
