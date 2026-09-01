@@ -62,30 +62,31 @@ declare namespace YT {
 
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 
-// ✅ EXTENSÃO DO FUNDOHOME – AJUSTE CONFORME O ARQUIVO REAL
+// Imagem utilizada como banner inicial e também no banner final
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Estados React
   const [heroStage, setHeroStage] = useState<'video1' | 'video2' | 'final'>('video1');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
+  const [videoStarted, setVideoStarted] = useState(false);
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Refs para controle síncrono da máquina de estados
+  // Refs para controle síncrono
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
 
   // ============================================================
-  // Lógica de dimensionamento do iframe
+  // Lógica de dimensionamento do iframe (preservada)
   // ============================================================
   useEffect(() => {
     const container = containerRef.current;
@@ -130,6 +131,30 @@ export default function HeroVideo() {
   }, [playerReady, currentVideoIndex]);
 
   // ============================================================
+  // Listener de scroll para iniciar o vídeo
+  // ============================================================
+  useEffect(() => {
+    const handleScroll = () => {
+      if (playerReady && !videoStarted) {
+        startVideo();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [playerReady, videoStarted]);
+
+  // ============================================================
+  // Função para iniciar o vídeo e fazer a transição
+  // ============================================================
+  const startVideo = () => {
+    if (!playerRef.current || videoStarted) return;
+    setVideoStarted(true);
+    playerRef.current.playVideo();
+    setMuted(true);
+  };
+
+  // ============================================================
   // Carregamento da YouTube IFrame API
   // ============================================================
   useEffect(() => {
@@ -166,7 +191,6 @@ export default function HeroVideo() {
       script.onerror = () => {
         console.error('[HERO] erro ao carregar script do YouTube');
         setError(true);
-        setLoading(false);
         setShowFallback(true);
       };
 
@@ -192,7 +216,7 @@ export default function HeroVideo() {
           width: '100%',
           videoId: VIDEO_IDS[0],
           playerVars: {
-            autoplay: 1,
+            autoplay: 0, // Não inicia automaticamente; controlaremos via startVideo
             mute: 1,
             playsinline: 1,
             controls: 0,
@@ -208,11 +232,11 @@ export default function HeroVideo() {
               event.target.mute();
               setMuted(true);
               setPlayerReady(true);
-              setLoading(false);
-              event.target.playVideo();
-              console.log('[HERO] VIDEO 1 START');
-              stageRef.current = 'video1';
-              video2FinishedRef.current = false;
+              // NÃO iniciar o vídeo ainda; aguardar scroll ou fallback
+              // Agendar fallback de 2 segundos para iniciar automaticamente
+              fallbackTimerRef.current = setTimeout(() => {
+                startVideo();
+              }, 2000);
             },
             onError: (event: YT.OnErrorEvent) => {
               console.error('[HERO] erro do YouTube:', event.data);
@@ -220,7 +244,6 @@ export default function HeroVideo() {
                 console.warn('[HERO] Erro 153: HTTP Referer ausente. Verifique a política de referrer.');
               }
               setError(true);
-              setLoading(false);
               setShowFallback(true);
             },
             onStateChange: (event: YT.OnStateChangeEvent) => {
@@ -228,33 +251,20 @@ export default function HeroVideo() {
               const player = event.target;
               console.log(`[HERO] state change: ${state}, stage: ${stageRef.current}`);
 
-              // Ignora eventos se já estiver no estado final
               if (stageRef.current === 'final') {
-                console.log('[HERO] ignoring event - already in final state');
                 return;
               }
 
-              // Apenas processa o evento ENDED (state === 0)
-              if (state !== 0) {
-                return;
-              }
+              if (state !== 0) return;
 
-              // Vídeo 1 terminou
               if (stageRef.current === 'video1') {
                 console.log('[HERO] VIDEO 1 ENDED');
                 transitionToVideo(player, 1);
                 return;
               }
 
-              // Vídeo 2 terminou
               if (stageRef.current === 'video2') {
-                // Se já foi finalizado, ignora (proteção contra eventos duplicados)
-                if (video2FinishedRef.current) {
-                  console.log('[HERO] video 2 already finished, ignoring');
-                  return;
-                }
-
-                console.log('[HERO] VIDEO 2 ENDED');
+                if (video2FinishedRef.current) return;
                 video2FinishedRef.current = true;
                 transitionToFinal();
                 return;
@@ -267,7 +277,6 @@ export default function HeroVideo() {
       } catch (err) {
         console.error('[HERO] erro ao criar player:', err);
         setError(true);
-        setLoading(false);
         setShowFallback(true);
       }
     };
@@ -280,25 +289,22 @@ export default function HeroVideo() {
         playerRef.current = null;
       }
       if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
     };
   }, []);
 
   // ============================================================
-  // Funções de transição
+  // Funções de transição entre vídeos (preservadas)
   // ============================================================
   const transitionToVideo = (player: YT.Player, nextIndex: number) => {
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
     setIsTransitioning(true);
 
-    console.log(`[HERO] LOADING VIDEO ${nextIndex + 1}`);
-
     transitionTimerRef.current = setTimeout(() => {
-      // Atualiza o ref de estado antes de carregar o próximo vídeo
       stageRef.current = nextIndex === 0 ? 'video1' : 'video2';
       setCurrentVideoIndex(nextIndex);
       setHeroStage(nextIndex === 0 ? 'video1' : 'video2');
       player.loadVideoById(VIDEO_IDS[nextIndex]);
-      // O autoplay iniciará automaticamente
       setIsTransitioning(false);
       transitionTimerRef.current = null;
     }, 500);
@@ -312,7 +318,6 @@ export default function HeroVideo() {
       stageRef.current = 'final';
       setHeroStage('final');
       setIsTransitioning(false);
-      console.log('[HERO] ENTERING FINAL');
       transitionTimerRef.current = null;
     }, 500);
   };
@@ -321,22 +326,18 @@ export default function HeroVideo() {
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
     if (!playerRef.current) return;
 
-    console.log('[HERO] REPLAY');
     setIsTransitioning(true);
 
     transitionTimerRef.current = setTimeout(() => {
       const player = playerRef.current!;
-      // Resetar todas as flags de estado
       stageRef.current = 'video1';
       video2FinishedRef.current = false;
       setCurrentVideoIndex(0);
       setHeroStage('video1');
-      // stopVideo não é necessário; loadVideoById já substitui o vídeo atual
       player.loadVideoById(VIDEO_IDS[0]);
       player.seekTo(0, true);
       player.playVideo();
       setIsTransitioning(false);
-      console.log('[HERO] VIDEO 1 START');
       transitionTimerRef.current = null;
     }, 500);
   };
@@ -363,7 +364,7 @@ export default function HeroVideo() {
         <div className="absolute inset-0 bg-primary-dark/90" />
         <div className="relative z-20 text-center px-6 max-w-2xl space-y-6">
           <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
-            Partenon<br />
+            Parthenon<br />
             <span className="font-primary font-medium tracking-[0.05em] text-white">Tecidos</span>
           </h1>
           <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">
@@ -391,16 +392,28 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do iframe – visível apenas durante os vídeos */}
+      {/* Container do iframe */}
       <div
         ref={containerRef}
         className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}`}
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* Overlay de transição */}
+      {/* Banner inicial que cobre o iframe e desaparece suavemente quando videoStarted é true */}
       <div
-        className={`absolute inset-0 z-20 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
+        className={`absolute inset-0 z-20 transition-opacity duration-800 ease-in-out ${
+          videoStarted ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+        style={{
+          backgroundImage: `url('${FUNDOHOME_IMAGE}')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+
+      {/* Overlay de transição entre vídeos */}
+      <div
+        className={`absolute inset-0 z-30 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
           isTransitioning ? 'opacity-100' : 'opacity-0'
         }`}
         style={{ pointerEvents: 'none' }}
@@ -420,7 +433,7 @@ export default function HeroVideo() {
           <div className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-8 text-center text-white">
             <div className="max-w-4xl space-y-4 md:space-y-6">
               <h2 className="font-primary font-bold text-3xl md:text-5xl lg:text-6xl tracking-[0.2em] leading-tight drop-shadow-md">
-                TÊXTIL PARTENON
+                TÊXTIL PARTHENON
               </h2>
               <h3 className="font-secondary text-2xl md:text-4xl lg:text-5xl font-light tracking-wide drop-shadow-md">
                 Tecidos que transformam espaços.
@@ -444,19 +457,12 @@ export default function HeroVideo() {
         </div>
       )}
 
-      {loading && (
-        <div className="absolute inset-0 z-40 bg-primary-dark flex items-center justify-center">
-          <div className="text-white text-center">
-            <p className="text-gold">Carregando experiência...</p>
-          </div>
-        </div>
-      )}
-
-      {playerReady && isVideoActive && (
+      {/* Botão de mute (aparece apenas quando o vídeo está ativo) */}
+      {playerReady && videoStarted && isVideoActive && (
         <button
           onClick={toggleMute}
           aria-label={muted ? 'Ativar som do vídeo' : 'Desativar som do vídeo'}
-          className="absolute bottom-6 right-6 z-50 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
+          className="absolute bottom-6 right-6 z-40 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
         >
           {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
         </button>
