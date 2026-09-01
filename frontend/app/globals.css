@@ -238,26 +238,23 @@ img {
 }
 
 /* ============================================================
-   UTILITÁRIOS CUSTOMIZADOS (mantidos)
+   UTILITÁRIOS CUSTOMIZADOS (CORRIGIDOS - cor sólida azul escuro)
    ============================================================ */
 @utility text-lead-gray {
   color: #262626;
 }
 
 @utility text-metallic-navy {
-  background: linear-gradient(145deg, #0A1420 10%, #1A3A5C 40%, #4C8BBB 70%, #1A3A5C 85%, #0A1420 95%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #0B1742;
   display: inline-block;
 }
 
 @utility bg-metallic-navy {
-  background: linear-gradient(145deg, #0A1420 10%, #1A3A5C 40%, #4C8BBB 70%, #1A3A5C 85%, #0A1420 95%);
+  background-color: #0B1742;
 }
 
 @utility bg-metallic-navy-hover {
-  background: linear-gradient(145deg, #1A3A5C 10%, #2E5F8E 40%, #6CA0C8 70%, #2E5F8E 85%, #1A3A5C 95%);
+  background-color: #0B1742;
 }
 
 /* ============================================================
