@@ -88,7 +88,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contato - agora com gap real entre os itens */}
+          {/* Contato */}
           <div>
             <h4 className="font-primary font-bold text-sm md:text-lg mb-2 md:mb-4 tracking-wide text-white">
               Contato
@@ -107,14 +107,15 @@ export default function Footer() {
                 </a>
               </li>
               <li className="flex items-start gap-4 md:gap-2.5">
-  <Phone className="w-5 h-5 text-gold flex-shrink-0 mt-0" strokeWidth={1.5} />
-  <a href="tel:5511999999999" className="hover:text-gold transition-colors">
-    (11) 99999-9999
-  </a>
-</li>
+                <Phone className="w-5 h-5 text-gold flex-shrink-0 mt-0" strokeWidth={1.5} />
+                <a href="tel:5511999999999" className="hover:text-gold transition-colors">
+                  (11) 99999-9999
+                </a>
+              </li>
             </ul>
 
-<div className="mt-7 pt-3 md:mt-6 md:pt-5 border-t border-white/20">              <span className="font-primary text-[10px] md:text-xs font-bold uppercase tracking-widest block mb-3 text-white">
+            <div className="mt-8 pt-3 md:mt-6 md:pt-5 border-t border-white/20">
+              <span className="font-primary text-[10px] md:text-xs font-bold uppercase tracking-widest block mb-3 text-white">
                 Siga-nos
               </span>
               <div className="flex gap-3">
