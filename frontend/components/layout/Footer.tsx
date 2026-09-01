@@ -9,7 +9,7 @@ export default function Footer() {
       
       {/* NEWSLETTER - compacto no mobile */}
       <div className="border-y border-white/20 py-4 md:py-8">
-        <div className="main-container flex flex-col items-center justify-center text-center gap-2 md:gap-6">
+        <div className="main-container px-4 md:px-6 flex flex-col items-center justify-center text-center gap-3 md:gap-6">
           
           <h2 className="font-primary font-bold text-2xl md:text-4xl tracking-tight text-white">
             Receba informações exclusivas
@@ -45,9 +45,9 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* COLUNAS - gap reduzido no mobile para aproximar blocos */}
-      <div className="main-container py-3 md:py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-8">
+      {/* COLUNAS - gap maior no mobile para separar seções */}
+      <div className="main-container px-4 md:px-6 py-4 md:py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           
           {/* Institucional */}
           <div>
@@ -114,8 +114,8 @@ export default function Footer() {
               </li>
             </ul>
 
-            <div className="mt-3 pt-2 md:mt-6 md:pt-5 border-t border-white/20">
-              <span className="font-primary text-[10px] md:text-xs font-bold uppercase tracking-widest block mb-2 text-white">
+            <div className="mt-5 pt-3 md:mt-6 md:pt-5 border-t border-white/20">
+              <span className="font-primary text-[10px] md:text-xs font-bold uppercase tracking-widest block mb-3 text-white">
                 Siga-nos
               </span>
               <div className="flex gap-3">
@@ -139,7 +139,7 @@ export default function Footer() {
 
       {/* COPYRIGHT - final compacto */}
       <div className="border-t border-white/20 bg-primary-dark/90">
-        <div className="main-container py-2 md:py-5 flex flex-col md:flex-row items-center justify-between gap-2 font-secondary text-xs text-white/80">
+        <div className="main-container px-4 md:px-6 py-3 md:py-5 flex flex-col md:flex-row items-center justify-between gap-2 font-secondary text-xs text-white/80">
           <p>
             &copy; {new Date().getFullYear()} Parthenon Tecidos. Todos os direitos reservados.
           </p>
