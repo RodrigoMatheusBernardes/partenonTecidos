@@ -114,8 +114,7 @@ export default function Footer() {
 </li>
             </ul>
 
-            <div className="mt-5 pt-3 md:mt-6 md:pt-5 border-t border-white/20">
-              <span className="font-primary text-[10px] md:text-xs font-bold uppercase tracking-widest block mb-3 text-white">
+<div className="mt-7 pt-3 md:mt-6 md:pt-5 border-t border-white/20">              <span className="font-primary text-[10px] md:text-xs font-bold uppercase tracking-widest block mb-3 text-white">
                 Siga-nos
               </span>
               <div className="flex gap-3">
