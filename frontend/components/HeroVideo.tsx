@@ -62,13 +62,14 @@ declare namespace YT {
 
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 
-// ✅ EXTENSÃO DO FUNDOHOME – AJUSTE CONFORME O ARQUIVO REAL
+// Imagem utilizada como banner inicial
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const bannerTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Estados React
   const [heroStage, setHeroStage] = useState<'video1' | 'video2' | 'final'>('video1');
@@ -79,6 +80,9 @@ export default function HeroVideo() {
   const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // NOVO: controla a visibilidade do banner inicial
+  const [initialBannerVisible, setInitialBannerVisible] = useState(true);
 
   // Refs para controle síncrono da máquina de estados
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
@@ -128,6 +132,25 @@ export default function HeroVideo() {
       resizeObserver.disconnect();
     };
   }, [playerReady, currentVideoIndex]);
+
+  // ============================================================
+  // Listeners de scroll para esconder o banner inicial
+  // ============================================================
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setInitialBannerVisible(false);
+        // Limpa o timer de fallback, pois o scroll já escondeu
+        if (bannerTimerRef.current) {
+          clearTimeout(bannerTimerRef.current);
+          bannerTimerRef.current = null;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // ============================================================
   // Carregamento da YouTube IFrame API
@@ -213,6 +236,12 @@ export default function HeroVideo() {
               console.log('[HERO] VIDEO 1 START');
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
+
+              // Fallback: esconder o banner após 1 segundo
+              // mesmo que o usuário não role
+              bannerTimerRef.current = setTimeout(() => {
+                setInitialBannerVisible(false);
+              }, 1000);
             },
             onError: (event: YT.OnErrorEvent) => {
               console.error('[HERO] erro do YouTube:', event.data);
@@ -228,27 +257,22 @@ export default function HeroVideo() {
               const player = event.target;
               console.log(`[HERO] state change: ${state}, stage: ${stageRef.current}`);
 
-              // Ignora eventos se já estiver no estado final
               if (stageRef.current === 'final') {
                 console.log('[HERO] ignoring event - already in final state');
                 return;
               }
 
-              // Apenas processa o evento ENDED (state === 0)
               if (state !== 0) {
                 return;
               }
 
-              // Vídeo 1 terminou
               if (stageRef.current === 'video1') {
                 console.log('[HERO] VIDEO 1 ENDED');
                 transitionToVideo(player, 1);
                 return;
               }
 
-              // Vídeo 2 terminou
               if (stageRef.current === 'video2') {
-                // Se já foi finalizado, ignora (proteção contra eventos duplicados)
                 if (video2FinishedRef.current) {
                   console.log('[HERO] video 2 already finished, ignoring');
                   return;
@@ -280,6 +304,7 @@ export default function HeroVideo() {
         playerRef.current = null;
       }
       if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+      if (bannerTimerRef.current) clearTimeout(bannerTimerRef.current);
     };
   }, []);
 
@@ -293,12 +318,10 @@ export default function HeroVideo() {
     console.log(`[HERO] LOADING VIDEO ${nextIndex + 1}`);
 
     transitionTimerRef.current = setTimeout(() => {
-      // Atualiza o ref de estado antes de carregar o próximo vídeo
       stageRef.current = nextIndex === 0 ? 'video1' : 'video2';
       setCurrentVideoIndex(nextIndex);
       setHeroStage(nextIndex === 0 ? 'video1' : 'video2');
       player.loadVideoById(VIDEO_IDS[nextIndex]);
-      // O autoplay iniciará automaticamente
       setIsTransitioning(false);
       transitionTimerRef.current = null;
     }, 500);
@@ -326,12 +349,10 @@ export default function HeroVideo() {
 
     transitionTimerRef.current = setTimeout(() => {
       const player = playerRef.current!;
-      // Resetar todas as flags de estado
       stageRef.current = 'video1';
       video2FinishedRef.current = false;
       setCurrentVideoIndex(0);
       setHeroStage('video1');
-      // stopVideo não é necessário; loadVideoById já substitui o vídeo atual
       player.loadVideoById(VIDEO_IDS[0]);
       player.seekTo(0, true);
       player.playVideo();
@@ -391,11 +412,23 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do iframe – visível apenas durante os vídeos */}
+      {/* Container do iframe */}
       <div
         ref={containerRef}
         className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}`}
         style={{ pointerEvents: 'none' }}
+      />
+
+      {/* NOVO: Banner inicial cobrindo o iframe */}
+      <div
+        className={`absolute inset-0 z-30 transition-opacity duration-700 ease-in-out ${
+          initialBannerVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        style={{
+          backgroundImage: `url('${FUNDOHOME_IMAGE}')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
       />
 
       {/* Overlay de transição */}
