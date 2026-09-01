@@ -73,7 +73,6 @@ ul, ol {
 /* ============================================================
    TIPOGRAFIA BASE
    ============================================================ */
-/* Títulos – apenas identidade, sem tamanho fixo */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-primary);
   font-weight: 700;
@@ -82,7 +81,6 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.01em;
 }
 
-/* Parágrafos – tamanho responsivo, mas sem clamp agressivo */
 p {
   font-family: var(--font-secondary);
   font-weight: 400;
@@ -97,17 +95,17 @@ small {
 }
 
 /* ============================================================
-   SISTEMA DE ESPAÇAMENTO (mantido)
+   SISTEMA DE ESPAÇAMENTO
    ============================================================ */
 :root {
-  --space-xs: 0.5rem;   /* 8px */
-  --space-sm: 1rem;     /* 16px */
-  --space-md: 1.5rem;   /* 24px */
-  --space-lg: 2rem;     /* 32px */
-  --space-xl: 3rem;     /* 48px */
-  --space-2xl: 4rem;    /* 64px */
-  --space-3xl: 5rem;    /* 80px */
-  --space-4xl: 6rem;    /* 96px */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 5rem;
+  --space-4xl: 6rem;
 }
 
 /* ============================================================
@@ -121,6 +119,23 @@ small {
   margin-right: auto;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+}
+
+/* Classe específica do Footer para controlar padding no mobile */
+.footer-container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .footer-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
 
 .section-padding {
@@ -173,7 +188,7 @@ a:focus {
 }
 
 /* ============================================================
-   FORMULÁRIOS – BASE (sem tamanhos rígidos)
+   FORMULÁRIOS
    ============================================================ */
 input,
 textarea,
@@ -184,7 +199,6 @@ select {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  /* font-size, padding, etc. são deixados para os componentes */
 }
 
 input::placeholder,
@@ -215,7 +229,7 @@ img {
 }
 
 /* ============================================================
-   SCROLLBAR (mantido)
+   SCROLLBAR
    ============================================================ */
 ::-webkit-scrollbar {
   width: 8px;
@@ -287,7 +301,7 @@ img {
 }
 
 /* ============================================================
-   ANIMAÇÕES (mantidas)
+   ANIMAÇÕES
    ============================================================ */
 @keyframes fadeInUp {
   from {
@@ -305,7 +319,7 @@ img {
 }
 
 /* ============================================================
-   UTILITÁRIOS DE FONTE (mantidos)
+   UTILITÁRIOS DE FONTE
    ============================================================ */
 @utility font-primary {
   font-family: var(--font-primary);
