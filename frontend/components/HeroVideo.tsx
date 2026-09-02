@@ -61,10 +61,13 @@ declare namespace YT {
 }
 
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
-
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
-// Overscan ajustado para 25% - suficiente para cortar o branding na maioria das resoluções
+// Assets de cobertura – precisam ser gerados a partir dos frames dos vídeos
+const COVER_VIDEO1 = '/img/youtube-cover-video1.jpg';
+const COVER_VIDEO2 = '/img/youtube-cover-video2.jpg';
+
+// Overscan mantido – não iremos aumentar para esconder o logo, pois a cobertura é independente
 const OVERSCAN = 1.25;
 
 export default function HeroVideo() {
@@ -72,6 +75,7 @@ export default function HeroVideo() {
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const coverRef = useRef<HTMLDivElement>(null);
 
   const [heroStage, setHeroStage] = useState<'video1' | 'video2' | 'final'>('video1');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -86,6 +90,9 @@ export default function HeroVideo() {
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
 
+  // ============================================================
+  // Lógica de dimensionamento do iframe e do overlay de cobertura
+  // ============================================================
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !playerReady) return;
@@ -98,6 +105,7 @@ export default function HeroVideo() {
       const containerWidth = rect.width;
       const containerHeight = rect.height;
 
+      // Escala base para preencher o container (16:9)
       const baseScale = Math.max(containerWidth / 16, containerHeight / 9);
       const scale = baseScale * OVERSCAN;
 
@@ -112,9 +120,23 @@ export default function HeroVideo() {
       iframe.style.maxWidth = 'none';
       iframe.style.maxHeight = 'none';
       iframe.style.border = '0';
+      iframe.style.transform = 'translate(-50%, -50%)'; // Centralizado para ambos
 
-      // Centralizado para ambos os vídeos, evitando que o logo fique próximo da borda
-      iframe.style.transform = 'translate(-50%, -50%)';
+      // Atualizar o overlay de cobertura
+      if (coverRef.current) {
+        const coverSizeW = containerWidth * 0.10; // Ajuste conforme necessidade
+        const coverSizeH = containerHeight * 0.06;
+        const coverRight = containerWidth * 0.02;
+        const coverBottom = containerHeight * 0.02;
+
+        coverRef.current.style.width = `${coverSizeW}px`;
+        coverRef.current.style.height = `${coverSizeH}px`;
+        coverRef.current.style.right = `${coverRight}px`;
+        coverRef.current.style.bottom = `${coverBottom}px`;
+        coverRef.current.style.backgroundImage = `url('${
+          currentVideoIndex === 0 ? COVER_VIDEO1 : COVER_VIDEO2
+        }')`;
+      }
     };
 
     const resizeObserver = new ResizeObserver(updateIframeSize);
@@ -126,6 +148,9 @@ export default function HeroVideo() {
     };
   }, [playerReady, currentVideoIndex]);
 
+  // ============================================================
+  // Função para iniciar o vídeo e esconder o banner
+  // ============================================================
   const startVideo = () => {
     if (!playerRef.current || videoStarted) return;
     playerRef.current.playVideo();
@@ -133,6 +158,9 @@ export default function HeroVideo() {
     setTimeout(() => setBannerVisible(false), 200);
   };
 
+  // ============================================================
+  // Listener de scroll para iniciar o vídeo (se ainda não iniciado)
+  // ============================================================
   useEffect(() => {
     const handleScroll = () => {
       if (playerReady && !videoStarted) startVideo();
@@ -141,6 +169,9 @@ export default function HeroVideo() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [playerReady, videoStarted]);
 
+  // ============================================================
+  // Carregamento da YouTube IFrame API
+  // ============================================================
   useEffect(() => {
     const loadAPI = () => {
       if (window.YT && window.YT.Player) {
@@ -339,6 +370,19 @@ export default function HeroVideo() {
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
       {/* Iframe do YouTube */}
       <div ref={containerRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 10 }} />
+
+      {/* Overlay de cobertura do branding – pequena imagem real */}
+      <div
+        ref={coverRef}
+        className="absolute"
+        style={{
+          zIndex: 15,
+          pointerEvents: 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
 
       {/* Banner inicial */}
       <div
