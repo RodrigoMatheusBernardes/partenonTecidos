@@ -69,7 +69,6 @@ export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const revealTimerRef = useRef<NodeJS.Timeout | null>(null);
   const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Estados React
@@ -77,8 +76,8 @@ export default function HeroVideo() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
-  const [videoStarted, setVideoStarted] = useState(false);
-  const [revealVideo, setRevealVideo] = useState(false); // controla se o iframe está visível
+  const [videoStarted, setVideoStarted] = useState(false); // controla se o vídeo já começou
+  const [bannerVisible, setBannerVisible] = useState(true); // controla a opacidade do banner inicial
   const [error, setError] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -133,24 +132,25 @@ export default function HeroVideo() {
   }, [playerReady, currentVideoIndex]);
 
   // ============================================================
-  // Função para iniciar o vídeo e revelar o iframe com segurança
+  // Função para iniciar o vídeo e esconder o banner
   // ============================================================
   const startVideo = () => {
     if (!playerRef.current || videoStarted) return;
 
-    // Inicia o vídeo mutado
+    // Inicia o vídeo (já está mudo)
     playerRef.current.playVideo();
     setVideoStarted(true);
 
-    // Aguarda um pequeno tempo para garantir que o primeiro frame do vídeo esteja visível
-    // antes de revelar o iframe. Isso evita que o logo/interface do YouTube apareça.
-    revealTimerRef.current = setTimeout(() => {
-      setRevealVideo(true);
-    }, 300);
+    // Inicia o fade do banner após um pequeno atraso para garantir
+    // que o primeiro frame do vídeo esteja sendo renderizado.
+    // A transição dura 700ms, criando um fade suave.
+    setTimeout(() => {
+      setBannerVisible(false);
+    }, 200); // 200ms para o vídeo começar a exibir, depois o banner some
   };
 
   // ============================================================
-  // Listener de scroll para iniciar o vídeo
+  // Listener de scroll para iniciar o vídeo (se ainda não iniciado)
   // ============================================================
   useEffect(() => {
     const handleScroll = () => {
@@ -226,7 +226,7 @@ export default function HeroVideo() {
           videoId: VIDEO_IDS[0],
           playerVars: {
             autoplay: 0, // Não inicia automaticamente; controlaremos via startVideo
-            mute: 1,
+            mute: 1,     // Mudo desde o início
             playsinline: 1,
             controls: 0,
             enablejsapi: 1,
@@ -238,7 +238,7 @@ export default function HeroVideo() {
           events: {
             onReady: (event: YT.OnReadyEvent) => {
               console.log('[HERO] player pronto');
-              event.target.mute();
+              event.target.mute(); // Garantir mudo
               setMuted(true);
               setPlayerReady(true);
 
@@ -298,7 +298,6 @@ export default function HeroVideo() {
         playerRef.current = null;
       }
       if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
-      if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
       if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
     };
   }, []);
@@ -402,23 +401,17 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do iframe - INVISÍVEL até revealVideo ser true */}
+      {/* Container do iframe - SEMPRE VISÍVEL (sem visibility hidden) */}
       <div
         ref={containerRef}
-        className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
-          revealVideo ? 'opacity-100' : 'opacity-0'
-        }`}
-        style={{
-          visibility: revealVideo ? 'visible' : 'hidden',
-          pointerEvents: revealVideo ? 'auto' : 'none',
-          zIndex: 10,
-        }}
+        className="absolute inset-0 w-full h-full"
+        style={{ zIndex: 10 }}
       />
 
-      {/* Banner inicial - VISÍVEL até revealVideo ser true */}
+      {/* Banner inicial - cobre o iframe e faz fade-out quando vídeo inicia */}
       <div
         className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-          revealVideo ? 'opacity-0' : 'opacity-100'
+          bannerVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         style={{
           backgroundImage: `url('${FUNDOHOME_IMAGE}')`,
@@ -474,8 +467,8 @@ export default function HeroVideo() {
         </div>
       )}
 
-      {/* Botão de mute (aparece apenas quando o vídeo está ativo e revelado) */}
-      {playerReady && videoStarted && isVideoActive && revealVideo && (
+      {/* Botão de mute (aparece apenas quando o vídeo está ativo e o banner já sumiu) */}
+      {playerReady && videoStarted && isVideoActive && !bannerVisible && (
         <button
           onClick={toggleMute}
           aria-label={muted ? 'Ativar som do vídeo' : 'Desativar som do vídeo'}
