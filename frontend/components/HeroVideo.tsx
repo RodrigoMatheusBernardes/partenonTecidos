@@ -61,21 +61,20 @@ declare namespace YT {
 }
 
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
-
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
-// Assets de cobertura – precisam ser gerados a partir dos MP4 originais
+// Assets de cobertura (recorte real do próprio vídeo)
 const COVER_VIDEO1 = '/img/youtube-cover-video1.jpg';
 const COVER_VIDEO2 = '/img/youtube-cover-video2.jpg';
 
-const OVERSCAN = 1.25;
+const OVERSCAN = 1.25; // Mantido, mas não vamos aumentar mais
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const coverRef = useRef<HTMLDivElement>(null);
+  const coverLogoRef = useRef<HTMLImageElement>(null); // Ref para o recorte do logo
 
   const [heroStage, setHeroStage] = useState<'video1' | 'video2' | 'final'>('video1');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -90,6 +89,9 @@ export default function HeroVideo() {
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
 
+  // ============================================================
+  // Atualização do tamanho do iframe e do recorte do logo
+  // ============================================================
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !playerReady) return;
@@ -104,10 +106,10 @@ export default function HeroVideo() {
 
       const baseScale = Math.max(containerWidth / 16, containerHeight / 9);
       const scale = baseScale * OVERSCAN;
-
       const videoWidth = 16 * scale;
       const videoHeight = 9 * scale;
 
+      // Posiciona o iframe centralizado
       iframe.style.width = `${videoWidth}px`;
       iframe.style.height = `${videoHeight}px`;
       iframe.style.position = 'absolute';
@@ -118,21 +120,36 @@ export default function HeroVideo() {
       iframe.style.border = '0';
       iframe.style.transform = 'translate(-50%, -50%)';
 
-      // Posicionamento do recorte sobre o logo do YouTube
-      if (coverRef.current) {
-        // Ajuste estes valores conforme necessidade (teste com os assets)
-        const coverW = containerWidth * 0.10;
-        const coverH = containerHeight * 0.06;
-        const coverRight = containerWidth * 0.02;
-        const coverBottom = containerHeight * 0.02;
+      // ----- CÁLCULO DO RECORTE DO LOGO (canto inferior direito do iframe) -----
+      if (coverLogoRef.current) {
+        // Posição do iframe em relação ao container
+        const iframeLeft = containerWidth / 2 - videoWidth / 2;
+        const iframeTop = containerHeight / 2 - videoHeight / 2;
+        const iframeBottom = iframeTop + videoHeight;
+        const iframeRight = iframeLeft + videoWidth;
 
-        coverRef.current.style.width = `${coverW}px`;
-        coverRef.current.style.height = `${coverH}px`;
-        coverRef.current.style.right = `${coverRight}px`;
-        coverRef.current.style.bottom = `${coverBottom}px`;
-        coverRef.current.style.backgroundImage = `url('${
-          currentVideoIndex === 0 ? COVER_VIDEO1 : COVER_VIDEO2
-        }')`;
+        // Tamanho do recorte (aproximadamente 8% da largura do iframe)
+        const logoCoverWidth = videoWidth * 0.08;
+        const logoCoverHeight = videoHeight * 0.05;
+
+        // Distância do logo a partir do canto inferior direito (dentro do iframe)
+        // (valores aproximados, ajustar conforme os assets reais)
+        const logoOffsetRight = videoWidth * 0.02;
+        const logoOffsetBottom = videoHeight * 0.02;
+
+        // Posição no container
+        const coverLeft = iframeRight - logoCoverWidth - logoOffsetRight;
+        const coverTop = iframeBottom - logoCoverHeight - logoOffsetBottom;
+
+        coverLogoRef.current.style.left = `${coverLeft}px`;
+        coverLogoRef.current.style.top = `${coverTop}px`;
+        coverLogoRef.current.style.width = `${logoCoverWidth}px`;
+        coverLogoRef.current.style.height = `${logoCoverHeight}px`;
+        coverLogoRef.current.src = currentVideoIndex === 0 ? COVER_VIDEO1 : COVER_VIDEO2;
+        coverLogoRef.current.style.objectFit = 'cover';
+        coverLogoRef.current.style.position = 'absolute';
+        coverLogoRef.current.style.pointerEvents = 'none';
+        coverLogoRef.current.style.zIndex = '15';
       }
     };
 
@@ -145,9 +162,8 @@ export default function HeroVideo() {
     };
   }, [playerReady, currentVideoIndex]);
 
-  // startVideo, scroll, carregamento da API, transições, handleReplay, toggleMute
-  // permanecem exatamente iguais...
-
+  // As demais funções (startVideo, scroll, carregamento da API, transições, replay, mute)
+  // permanecem exatamente iguais ao código anterior...
   const startVideo = () => {
     if (!playerRef.current || videoStarted) return;
     playerRef.current.playVideo();
@@ -362,16 +378,18 @@ export default function HeroVideo() {
       {/* Iframe do YouTube */}
       <div ref={containerRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 10 }} />
 
-      {/* Recorte real do vídeo para cobrir o branding */}
-      <div
-        ref={coverRef}
-        className="absolute"
+      {/* Recorte real do vídeo para cobrir o logo do YouTube */}
+      <img
+        ref={coverLogoRef}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
         style={{
-          zIndex: 15,
+          position: 'absolute',
           pointerEvents: 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+          objectFit: 'cover',
+          zIndex: 15,
+          userSelect: 'none',
         }}
       />
 
