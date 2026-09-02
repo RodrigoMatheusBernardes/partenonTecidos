@@ -57,15 +57,14 @@ declare namespace YT {
     destroy(): void;
     loadVideoById(videoId: string): void;
     seekTo(seconds: number, allowSeekAhead: boolean): void;
-    stopVideo(): void; // <-- Adicionado
+    stopVideo(): void;
   }
 }
 
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
-
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
-// O OVERSCAN permanece 1.25, NÃO alteraremos isso
+// OVERSCAN NÃO ALTERADO (permanece 1.25)
 const OVERSCAN = 1.25;
 
 export default function HeroVideo() {
@@ -74,6 +73,7 @@ export default function HeroVideo() {
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Estados React
   const [heroStage, setHeroStage] = useState<'video1' | 'video2' | 'final'>('video1');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [muted, setMuted] = useState(true);
@@ -83,10 +83,14 @@ export default function HeroVideo() {
   const [error, setError] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isPlayerCovered, setIsPlayerCovered] = useState(false); // NOVO ESTADO
 
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
 
+  // ============================================================
+  // Atualização do tamanho do iframe (INALTERADA)
+  // ============================================================
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !playerReady) return;
@@ -114,8 +118,6 @@ export default function HeroVideo() {
       iframe.style.maxHeight = 'none';
       iframe.style.border = '0';
       iframe.style.transform = 'translate(-50%, -50%)';
-
-      // Lógica de dimensionamento preservada, nada alterado aqui
     };
 
     const resizeObserver = new ResizeObserver(updateIframeSize);
@@ -127,6 +129,9 @@ export default function HeroVideo() {
     };
   }, [playerReady, currentVideoIndex]);
 
+  // ============================================================
+  // Início do vídeo (startVideo) - INALTERADO
+  // ============================================================
   const startVideo = () => {
     if (!playerRef.current || videoStarted) return;
     playerRef.current.playVideo();
@@ -134,6 +139,9 @@ export default function HeroVideo() {
     setTimeout(() => setBannerVisible(false), 200);
   };
 
+  // ============================================================
+  // Listener de scroll - INALTERADO
+  // ============================================================
   useEffect(() => {
     const handleScroll = () => {
       if (playerReady && !videoStarted) startVideo();
@@ -142,6 +150,9 @@ export default function HeroVideo() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [playerReady, videoStarted]);
 
+  // ============================================================
+  // Carregamento da YouTube IFrame API - INALTERADO
+  // ============================================================
   useEffect(() => {
     const loadAPI = () => {
       if (window.YT && window.YT.Player) {
@@ -222,7 +233,11 @@ export default function HeroVideo() {
             },
             onStateChange: (event) => {
               const state = event.data;
+
+              // Se já estamos no final, ignoramos eventos tardios
               if (stageRef.current === 'final') return;
+
+              // 0 = ENDED
               if (state !== 0) return;
 
               if (stageRef.current === 'video1') {
@@ -255,6 +270,9 @@ export default function HeroVideo() {
     };
   }, []);
 
+  // ============================================================
+  // transição vídeo 1 → vídeo 2 (INALTERADA)
+  // ============================================================
   const transitionToVideo = (player: YT.Player, nextIndex: number) => {
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
     setIsTransitioning(true);
@@ -268,40 +286,81 @@ export default function HeroVideo() {
     }, 500);
   };
 
+  // ============================================================
+  // transição para o final (NOVA VERSÃO)
+  // ============================================================
   const transitionToFinal = () => {
-    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    if (transitionTimerRef.current) {
+      clearTimeout(transitionTimerRef.current);
+    }
+
+    // 1. Cobre imediatamente o iframe
+    setIsPlayerCovered(true);
     setIsTransitioning(true);
-    transitionTimerRef.current = setTimeout(() => {
-      stageRef.current = 'final';
 
-      if (playerRef.current) {
-        playerRef.current.stopVideo(); // Parar o player antes de revelar o banner final
+    // 2. Atualiza a referência imediatamente
+    stageRef.current = 'final';
+
+    // 3. Para o player imediatamente
+    if (playerRef.current) {
+      try {
+        playerRef.current.stopVideo();
+      } catch {
+        // Player pode já estar encerrando naturalmente.
       }
+    }
 
+    // 4. Janela de 100ms apenas para concluir a composição
+    transitionTimerRef.current = setTimeout(() => {
       setHeroStage('final');
       setIsTransitioning(false);
       transitionTimerRef.current = null;
-    }, 500);
+    }, 100);
   };
 
+  // ============================================================
+  // Replay (NOVA VERSÃO)
+  // ============================================================
   const handleReplay = () => {
-    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    if (transitionTimerRef.current) {
+      clearTimeout(transitionTimerRef.current);
+    }
+
     if (!playerRef.current) return;
+
     setIsTransitioning(true);
+
     transitionTimerRef.current = setTimeout(() => {
       const player = playerRef.current!;
+
+      // Remove o bloqueio antes de voltar ao vídeo
+      setIsPlayerCovered(false);
+
       stageRef.current = 'video1';
       video2FinishedRef.current = false;
+
       setCurrentVideoIndex(0);
       setHeroStage('video1');
-      player.loadVideoById(VIDEO_IDS[0]);
-      player.seekTo(0, true);
-      player.playVideo();
+
+      try {
+        player.loadVideoById(VIDEO_IDS[0]);
+        player.seekTo(0, true);
+        player.playVideo();
+      } catch {
+        // Evita quebrar o fluxo caso o player ainda esteja sincronizando.
+      }
+
+      setVideoStarted(true);
+      setBannerVisible(false);
       setIsTransitioning(false);
+
       transitionTimerRef.current = null;
-    }, 500);
+    }, 100);
   };
 
+  // ============================================================
+  // Mute/Unmute (INALTERADO)
+  // ============================================================
   const toggleMute = () => {
     if (!playerRef.current) return;
     if (muted) {
@@ -315,6 +374,9 @@ export default function HeroVideo() {
 
   const isVideoActive = heroStage === 'video1' || heroStage === 'video2';
 
+  // ============================================================
+  // Renderização
+  // ============================================================
   if (showFallback) {
     return (
       <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
@@ -348,12 +410,32 @@ export default function HeroVideo() {
         ref={containerRef}
         className="absolute inset-0 w-full h-full z-10"
         style={{
-          opacity: heroStage === 'final' ? 0 : 1,
-          visibility: heroStage === 'final' ? 'hidden' : 'visible',
+          opacity:
+            heroStage === 'final' || isPlayerCovered
+              ? 0
+              : 1,
+
+          visibility:
+            heroStage === 'final' || isPlayerCovered
+              ? 'hidden'
+              : 'visible',
+
           pointerEvents: 'none',
-          transition: 'opacity 0.3s ease, visibility 0s linear 0.3s',
+          transition: 'none',
         }}
       />
+
+      {/* Camada de bloqueio (aparece quando isPlayerCovered = true) */}
+      {isPlayerCovered && (
+        <div
+          className="absolute inset-0 bg-primary-dark"
+          style={{
+            zIndex: 15,
+            pointerEvents: 'none',
+          }}
+          aria-hidden="true"
+        />
+      )}
 
       {/* Banner inicial */}
       <div
