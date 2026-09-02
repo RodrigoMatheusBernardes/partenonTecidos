@@ -65,6 +65,9 @@ const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 // Imagem utilizada como banner inicial e também no banner final
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
+// Overscan para cortar bordas do player (logo/título do YouTube)
+const OVERSCAN = 1.06;
+
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
@@ -76,8 +79,8 @@ export default function HeroVideo() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
-  const [videoStarted, setVideoStarted] = useState(false); // controla se o vídeo já começou
-  const [bannerVisible, setBannerVisible] = useState(true); // controla a opacidade do banner inicial
+  const [videoStarted, setVideoStarted] = useState(false);
+  const [bannerVisible, setBannerVisible] = useState(true);
   const [error, setError] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -87,7 +90,7 @@ export default function HeroVideo() {
   const video2FinishedRef = useRef(false);
 
   // ============================================================
-  // Lógica de dimensionamento do iframe (preservada)
+  // Lógica de dimensionamento do iframe (com overscan)
   // ============================================================
   useEffect(() => {
     const container = containerRef.current;
@@ -101,7 +104,12 @@ export default function HeroVideo() {
       const containerWidth = rect.width;
       const containerHeight = rect.height;
 
-      const scale = Math.max(containerWidth / 16, containerHeight / 9);
+      // Escala base para preencher o container com vídeo 16:9
+      const baseScale = Math.max(containerWidth / 16, containerHeight / 9);
+
+      // Aplica overscan para cortar bordas (logo/título do YouTube)
+      const scale = baseScale * OVERSCAN;
+
       const videoWidth = 16 * scale;
       const videoHeight = 9 * scale;
 
@@ -114,9 +122,11 @@ export default function HeroVideo() {
       iframe.style.maxHeight = 'none';
       iframe.style.border = '0';
 
+      // Transformação para centralizar e deslocar levemente no vídeo 2
       const isVideo2 = currentVideoIndex === 1;
       if (isVideo2) {
-        iframe.style.transform = 'translate(-50%, -40%) scale(1.05)';
+        // Mantém deslocamento vertical (mostra mais a parte inferior) sem scale extra
+        iframe.style.transform = 'translate(-50%, -40%)';
       } else {
         iframe.style.transform = 'translate(-50%, -50%)';
       }
@@ -137,16 +147,13 @@ export default function HeroVideo() {
   const startVideo = () => {
     if (!playerRef.current || videoStarted) return;
 
-    // Inicia o vídeo (já está mudo)
     playerRef.current.playVideo();
     setVideoStarted(true);
 
-    // Inicia o fade do banner após um pequeno atraso para garantir
-    // que o primeiro frame do vídeo esteja sendo renderizado.
-    // A transição dura 700ms, criando um fade suave.
+    // Pequeno atraso antes de iniciar o fade do banner
     setTimeout(() => {
       setBannerVisible(false);
-    }, 200); // 200ms para o vídeo começar a exibir, depois o banner some
+    }, 200);
   };
 
   // ============================================================
@@ -225,8 +232,8 @@ export default function HeroVideo() {
           width: '100%',
           videoId: VIDEO_IDS[0],
           playerVars: {
-            autoplay: 0, // Não inicia automaticamente; controlaremos via startVideo
-            mute: 1,     // Mudo desde o início
+            autoplay: 0,
+            mute: 1,
             playsinline: 1,
             controls: 0,
             enablejsapi: 1,
@@ -238,11 +245,10 @@ export default function HeroVideo() {
           events: {
             onReady: (event: YT.OnReadyEvent) => {
               console.log('[HERO] player pronto');
-              event.target.mute(); // Garantir mudo
+              event.target.mute();
               setMuted(true);
               setPlayerReady(true);
 
-              // Fallback: se o usuário não rolar, inicia o vídeo após 5 segundos
               fallbackTimerRef.current = setTimeout(() => {
                 startVideo();
               }, 5000);
@@ -401,7 +407,7 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do iframe - SEMPRE VISÍVEL (sem visibility hidden) */}
+      {/* Container do iframe - SEMPRE VISÍVEL */}
       <div
         ref={containerRef}
         className="absolute inset-0 w-full h-full"
