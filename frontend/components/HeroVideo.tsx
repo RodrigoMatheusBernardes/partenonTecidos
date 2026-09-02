@@ -57,106 +57,36 @@ declare namespace YT {
     destroy(): void;
     loadVideoById(videoId: string): void;
     seekTo(seconds: number, allowSeekAhead: boolean): void;
-    stopVideo(): void;
-    getCurrentTime(): number;
-    getDuration(): number;
   }
 }
 
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
+
+// ✅ EXTENSÃO DO FUNDOHOME – AJUSTE CONFORME O ARQUIVO REAL
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
-
-// NÃO ALTERAR.
-const OVERSCAN = 1.25;
-
-// ============================================================
-// ANTECIPAÇÃO DO BLOQUEIO
-// ============================================================
-const FINAL_COVER_LEAD_MS = 350;
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
-
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const finalCoverTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const finalMonitorRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Estados React
   const [heroStage, setHeroStage] = useState<'video1' | 'video2' | 'final'>('video1');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [muted, setMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
-  const [videoStarted, setVideoStarted] = useState(false);
-  const [bannerVisible, setBannerVisible] = useState(true);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isPlayerCovered, setIsPlayerCovered] = useState(false);
 
+  // Refs para controle síncrono da máquina de estados
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
 
-  const clearFinalTimers = () => {
-    if (finalCoverTimerRef.current) {
-      clearTimeout(finalCoverTimerRef.current);
-      finalCoverTimerRef.current = null;
-    }
-    if (finalMonitorRef.current) {
-      clearInterval(finalMonitorRef.current);
-      finalMonitorRef.current = null;
-    }
-  };
-
-  const coverPlayer = () => {
-    if (stageRef.current === 'final') return;
-
-    setIsPlayerCovered(true);
-    setIsTransitioning(true);
-
-    stageRef.current = 'final';
-
-    if (playerRef.current) {
-      try {
-        playerRef.current.stopVideo();
-      } catch {
-        // Ignora caso o player já tenha encerrado.
-      }
-    }
-  };
-
-  const monitorVideo2End = () => {
-    clearFinalTimers();
-
-    if (!playerRef.current) return;
-
-    finalMonitorRef.current = setInterval(() => {
-      const player = playerRef.current;
-      if (!player) return;
-
-      if (stageRef.current !== 'video2') {
-        clearFinalTimers();
-        return;
-      }
-
-      try {
-        const currentTime = player.getCurrentTime();
-        const duration = player.getDuration();
-
-        if (!duration || duration <= 0) return;
-
-        const remainingMs = (duration - currentTime) * 1000;
-
-        if (remainingMs <= FINAL_COVER_LEAD_MS) {
-          clearFinalTimers();
-          coverPlayer();
-        }
-      } catch {
-        // API pode estar momentaneamente indisponível.
-      }
-    }, 50);
-  };
-
+  // ============================================================
+  // Lógica de dimensionamento do iframe
+  // ============================================================
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !playerReady) return;
@@ -169,8 +99,7 @@ export default function HeroVideo() {
       const containerWidth = rect.width;
       const containerHeight = rect.height;
 
-      const baseScale = Math.max(containerWidth / 16, containerHeight / 9);
-      const scale = baseScale * OVERSCAN;
+      const scale = Math.max(containerWidth / 16, containerHeight / 9);
       const videoWidth = 16 * scale;
       const videoHeight = 9 * scale;
 
@@ -182,7 +111,13 @@ export default function HeroVideo() {
       iframe.style.maxWidth = 'none';
       iframe.style.maxHeight = 'none';
       iframe.style.border = '0';
-      iframe.style.transform = 'translate(-50%, -50%)';
+
+      const isVideo2 = currentVideoIndex === 1;
+      if (isVideo2) {
+        iframe.style.transform = 'translate(-50%, -40%) scale(1.05)';
+      } else {
+        iframe.style.transform = 'translate(-50%, -50%)';
+      }
     };
 
     const resizeObserver = new ResizeObserver(updateIframeSize);
@@ -194,21 +129,9 @@ export default function HeroVideo() {
     };
   }, [playerReady, currentVideoIndex]);
 
-  const startVideo = () => {
-    if (!playerRef.current || videoStarted) return;
-    playerRef.current.playVideo();
-    setVideoStarted(true);
-    setTimeout(() => setBannerVisible(false), 200);
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (playerReady && !videoStarted) startVideo();
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [playerReady, videoStarted]);
-
+  // ============================================================
+  // Carregamento da YouTube IFrame API
+  // ============================================================
   useEffect(() => {
     const loadAPI = () => {
       if (window.YT && window.YT.Player) {
@@ -241,7 +164,9 @@ export default function HeroVideo() {
       };
 
       script.onerror = () => {
+        console.error('[HERO] erro ao carregar script do YouTube');
         setError(true);
+        setLoading(false);
         setShowFallback(true);
       };
 
@@ -253,6 +178,7 @@ export default function HeroVideo() {
         setTimeout(tryInitialize, 300);
         return;
       }
+
       if (playerRef.current) return;
 
       if (!window.YT || !window.YT.Player) {
@@ -266,7 +192,7 @@ export default function HeroVideo() {
           width: '100%',
           videoId: VIDEO_IDS[0],
           playerVars: {
-            autoplay: 0,
+            autoplay: 1,
             mute: 1,
             playsinline: 1,
             controls: 0,
@@ -277,38 +203,71 @@ export default function HeroVideo() {
             iv_load_policy: 3,
           },
           events: {
-            onReady: (event) => {
+            onReady: (event: YT.OnReadyEvent) => {
+              console.log('[HERO] player pronto');
               event.target.mute();
               setMuted(true);
               setPlayerReady(true);
-              fallbackTimerRef.current = setTimeout(() => startVideo(), 5000);
+              setLoading(false);
+              event.target.playVideo();
+              console.log('[HERO] VIDEO 1 START');
+              stageRef.current = 'video1';
+              video2FinishedRef.current = false;
             },
-            onError: () => {
+            onError: (event: YT.OnErrorEvent) => {
+              console.error('[HERO] erro do YouTube:', event.data);
+              if (event.data === 153) {
+                console.warn('[HERO] Erro 153: HTTP Referer ausente. Verifique a política de referrer.');
+              }
               setError(true);
+              setLoading(false);
               setShowFallback(true);
             },
-            onStateChange: (event) => {
+            onStateChange: (event: YT.OnStateChangeEvent) => {
               const state = event.data;
-              if (stageRef.current === 'final') return;
-              if (state !== 0) return;
+              const player = event.target;
+              console.log(`[HERO] state change: ${state}, stage: ${stageRef.current}`);
 
-              if (stageRef.current === 'video1') {
-                transitionToVideo(event.target, 1);
+              // Ignora eventos se já estiver no estado final
+              if (stageRef.current === 'final') {
+                console.log('[HERO] ignoring event - already in final state');
                 return;
               }
 
+              // Apenas processa o evento ENDED (state === 0)
+              if (state !== 0) {
+                return;
+              }
+
+              // Vídeo 1 terminou
+              if (stageRef.current === 'video1') {
+                console.log('[HERO] VIDEO 1 ENDED');
+                transitionToVideo(player, 1);
+                return;
+              }
+
+              // Vídeo 2 terminou
               if (stageRef.current === 'video2') {
-                if (!video2FinishedRef.current) {
-                  video2FinishedRef.current = true;
-                  transitionToFinal();
+                // Se já foi finalizado, ignora (proteção contra eventos duplicados)
+                if (video2FinishedRef.current) {
+                  console.log('[HERO] video 2 already finished, ignoring');
+                  return;
                 }
+
+                console.log('[HERO] VIDEO 2 ENDED');
+                video2FinishedRef.current = true;
+                transitionToFinal();
+                return;
               }
             },
           },
         });
+
         playerRef.current = player;
-      } catch {
+      } catch (err) {
+        console.error('[HERO] erro ao criar player:', err);
         setError(true);
+        setLoading(false);
         setShowFallback(true);
       }
     };
@@ -316,91 +275,70 @@ export default function HeroVideo() {
     loadAPI();
 
     return () => {
-      clearFinalTimers();
       if (playerRef.current) {
         try { playerRef.current.destroy(); } catch {}
         playerRef.current = null;
       }
       if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
-      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
     };
   }, []);
 
+  // ============================================================
+  // Funções de transição
+  // ============================================================
   const transitionToVideo = (player: YT.Player, nextIndex: number) => {
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
-    clearFinalTimers();
-
     setIsTransitioning(true);
 
+    console.log(`[HERO] LOADING VIDEO ${nextIndex + 1}`);
+
     transitionTimerRef.current = setTimeout(() => {
+      // Atualiza o ref de estado antes de carregar o próximo vídeo
       stageRef.current = nextIndex === 0 ? 'video1' : 'video2';
       setCurrentVideoIndex(nextIndex);
       setHeroStage(nextIndex === 0 ? 'video1' : 'video2');
-      setIsPlayerCovered(false);
-
       player.loadVideoById(VIDEO_IDS[nextIndex]);
+      // O autoplay iniciará automaticamente
       setIsTransitioning(false);
       transitionTimerRef.current = null;
-
-      if (nextIndex === 1) {
-        setTimeout(() => {
-          if (stageRef.current === 'video2' && playerRef.current) {
-            monitorVideo2End();
-          }
-        }, 100);
-      }
     }, 500);
   };
 
   const transitionToFinal = () => {
-    if (stageRef.current === 'final') return;
-
-    clearFinalTimers();
-
-    setIsPlayerCovered(true);
+    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
     setIsTransitioning(true);
 
-    stageRef.current = 'final';
-
-    if (playerRef.current) {
-      try { playerRef.current.stopVideo(); } catch {}
-    }
-
     transitionTimerRef.current = setTimeout(() => {
+      stageRef.current = 'final';
       setHeroStage('final');
       setIsTransitioning(false);
+      console.log('[HERO] ENTERING FINAL');
       transitionTimerRef.current = null;
-    }, 100);
+    }, 500);
   };
 
   const handleReplay = () => {
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
-    clearFinalTimers();
     if (!playerRef.current) return;
 
+    console.log('[HERO] REPLAY');
     setIsTransitioning(true);
 
     transitionTimerRef.current = setTimeout(() => {
-      const player = playerRef.current;
-      if (!player) return;
-
+      const player = playerRef.current!;
+      // Resetar todas as flags de estado
       stageRef.current = 'video1';
       video2FinishedRef.current = false;
-      setIsPlayerCovered(false);
       setCurrentVideoIndex(0);
       setHeroStage('video1');
-
-      try {
-        player.loadVideoById(VIDEO_IDS[0]);
-        player.seekTo(0, true);
-        player.playVideo();
-      } catch {}
-
-      setVideoStarted(true);
-      setBannerVisible(false);
+      // stopVideo não é necessário; loadVideoById já substitui o vídeo atual
+      player.loadVideoById(VIDEO_IDS[0]);
+      player.seekTo(0, true);
+      player.playVideo();
       setIsTransitioning(false);
+      console.log('[HERO] VIDEO 1 START');
       transitionTimerRef.current = null;
-    }, 100);
+    }, 500);
   };
 
   const toggleMute = () => {
@@ -414,6 +352,9 @@ export default function HeroVideo() {
     }
   };
 
+  // ============================================================
+  // Renderização
+  // ============================================================
   const isVideoActive = heroStage === 'video1' || heroStage === 'video2';
 
   if (showFallback) {
@@ -422,12 +363,16 @@ export default function HeroVideo() {
         <div className="absolute inset-0 bg-primary-dark/90" />
         <div className="relative z-20 text-center px-6 max-w-2xl space-y-6">
           <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
-            Parthenon<br />
+            Partenon<br />
             <span className="font-primary font-medium tracking-[0.05em] text-white">Tecidos</span>
           </h1>
-          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">A elegância que tece histórias</p>
+          <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-secondary font-normal text-white">
+            A elegância que tece histórias
+          </p>
           <div className="pt-2">
-            <Link href="/loja" className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500">Conhecer a coleção</Link>
+            <Link href="/loja" className="inline-block border border-gold text-gold px-10 py-4 text-xs tracking-[0.2em] uppercase font-secondary font-light hover:bg-gold hover:text-primary-dark transition-all duration-500">
+              Conhecer a coleção
+            </Link>
           </div>
         </div>
       </section>
@@ -437,65 +382,52 @@ export default function HeroVideo() {
   if (error) {
     return (
       <section className="w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
-        <div className="text-white text-center"><p className="text-red-500">Erro ao carregar o vídeo.</p></div>
+        <div className="text-white text-center">
+          <p className="text-red-500">Erro ao carregar o vídeo.</p>
+        </div>
       </section>
     );
   }
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* YouTube Player */}
+      {/* Container do iframe – visível apenas durante os vídeos */}
       <div
         ref={containerRef}
-        className="absolute inset-0 w-full h-full z-10"
-        style={{
-          opacity: heroStage === 'final' || isPlayerCovered ? 0 : 1,
-          visibility: heroStage === 'final' || isPlayerCovered ? 'hidden' : 'visible',
-          pointerEvents: 'none',
-          transition: 'none',
-        }}
-      />
-
-      {/* Camada de proteção */}
-      {isPlayerCovered && (
-        <div
-          className="absolute inset-0"
-          style={{
-            zIndex: 15,
-            backgroundColor: '#0B1742',
-            pointerEvents: 'none',
-          }}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Banner inicial */}
-      <div
-        className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${bannerVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-        style={{
-          backgroundImage: `url('${FUNDOHOME_IMAGE}')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          zIndex: 20,
-        }}
+        className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}`}
+        style={{ pointerEvents: 'none' }}
       />
 
       {/* Overlay de transição */}
       <div
-        className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${isTransitioning ? 'opacity-100' : 'opacity-0'}`}
-        style={{ pointerEvents: 'none', zIndex: 25 }}
+        className={`absolute inset-0 z-20 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
+          isTransitioning ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{ pointerEvents: 'none' }}
       />
 
-      {/* Banner final */}
+      {/* BANNER FINAL */}
       {heroStage === 'final' && (
-        <div className="absolute inset-0 animate-fade-in-up" style={{ zIndex: 30 }}>
-          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${FUNDOHOME_IMAGE}')` }} />
+        <div className="absolute inset-0 z-30 animate-fade-in-up">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url('${FUNDOHOME_IMAGE}')`,
+            }}
+          />
           <div className="absolute inset-0 bg-black/10" />
+
           <div className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-8 text-center text-white">
             <div className="max-w-4xl space-y-4 md:space-y-6">
-              <h2 className="font-primary font-bold text-3xl md:text-5xl lg:text-6xl tracking-[0.2em] leading-tight drop-shadow-md">TÊXTIL PARTHENON</h2>
-              <h3 className="font-secondary text-2xl md:text-4xl lg:text-5xl font-light tracking-wide drop-shadow-md">Tecidos que transformam espaços.</h3>
-              <p className="text-sm md:text-lg lg:text-xl text-white/80 font-light tracking-widest drop-shadow-sm max-w-2xl mx-auto">Qualidade, textura e sofisticação em cada detalhe.</p>
+              <h2 className="font-primary font-bold text-3xl md:text-5xl lg:text-6xl tracking-[0.2em] leading-tight drop-shadow-md">
+                TÊXTIL PARTENON
+              </h2>
+              <h3 className="font-secondary text-2xl md:text-4xl lg:text-5xl font-light tracking-wide drop-shadow-md">
+                Tecidos que transformam espaços.
+              </h3>
+              <p className="text-sm md:text-lg lg:text-xl text-white/80 font-light tracking-widest drop-shadow-sm max-w-2xl mx-auto">
+                Qualidade, textura e sofisticação em cada detalhe.
+              </p>
               <div className="pt-6 md:pt-8">
                 <button
                   onClick={handleReplay}
@@ -512,13 +444,19 @@ export default function HeroVideo() {
         </div>
       )}
 
-      {/* Botão de mute */}
-      {playerReady && videoStarted && isVideoActive && !bannerVisible && (
+      {loading && (
+        <div className="absolute inset-0 z-40 bg-primary-dark flex items-center justify-center">
+          <div className="text-white text-center">
+            <p className="text-gold">Carregando experiência...</p>
+          </div>
+        </div>
+      )}
+
+      {playerReady && isVideoActive && (
         <button
           onClick={toggleMute}
           aria-label={muted ? 'Ativar som do vídeo' : 'Desativar som do vídeo'}
-          className="absolute bottom-6 right-6 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
-          style={{ zIndex: 40 }}
+          className="absolute bottom-6 right-6 z-50 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
         >
           {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
         </button>
@@ -526,10 +464,18 @@ export default function HeroVideo() {
 
       <style jsx global>{`
         @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
-        .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+        .animate-fade-in-up {
+          animation: fadeInUp 0.8s ease-out forwards;
+        }
       `}</style>
     </section>
   );
