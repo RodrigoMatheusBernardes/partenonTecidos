@@ -64,14 +64,17 @@ const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
-// Overscan calculado: 1.1 corta branding sem prejudicar o vídeo
-const OVERSCAN = 1.1;
+const OVERSCAN = 1.2;
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Refs para as máscaras
+  const maskBottomRef = useRef<HTMLDivElement>(null);
+  const maskTopRef = useRef<HTMLDivElement>(null);
 
   const [heroStage, setHeroStage] = useState<'video1' | 'video2' | 'final'>('video1');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -98,10 +101,7 @@ export default function HeroVideo() {
       const containerWidth = rect.width;
       const containerHeight = rect.height;
 
-      // Escala base para preencher o container (16:9)
       const baseScale = Math.max(containerWidth / 16, containerHeight / 9);
-
-      // Aplica overscan para cortar bordas (logo/título)
       const scale = baseScale * OVERSCAN;
 
       const videoWidth = 16 * scale;
@@ -118,10 +118,23 @@ export default function HeroVideo() {
 
       const isVideo2 = currentVideoIndex === 1;
       if (isVideo2) {
-        // Mantém deslocamento vertical (mostra mais a parte inferior)
         iframe.style.transform = 'translate(-50%, -40%)';
       } else {
         iframe.style.transform = 'translate(-50%, -50%)';
+      }
+
+      // Cálculo das máscaras
+      if (maskBottomRef.current) {
+        maskBottomRef.current.style.left = `${containerWidth * 0.80}px`;
+        maskBottomRef.current.style.top = `${containerHeight * 0.86}px`;
+        maskBottomRef.current.style.width = `${containerWidth * 0.18}px`;
+        maskBottomRef.current.style.height = `${containerHeight * 0.12}px`;
+      }
+      if (maskTopRef.current) {
+        maskTopRef.current.style.left = `${containerWidth * 0.05}px`;
+        maskTopRef.current.style.top = `${containerHeight * 0.02}px`;
+        maskTopRef.current.style.width = `${containerWidth * 0.40}px`;
+        maskTopRef.current.style.height = `${containerHeight * 0.10}px`;
       }
     };
 
@@ -345,15 +358,51 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
+      {/* Iframe do YouTube */}
       <div ref={containerRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 10 }} />
 
+      {/* Máscara inferior direita (logo YouTube) */}
       <div
-        className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${bannerVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-        style={{ backgroundImage: `url('${FUNDOHOME_IMAGE}')`, backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 20 }}
+        ref={maskBottomRef}
+        className="absolute"
+        style={{
+          zIndex: 15,
+          pointerEvents: 'none',
+          backdropFilter: 'blur(3px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        }}
       />
 
-      <div className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${isTransitioning ? 'opacity-100' : 'opacity-0'}`} style={{ pointerEvents: 'none', zIndex: 30 }} />
+      {/* Máscara superior esquerda (título) */}
+      <div
+        ref={maskTopRef}
+        className="absolute"
+        style={{
+          zIndex: 15,
+          pointerEvents: 'none',
+          backdropFilter: 'blur(3px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        }}
+      />
 
+      {/* Banner inicial */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${bannerVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        style={{
+          backgroundImage: `url('${FUNDOHOME_IMAGE}')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: 20,
+        }}
+      />
+
+      {/* Overlay de transição entre vídeos */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${isTransitioning ? 'opacity-100' : 'opacity-0'}`}
+        style={{ pointerEvents: 'none', zIndex: 30 }}
+      />
+
+      {/* BANNER FINAL */}
       {heroStage === 'final' && (
         <div className="absolute inset-0 animate-fade-in-up" style={{ zIndex: 30 }}>
           <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${FUNDOHOME_IMAGE}')` }} />
@@ -374,6 +423,7 @@ export default function HeroVideo() {
         </div>
       )}
 
+      {/* Botão de mute */}
       {playerReady && videoStarted && isVideoActive && !bannerVisible && (
         <button onClick={toggleMute} aria-label={muted ? 'Ativar som do vídeo' : 'Desativar som do vídeo'} className="absolute bottom-6 right-6 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors" style={{ zIndex: 40 }}>
           {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
