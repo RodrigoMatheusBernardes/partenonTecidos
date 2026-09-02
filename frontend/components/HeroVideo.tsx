@@ -64,17 +64,14 @@ const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
-const OVERSCAN = 1.2;
+// Overscan ajustado para 25% - suficiente para cortar o branding na maioria das resoluções
+const OVERSCAN = 1.25;
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Refs para as máscaras
-  const maskBottomRef = useRef<HTMLDivElement>(null);
-  const maskTopRef = useRef<HTMLDivElement>(null);
 
   const [heroStage, setHeroStage] = useState<'video1' | 'video2' | 'final'>('video1');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -116,26 +113,8 @@ export default function HeroVideo() {
       iframe.style.maxHeight = 'none';
       iframe.style.border = '0';
 
-      const isVideo2 = currentVideoIndex === 1;
-      if (isVideo2) {
-        iframe.style.transform = 'translate(-50%, -40%)';
-      } else {
-        iframe.style.transform = 'translate(-50%, -50%)';
-      }
-
-      // Cálculo das máscaras
-      if (maskBottomRef.current) {
-        maskBottomRef.current.style.left = `${containerWidth * 0.80}px`;
-        maskBottomRef.current.style.top = `${containerHeight * 0.86}px`;
-        maskBottomRef.current.style.width = `${containerWidth * 0.18}px`;
-        maskBottomRef.current.style.height = `${containerHeight * 0.12}px`;
-      }
-      if (maskTopRef.current) {
-        maskTopRef.current.style.left = `${containerWidth * 0.05}px`;
-        maskTopRef.current.style.top = `${containerHeight * 0.02}px`;
-        maskTopRef.current.style.width = `${containerWidth * 0.40}px`;
-        maskTopRef.current.style.height = `${containerHeight * 0.10}px`;
-      }
+      // Centralizado para ambos os vídeos, evitando que o logo fique próximo da borda
+      iframe.style.transform = 'translate(-50%, -50%)';
     };
 
     const resizeObserver = new ResizeObserver(updateIframeSize);
@@ -360,30 +339,6 @@ export default function HeroVideo() {
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
       {/* Iframe do YouTube */}
       <div ref={containerRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 10 }} />
-
-      {/* Máscara inferior direita (logo YouTube) */}
-      <div
-        ref={maskBottomRef}
-        className="absolute"
-        style={{
-          zIndex: 15,
-          pointerEvents: 'none',
-          backdropFilter: 'blur(3px)',
-          backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        }}
-      />
-
-      {/* Máscara superior esquerda (título) */}
-      <div
-        ref={maskTopRef}
-        className="absolute"
-        style={{
-          zIndex: 15,
-          pointerEvents: 'none',
-          backdropFilter: 'blur(3px)',
-          backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        }}
-      />
 
       {/* Banner inicial */}
       <div
