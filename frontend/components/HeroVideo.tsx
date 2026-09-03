@@ -64,25 +64,7 @@ declare namespace YT {
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
-// Hook para detectar mobile (largura < 768px)
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const check = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
-
-  return isMobile;
-}
-
 export default function HeroVideo() {
-  const isMobile = useIsMobile();
-
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -97,13 +79,11 @@ export default function HeroVideo() {
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Ref para controle síncrono da máquina de estados
+  // Ref para controle da máquina de estados
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
-
-  // Ref para controle do scroll no mobile
+  // Controle de reprodução iniciada via scroll/observer
   const hasStartedRef = useRef(false);
-  const scrollListenerRef = useRef<(() => void) | null>(null);
 
   // ============================================================
   // Lógica de dimensionamento do iframe (mantida)
@@ -151,7 +131,7 @@ export default function HeroVideo() {
   }, [playerReady, currentVideoIndex]);
 
   // ============================================================
-  // Carregamento da YouTube IFrame API (modificado para mobile)
+  // Carregamento da YouTube IFrame API (com autoplay desativado inicialmente)
   // ============================================================
   useEffect(() => {
     const loadAPI = () => {
@@ -208,14 +188,12 @@ export default function HeroVideo() {
       }
 
       try {
-        // Para mobile, desativamos o autoplay inicial
-        const shouldAutoplay = !isMobile;
         const player = new window.YT.Player(containerRef.current, {
           height: '100%',
           width: '100%',
           videoId: VIDEO_IDS[0],
           playerVars: {
-            autoplay: shouldAutoplay ? 1 : 0,
+            autoplay: 0, // Desativado inicialmente – será iniciado pelo IntersectionObserver
             mute: 1,
             playsinline: 1,
             controls: 0,
@@ -232,14 +210,6 @@ export default function HeroVideo() {
               setMuted(true);
               setPlayerReady(true);
               setLoading(false);
-
-              if (shouldAutoplay) {
-                event.target.playVideo();
-                console.log('[HERO] VIDEO 1 START (autoplay)');
-              } else {
-                // Mobile: vídeo carregado mas pausado
-                console.log('[HERO] VIDEO 1 loaded, waiting for scroll');
-              }
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
             },
@@ -305,53 +275,37 @@ export default function HeroVideo() {
         playerRef.current = null;
       }
       if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
-      if (scrollListenerRef.current) {
-        window.removeEventListener('scroll', scrollListenerRef.current);
-        scrollListenerRef.current = null;
-      }
     };
-  }, [isMobile]);
+  }, []);
 
   // ============================================================
-  // Efeito: iniciar reprodução no scroll (mobile)
+  // IntersectionObserver: inicia a reprodução quando o vídeo entra na viewport
   // ============================================================
   useEffect(() => {
-    if (!isMobile || !playerReady || !playerRef.current) return;
+    if (!playerReady || !containerRef.current) return;
 
-    const handleScroll = () => {
-      if (hasStartedRef.current) return;
-      // Após rolar pelo menos 100px, inicia o vídeo
-      if (window.scrollY > 100) {
-        const player = playerRef.current;
-        if (player && player.playVideo) {
-          player.playVideo();
-          console.log('[HERO] VIDEO 1 START (scroll trigger)');
-          hasStartedRef.current = true;
-          // Remove o listener após iniciar
-          if (scrollListenerRef.current) {
-            window.removeEventListener('scroll', scrollListenerRef.current);
-            scrollListenerRef.current = null;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasStartedRef.current) {
+            const player = playerRef.current;
+            if (player && player.playVideo) {
+              player.playVideo();
+              console.log('[HERO] VIDEO 1 START (intersection)');
+              hasStartedRef.current = true;
+            }
           }
-        }
-      }
-    };
+        });
+      },
+      { threshold: 0.3 } // Inicia quando pelo menos 30% do container estiver visível
+    );
 
-    // Adiciona listener
-    window.addEventListener('scroll', handleScroll);
-    scrollListenerRef.current = handleScroll;
-
-    // Se o usuário já tiver rolado antes do player ficar pronto, verifica imediatamente
-    if (window.scrollY > 100) {
-      handleScroll();
-    }
+    observer.observe(containerRef.current);
 
     return () => {
-      if (scrollListenerRef.current) {
-        window.removeEventListener('scroll', scrollListenerRef.current);
-        scrollListenerRef.current = null;
-      }
+      observer.disconnect();
     };
-  }, [isMobile, playerReady]);
+  }, [playerReady]);
 
   // ============================================================
   // Funções de transição (mantidas)
@@ -367,6 +321,7 @@ export default function HeroVideo() {
       setCurrentVideoIndex(nextIndex);
       setHeroStage(nextIndex === 0 ? 'video1' : 'video2');
       player.loadVideoById(VIDEO_IDS[nextIndex]);
+      // Se o usuário já tiver iniciado a reprodução, o novo vídeo tocará automaticamente
       setIsTransitioning(false);
       transitionTimerRef.current = null;
     }, 500);
@@ -398,7 +353,7 @@ export default function HeroVideo() {
       video2FinishedRef.current = false;
       setCurrentVideoIndex(0);
       setHeroStage('video1');
-      hasStartedRef.current = true; // já iniciou antes, não precisa de scroll novamente
+      hasStartedRef.current = true; // já foi iniciado antes, manter estado
       player.loadVideoById(VIDEO_IDS[0]);
       player.seekTo(0, true);
       player.playVideo();
@@ -420,7 +375,7 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Renderização
+  // Renderização – estrutura original restaurada
   // ============================================================
   const isVideoActive = heroStage === 'video1' || heroStage === 'video2';
 
@@ -448,7 +403,7 @@ export default function HeroVideo() {
 
   if (error) {
     return (
-      <section className="w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
+      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
           <p className="text-red-500">Erro ao carregar o vídeo.</p>
         </div>
@@ -457,17 +412,11 @@ export default function HeroVideo() {
   }
 
   return (
-    <section
-      className={`
-        relative w-full max-w-full overflow-hidden bg-primary-dark group
-        ${isMobile ? 'h-screen sticky top-0' : 'aspect-[16/9]'}
-      `}
-    >
-      {/* Container do iframe */}
+    <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
+      {/* Container do iframe – ocupa todo o espaço do Hero */}
       <div
         ref={containerRef}
         className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}`}
-        style={{ pointerEvents: 'none' }}
       />
 
       {/* Overlay de transição */}
