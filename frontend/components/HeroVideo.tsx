@@ -52,6 +52,7 @@ declare namespace YT {
 
   interface Player {
     playVideo(): void;
+    pauseVideo(): void;
     mute(): void;
     unMute(): void;
     destroy(): void;
@@ -61,11 +62,27 @@ declare namespace YT {
 }
 
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
-
-// ✅ EXTENSÃO DO FUNDOHOME – AJUSTE CONFORME O ARQUIVO REAL
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
+// Hook para detectar mobile (largura < 768px)
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  return isMobile;
+}
+
 export default function HeroVideo() {
+  const isMobile = useIsMobile();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -80,12 +97,16 @@ export default function HeroVideo() {
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Refs para controle síncrono da máquina de estados
+  // Ref para controle síncrono da máquina de estados
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
 
+  // Ref para controle do scroll no mobile
+  const hasStartedRef = useRef(false);
+  const scrollListenerRef = useRef<(() => void) | null>(null);
+
   // ============================================================
-  // Lógica de dimensionamento do iframe
+  // Lógica de dimensionamento do iframe (mantida)
   // ============================================================
   useEffect(() => {
     const container = containerRef.current;
@@ -130,7 +151,7 @@ export default function HeroVideo() {
   }, [playerReady, currentVideoIndex]);
 
   // ============================================================
-  // Carregamento da YouTube IFrame API
+  // Carregamento da YouTube IFrame API (modificado para mobile)
   // ============================================================
   useEffect(() => {
     const loadAPI = () => {
@@ -187,12 +208,14 @@ export default function HeroVideo() {
       }
 
       try {
+        // Para mobile, desativamos o autoplay inicial
+        const shouldAutoplay = !isMobile;
         const player = new window.YT.Player(containerRef.current, {
           height: '100%',
           width: '100%',
           videoId: VIDEO_IDS[0],
           playerVars: {
-            autoplay: 1,
+            autoplay: shouldAutoplay ? 1 : 0,
             mute: 1,
             playsinline: 1,
             controls: 0,
@@ -209,15 +232,21 @@ export default function HeroVideo() {
               setMuted(true);
               setPlayerReady(true);
               setLoading(false);
-              event.target.playVideo();
-              console.log('[HERO] VIDEO 1 START');
+
+              if (shouldAutoplay) {
+                event.target.playVideo();
+                console.log('[HERO] VIDEO 1 START (autoplay)');
+              } else {
+                // Mobile: vídeo carregado mas pausado
+                console.log('[HERO] VIDEO 1 loaded, waiting for scroll');
+              }
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
             },
             onError: (event: YT.OnErrorEvent) => {
               console.error('[HERO] erro do YouTube:', event.data);
               if (event.data === 153) {
-                console.warn('[HERO] Erro 153: HTTP Referer ausente. Verifique a política de referrer.');
+                console.warn('[HERO] Erro 153: HTTP Referer ausente.');
               }
               setError(true);
               setLoading(false);
@@ -228,13 +257,11 @@ export default function HeroVideo() {
               const player = event.target;
               console.log(`[HERO] state change: ${state}, stage: ${stageRef.current}`);
 
-              // Ignora eventos se já estiver no estado final
               if (stageRef.current === 'final') {
                 console.log('[HERO] ignoring event - already in final state');
                 return;
               }
 
-              // Apenas processa o evento ENDED (state === 0)
               if (state !== 0) {
                 return;
               }
@@ -248,12 +275,10 @@ export default function HeroVideo() {
 
               // Vídeo 2 terminou
               if (stageRef.current === 'video2') {
-                // Se já foi finalizado, ignora (proteção contra eventos duplicados)
                 if (video2FinishedRef.current) {
                   console.log('[HERO] video 2 already finished, ignoring');
                   return;
                 }
-
                 console.log('[HERO] VIDEO 2 ENDED');
                 video2FinishedRef.current = true;
                 transitionToFinal();
@@ -280,11 +305,56 @@ export default function HeroVideo() {
         playerRef.current = null;
       }
       if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+      if (scrollListenerRef.current) {
+        window.removeEventListener('scroll', scrollListenerRef.current);
+        scrollListenerRef.current = null;
+      }
     };
-  }, []);
+  }, [isMobile]);
 
   // ============================================================
-  // Funções de transição
+  // Efeito: iniciar reprodução no scroll (mobile)
+  // ============================================================
+  useEffect(() => {
+    if (!isMobile || !playerReady || !playerRef.current) return;
+
+    const handleScroll = () => {
+      if (hasStartedRef.current) return;
+      // Após rolar pelo menos 100px, inicia o vídeo
+      if (window.scrollY > 100) {
+        const player = playerRef.current;
+        if (player && player.playVideo) {
+          player.playVideo();
+          console.log('[HERO] VIDEO 1 START (scroll trigger)');
+          hasStartedRef.current = true;
+          // Remove o listener após iniciar
+          if (scrollListenerRef.current) {
+            window.removeEventListener('scroll', scrollListenerRef.current);
+            scrollListenerRef.current = null;
+          }
+        }
+      }
+    };
+
+    // Adiciona listener
+    window.addEventListener('scroll', handleScroll);
+    scrollListenerRef.current = handleScroll;
+
+    // Se o usuário já tiver rolado antes do player ficar pronto, verifica imediatamente
+    if (window.scrollY > 100) {
+      handleScroll();
+    }
+
+    return () => {
+      if (scrollListenerRef.current) {
+        window.removeEventListener('scroll', scrollListenerRef.current);
+        scrollListenerRef.current = null;
+      }
+    };
+  }, [isMobile, playerReady]);
+
+  // ============================================================
+  // Funções de transição (mantidas)
   // ============================================================
   const transitionToVideo = (player: YT.Player, nextIndex: number) => {
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
@@ -293,12 +363,10 @@ export default function HeroVideo() {
     console.log(`[HERO] LOADING VIDEO ${nextIndex + 1}`);
 
     transitionTimerRef.current = setTimeout(() => {
-      // Atualiza o ref de estado antes de carregar o próximo vídeo
       stageRef.current = nextIndex === 0 ? 'video1' : 'video2';
       setCurrentVideoIndex(nextIndex);
       setHeroStage(nextIndex === 0 ? 'video1' : 'video2');
       player.loadVideoById(VIDEO_IDS[nextIndex]);
-      // O autoplay iniciará automaticamente
       setIsTransitioning(false);
       transitionTimerRef.current = null;
     }, 500);
@@ -326,12 +394,11 @@ export default function HeroVideo() {
 
     transitionTimerRef.current = setTimeout(() => {
       const player = playerRef.current!;
-      // Resetar todas as flags de estado
       stageRef.current = 'video1';
       video2FinishedRef.current = false;
       setCurrentVideoIndex(0);
       setHeroStage('video1');
-      // stopVideo não é necessário; loadVideoById já substitui o vídeo atual
+      hasStartedRef.current = true; // já iniciou antes, não precisa de scroll novamente
       player.loadVideoById(VIDEO_IDS[0]);
       player.seekTo(0, true);
       player.playVideo();
@@ -390,8 +457,13 @@ export default function HeroVideo() {
   }
 
   return (
-    <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do iframe – visível apenas durante os vídeos */}
+    <section
+      className={`
+        relative w-full max-w-full overflow-hidden bg-primary-dark group
+        ${isMobile ? 'h-screen sticky top-0' : 'aspect-[16/9]'}
+      `}
+    >
+      {/* Container do iframe */}
       <div
         ref={containerRef}
         className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}`}
