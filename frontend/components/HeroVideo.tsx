@@ -64,7 +64,25 @@ declare namespace YT {
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
+// Hook para detectar mobile (largura < 768px)
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  return isMobile;
+}
+
 export default function HeroVideo() {
+  const isMobile = useIsMobile();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -129,7 +147,7 @@ export default function HeroVideo() {
   }, [playerReady, currentVideoIndex]);
 
   // ============================================================
-  // Carregamento da YouTube IFrame API (com autoplay ativado)
+  // Carregamento da YouTube IFrame API (com autoplay)
   // ============================================================
   useEffect(() => {
     const loadAPI = () => {
@@ -342,13 +360,13 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Renderização – com sticky no container principal
+  // Renderização
   // ============================================================
   const isVideoActive = heroStage === 'video1' || heroStage === 'video2';
 
   if (showFallback) {
     return (
-      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center sticky top-0 z-10">
+      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
         <div className="absolute inset-0 bg-primary-dark/90" />
         <div className="relative z-20 text-center px-6 max-w-2xl space-y-6">
           <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
@@ -370,7 +388,7 @@ export default function HeroVideo() {
 
   if (error) {
     return (
-      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center sticky top-0 z-10">
+      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
           <p className="text-red-500">Erro ao carregar o vídeo.</p>
         </div>
@@ -379,11 +397,20 @@ export default function HeroVideo() {
   }
 
   return (
-    <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group sticky top-0 z-10">
-      {/* Container do iframe */}
+    /* 
+      No mobile: utilizamos um wrapper que ocupa 100% da largura e mantém a proporção 16:9,
+      e dentro dele o container do vídeo fica sticky para permanecer visível.
+      No desktop: mantemos o comportamento original (sem sticky).
+    */
+    <section className={`relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group ${isMobile ? 'h-[calc(100vh-var(--header-height,0px))] min-h-[300px]' : ''}`}>
+      {/* Container do iframe – com sticky apenas no mobile */}
       <div
         ref={containerRef}
-        className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}`}
+        className={`
+          absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out
+          ${isMobile ? 'sticky top-0' : ''}
+          ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}
+        `}
       />
 
       {/* Overlay de transição */}
@@ -394,7 +421,7 @@ export default function HeroVideo() {
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* BANNER FINAL – aparece automaticamente quando heroStage === 'final' */}
+      {/* BANNER FINAL – aparece automaticamente */}
       {heroStage === 'final' && (
         <div className="absolute inset-0 z-30 animate-fade-in-up">
           <div
