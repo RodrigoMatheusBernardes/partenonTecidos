@@ -52,7 +52,6 @@ declare namespace YT {
 
   interface Player {
     playVideo(): void;
-    pauseVideo(): void;
     mute(): void;
     unMute(): void;
     destroy(): void;
@@ -62,27 +61,11 @@ declare namespace YT {
 }
 
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
+
+// ✅ EXTENSÃO DO FUNDOHOME – AJUSTE CONFORME O ARQUIVO REAL
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
-// Hook para detectar mobile (largura < 768px)
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const check = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
-
-  return isMobile;
-}
-
 export default function HeroVideo() {
-  const isMobile = useIsMobile();
-
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -97,12 +80,12 @@ export default function HeroVideo() {
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Refs para controle síncrono
+  // Refs para controle síncrono da máquina de estados
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
 
   // ============================================================
-  // Lógica de dimensionamento do iframe (mantida)
+  // Lógica de dimensionamento do iframe
   // ============================================================
   useEffect(() => {
     const container = containerRef.current;
@@ -147,7 +130,7 @@ export default function HeroVideo() {
   }, [playerReady, currentVideoIndex]);
 
   // ============================================================
-  // Carregamento da YouTube IFrame API (com autoplay)
+  // Carregamento da YouTube IFrame API
   // ============================================================
   useEffect(() => {
     const loadAPI = () => {
@@ -226,13 +209,15 @@ export default function HeroVideo() {
               setMuted(true);
               setPlayerReady(true);
               setLoading(false);
+              event.target.playVideo();
+              console.log('[HERO] VIDEO 1 START');
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
             },
             onError: (event: YT.OnErrorEvent) => {
               console.error('[HERO] erro do YouTube:', event.data);
               if (event.data === 153) {
-                console.warn('[HERO] Erro 153: HTTP Referer ausente.');
+                console.warn('[HERO] Erro 153: HTTP Referer ausente. Verifique a política de referrer.');
               }
               setError(true);
               setLoading(false);
@@ -243,11 +228,13 @@ export default function HeroVideo() {
               const player = event.target;
               console.log(`[HERO] state change: ${state}, stage: ${stageRef.current}`);
 
+              // Ignora eventos se já estiver no estado final
               if (stageRef.current === 'final') {
                 console.log('[HERO] ignoring event - already in final state');
                 return;
               }
 
+              // Apenas processa o evento ENDED (state === 0)
               if (state !== 0) {
                 return;
               }
@@ -261,10 +248,12 @@ export default function HeroVideo() {
 
               // Vídeo 2 terminou
               if (stageRef.current === 'video2') {
+                // Se já foi finalizado, ignora (proteção contra eventos duplicados)
                 if (video2FinishedRef.current) {
                   console.log('[HERO] video 2 already finished, ignoring');
                   return;
                 }
+
                 console.log('[HERO] VIDEO 2 ENDED');
                 video2FinishedRef.current = true;
                 transitionToFinal();
@@ -295,7 +284,7 @@ export default function HeroVideo() {
   }, []);
 
   // ============================================================
-  // Funções de transição (mantidas)
+  // Funções de transição
   // ============================================================
   const transitionToVideo = (player: YT.Player, nextIndex: number) => {
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
@@ -304,10 +293,12 @@ export default function HeroVideo() {
     console.log(`[HERO] LOADING VIDEO ${nextIndex + 1}`);
 
     transitionTimerRef.current = setTimeout(() => {
+      // Atualiza o ref de estado antes de carregar o próximo vídeo
       stageRef.current = nextIndex === 0 ? 'video1' : 'video2';
       setCurrentVideoIndex(nextIndex);
       setHeroStage(nextIndex === 0 ? 'video1' : 'video2');
       player.loadVideoById(VIDEO_IDS[nextIndex]);
+      // O autoplay iniciará automaticamente
       setIsTransitioning(false);
       transitionTimerRef.current = null;
     }, 500);
@@ -335,10 +326,12 @@ export default function HeroVideo() {
 
     transitionTimerRef.current = setTimeout(() => {
       const player = playerRef.current!;
+      // Resetar todas as flags de estado
       stageRef.current = 'video1';
       video2FinishedRef.current = false;
       setCurrentVideoIndex(0);
       setHeroStage('video1');
+      // stopVideo não é necessário; loadVideoById já substitui o vídeo atual
       player.loadVideoById(VIDEO_IDS[0]);
       player.seekTo(0, true);
       player.playVideo();
@@ -388,7 +381,7 @@ export default function HeroVideo() {
 
   if (error) {
     return (
-      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
+      <section className="w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
           <p className="text-red-500">Erro ao carregar o vídeo.</p>
         </div>
@@ -397,20 +390,12 @@ export default function HeroVideo() {
   }
 
   return (
-    /* 
-      No mobile: utilizamos um wrapper que ocupa 100% da largura e mantém a proporção 16:9,
-      e dentro dele o container do vídeo fica sticky para permanecer visível.
-      No desktop: mantemos o comportamento original (sem sticky).
-    */
-    <section className={`relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group ${isMobile ? 'h-[calc(100vh-var(--header-height,0px))] min-h-[300px]' : ''}`}>
-      {/* Container do iframe – com sticky apenas no mobile */}
+    <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
+      {/* Container do iframe – visível apenas durante os vídeos */}
       <div
         ref={containerRef}
-        className={`
-          absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out
-          ${isMobile ? 'sticky top-0' : ''}
-          ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}
-        `}
+        className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}`}
+        style={{ pointerEvents: 'none' }}
       />
 
       {/* Overlay de transição */}
@@ -421,7 +406,7 @@ export default function HeroVideo() {
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* BANNER FINAL – aparece automaticamente */}
+      {/* BANNER FINAL */}
       {heroStage === 'final' && (
         <div className="absolute inset-0 z-30 animate-fade-in-up">
           <div
