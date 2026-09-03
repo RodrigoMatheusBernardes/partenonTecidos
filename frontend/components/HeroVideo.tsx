@@ -79,11 +79,9 @@ export default function HeroVideo() {
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Ref para controle da máquina de estados
+  // Refs para controle síncrono
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
-  // Controle de reprodução iniciada via scroll/observer
-  const hasStartedRef = useRef(false);
 
   // ============================================================
   // Lógica de dimensionamento do iframe (mantida)
@@ -131,7 +129,7 @@ export default function HeroVideo() {
   }, [playerReady, currentVideoIndex]);
 
   // ============================================================
-  // Carregamento da YouTube IFrame API (com autoplay desativado inicialmente)
+  // Carregamento da YouTube IFrame API (com autoplay ativado)
   // ============================================================
   useEffect(() => {
     const loadAPI = () => {
@@ -193,7 +191,7 @@ export default function HeroVideo() {
           width: '100%',
           videoId: VIDEO_IDS[0],
           playerVars: {
-            autoplay: 0, // Desativado inicialmente – será iniciado pelo IntersectionObserver
+            autoplay: 1,
             mute: 1,
             playsinline: 1,
             controls: 0,
@@ -279,35 +277,6 @@ export default function HeroVideo() {
   }, []);
 
   // ============================================================
-  // IntersectionObserver: inicia a reprodução quando o vídeo entra na viewport
-  // ============================================================
-  useEffect(() => {
-    if (!playerReady || !containerRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasStartedRef.current) {
-            const player = playerRef.current;
-            if (player && player.playVideo) {
-              player.playVideo();
-              console.log('[HERO] VIDEO 1 START (intersection)');
-              hasStartedRef.current = true;
-            }
-          }
-        });
-      },
-      { threshold: 0.3 } // Inicia quando pelo menos 30% do container estiver visível
-    );
-
-    observer.observe(containerRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [playerReady]);
-
-  // ============================================================
   // Funções de transição (mantidas)
   // ============================================================
   const transitionToVideo = (player: YT.Player, nextIndex: number) => {
@@ -321,7 +290,6 @@ export default function HeroVideo() {
       setCurrentVideoIndex(nextIndex);
       setHeroStage(nextIndex === 0 ? 'video1' : 'video2');
       player.loadVideoById(VIDEO_IDS[nextIndex]);
-      // Se o usuário já tiver iniciado a reprodução, o novo vídeo tocará automaticamente
       setIsTransitioning(false);
       transitionTimerRef.current = null;
     }, 500);
@@ -353,7 +321,6 @@ export default function HeroVideo() {
       video2FinishedRef.current = false;
       setCurrentVideoIndex(0);
       setHeroStage('video1');
-      hasStartedRef.current = true; // já foi iniciado antes, manter estado
       player.loadVideoById(VIDEO_IDS[0]);
       player.seekTo(0, true);
       player.playVideo();
@@ -375,13 +342,13 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Renderização – estrutura original restaurada
+  // Renderização – com sticky no container principal
   // ============================================================
   const isVideoActive = heroStage === 'video1' || heroStage === 'video2';
 
   if (showFallback) {
     return (
-      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
+      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center sticky top-0 z-10">
         <div className="absolute inset-0 bg-primary-dark/90" />
         <div className="relative z-20 text-center px-6 max-w-2xl space-y-6">
           <h1 className="text-4xl md:text-7xl lg:text-8xl font-primary font-normal tracking-[0.15em] leading-[1.1] text-white">
@@ -403,7 +370,7 @@ export default function HeroVideo() {
 
   if (error) {
     return (
-      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
+      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center sticky top-0 z-10">
         <div className="text-white text-center">
           <p className="text-red-500">Erro ao carregar o vídeo.</p>
         </div>
@@ -412,8 +379,8 @@ export default function HeroVideo() {
   }
 
   return (
-    <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do iframe – ocupa todo o espaço do Hero */}
+    <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group sticky top-0 z-10">
+      {/* Container do iframe */}
       <div
         ref={containerRef}
         className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}`}
@@ -427,7 +394,7 @@ export default function HeroVideo() {
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* BANNER FINAL */}
+      {/* BANNER FINAL – aparece automaticamente quando heroStage === 'final' */}
       {heroStage === 'final' && (
         <div className="absolute inset-0 z-30 animate-fade-in-up">
           <div
