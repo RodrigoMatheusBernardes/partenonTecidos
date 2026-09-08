@@ -64,7 +64,24 @@ declare namespace YT {
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  return isMobile;
+}
+
 export default function HeroVideo() {
+  const isMobile = useIsMobile();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -164,7 +181,6 @@ export default function HeroVideo() {
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
 
-              // O CSS já trata o dimensionamento, mas garantimos que o iframe não tenha estilos indesejados
               const iframe = containerRef.current?.querySelector('iframe');
               if (iframe) {
                 iframe.style.position = 'absolute';
@@ -240,7 +256,7 @@ export default function HeroVideo() {
   }, []);
 
   // ============================================================
-  // Garantir que o iframe permaneça estável (apenas no mobile ou geral)
+  // Garantir que o iframe permaneça estável
   // ============================================================
   useEffect(() => {
     if (!playerReady) return;
@@ -322,7 +338,7 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Renderização – sticky removido, Hero normal
+  // Renderização – sticky com wrapper de altura adequada
   // ============================================================
   const isVideoActive = heroStage === 'video1' || heroStage === 'video2';
 
@@ -359,8 +375,13 @@ export default function HeroVideo() {
   }
 
   return (
-    <div className="relative w-full">
-      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
+    <div
+      className={`relative w-full ${isMobile ? 'sticky top-0 z-50' : ''}`}
+      // No mobile, a altura do wrapper é calculada para corresponder ao aspect-ratio do Hero,
+      // garantindo que o sticky tenha espaço suficiente para exibir o vídeo inteiro.
+      style={isMobile ? { height: 'calc(100vw * 9 / 16)' } : {}}
+    >
+      <section className="relative w-full h-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
         <div ref={containerRef} className="absolute inset-0 w-full h-full z-10" />
 
         {/* Overlay de transição */}
