@@ -52,6 +52,7 @@ declare namespace YT {
 
   interface Player {
     playVideo(): void;
+    pauseVideo(): void;
     mute(): void;
     unMute(): void;
     destroy(): void;
@@ -61,11 +62,27 @@ declare namespace YT {
 }
 
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
-
-// ✅ EXTENSÃO DO FUNDOHOME – AJUSTE CONFORME O ARQUIVO REAL
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
+// Hook para detectar mobile
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  return isMobile;
+}
+
 export default function HeroVideo() {
+  const isMobile = useIsMobile();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -80,12 +97,11 @@ export default function HeroVideo() {
   const [showFallback, setShowFallback] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Refs para controle síncrono da máquina de estados
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
 
   // ============================================================
-  // Lógica de dimensionamento do iframe
+  // Dimensionamento do iframe – calculado APENAS no onReady e resize de janela
   // ============================================================
   useEffect(() => {
     const container = containerRef.current;
@@ -99,6 +115,7 @@ export default function HeroVideo() {
       const containerWidth = rect.width;
       const containerHeight = rect.height;
 
+      // Mantém proporção 16:9 preenchendo o container (sem crop)
       const scale = Math.max(containerWidth / 16, containerHeight / 9);
       const videoWidth = 16 * scale;
       const videoHeight = 9 * scale;
@@ -120,12 +137,17 @@ export default function HeroVideo() {
       }
     };
 
-    const resizeObserver = new ResizeObserver(updateIframeSize);
-    resizeObserver.observe(container);
+    // Executa uma vez no carregamento
     updateIframeSize();
 
+    // Apenas em resize de janela (não em scroll)
+    const handleResize = () => {
+      updateIframeSize();
+    };
+    window.addEventListener('resize', handleResize);
+
     return () => {
-      resizeObserver.disconnect();
+      window.removeEventListener('resize', handleResize);
     };
   }, [playerReady, currentVideoIndex]);
 
@@ -209,15 +231,13 @@ export default function HeroVideo() {
               setMuted(true);
               setPlayerReady(true);
               setLoading(false);
-              event.target.playVideo();
-              console.log('[HERO] VIDEO 1 START');
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
             },
             onError: (event: YT.OnErrorEvent) => {
               console.error('[HERO] erro do YouTube:', event.data);
               if (event.data === 153) {
-                console.warn('[HERO] Erro 153: HTTP Referer ausente. Verifique a política de referrer.');
+                console.warn('[HERO] Erro 153: HTTP Referer ausente.');
               }
               setError(true);
               setLoading(false);
@@ -228,32 +248,26 @@ export default function HeroVideo() {
               const player = event.target;
               console.log(`[HERO] state change: ${state}, stage: ${stageRef.current}`);
 
-              // Ignora eventos se já estiver no estado final
               if (stageRef.current === 'final') {
                 console.log('[HERO] ignoring event - already in final state');
                 return;
               }
 
-              // Apenas processa o evento ENDED (state === 0)
               if (state !== 0) {
                 return;
               }
 
-              // Vídeo 1 terminou
               if (stageRef.current === 'video1') {
                 console.log('[HERO] VIDEO 1 ENDED');
                 transitionToVideo(player, 1);
                 return;
               }
 
-              // Vídeo 2 terminou
               if (stageRef.current === 'video2') {
-                // Se já foi finalizado, ignora (proteção contra eventos duplicados)
                 if (video2FinishedRef.current) {
                   console.log('[HERO] video 2 already finished, ignoring');
                   return;
                 }
-
                 console.log('[HERO] VIDEO 2 ENDED');
                 video2FinishedRef.current = true;
                 transitionToFinal();
@@ -284,7 +298,7 @@ export default function HeroVideo() {
   }, []);
 
   // ============================================================
-  // Funções de transição
+  // Funções de transição (mantidas)
   // ============================================================
   const transitionToVideo = (player: YT.Player, nextIndex: number) => {
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
@@ -293,12 +307,10 @@ export default function HeroVideo() {
     console.log(`[HERO] LOADING VIDEO ${nextIndex + 1}`);
 
     transitionTimerRef.current = setTimeout(() => {
-      // Atualiza o ref de estado antes de carregar o próximo vídeo
       stageRef.current = nextIndex === 0 ? 'video1' : 'video2';
       setCurrentVideoIndex(nextIndex);
       setHeroStage(nextIndex === 0 ? 'video1' : 'video2');
       player.loadVideoById(VIDEO_IDS[nextIndex]);
-      // O autoplay iniciará automaticamente
       setIsTransitioning(false);
       transitionTimerRef.current = null;
     }, 500);
@@ -326,12 +338,10 @@ export default function HeroVideo() {
 
     transitionTimerRef.current = setTimeout(() => {
       const player = playerRef.current!;
-      // Resetar todas as flags de estado
       stageRef.current = 'video1';
       video2FinishedRef.current = false;
       setCurrentVideoIndex(0);
       setHeroStage('video1');
-      // stopVideo não é necessário; loadVideoById já substitui o vídeo atual
       player.loadVideoById(VIDEO_IDS[0]);
       player.seekTo(0, true);
       player.playVideo();
@@ -353,7 +363,7 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Renderização
+  // Renderização – estrutura estável com sticky no mobile
   // ============================================================
   const isVideoActive = heroStage === 'video1' || heroStage === 'video2';
 
@@ -381,7 +391,7 @@ export default function HeroVideo() {
 
   if (error) {
     return (
-      <section className="w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
+      <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark flex items-center justify-center">
         <div className="text-white text-center">
           <p className="text-red-500">Erro ao carregar o vídeo.</p>
         </div>
@@ -391,76 +401,74 @@ export default function HeroVideo() {
 
   return (
     <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container do iframe – visível apenas durante os vídeos */}
-      <div
-        ref={containerRef}
-        className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-500 ease-in-out ${heroStage === 'final' ? 'opacity-0' : 'opacity-100'}`}
-        style={{ pointerEvents: 'none' }}
-      />
+      {/* Container que será sticky no mobile */}
+      <div className={`relative w-full h-full ${isMobile ? 'sticky top-0' : ''}`}>
+        <div ref={containerRef} className="absolute inset-0 w-full h-full z-10">
+          {/* O iframe será inserido aqui pelo YouTube API */}
+        </div>
 
-      {/* Overlay de transição */}
-      <div
-        className={`absolute inset-0 z-20 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
-          isTransitioning ? 'opacity-100' : 'opacity-0'
-        }`}
-        style={{ pointerEvents: 'none' }}
-      />
+        {/* Overlay de transição */}
+        <div
+          className={`absolute inset-0 z-20 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
+            isTransitioning ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ pointerEvents: 'none' }}
+        />
 
-      {/* BANNER FINAL */}
-      {heroStage === 'final' && (
-        <div className="absolute inset-0 z-30 animate-fade-in-up">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url('${FUNDOHOME_IMAGE}')`,
-            }}
-          />
-          <div className="absolute inset-0 bg-black/10" />
+        {/* BANNER FINAL – aparece automaticamente */}
+        {heroStage === 'final' && (
+          <div className="absolute inset-0 z-30 animate-fade-in-up">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url('${FUNDOHOME_IMAGE}')` }}
+            />
+            <div className="absolute inset-0 bg-black/10" />
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-8 text-center text-white">
-            <div className="max-w-4xl space-y-4 md:space-y-6">
-              <h2 className="font-primary font-bold text-3xl md:text-5xl lg:text-6xl tracking-[0.2em] leading-tight drop-shadow-md">
-                TÊXTIL PARTENON
-              </h2>
-              <h3 className="font-secondary text-2xl md:text-4xl lg:text-5xl font-light tracking-wide drop-shadow-md">
-                Tecidos que transformam espaços.
-              </h3>
-              <p className="text-sm md:text-lg lg:text-xl text-white/80 font-light tracking-widest drop-shadow-sm max-w-2xl mx-auto">
-                Qualidade, textura e sofisticação em cada detalhe.
-              </p>
-              <div className="pt-6 md:pt-8">
-                <button
-                  onClick={handleReplay}
-                  className="group inline-flex items-center gap-3 border-2 border-white/40 px-8 md:px-12 py-3 md:py-4 rounded-full text-sm md:text-base font-secondary font-medium tracking-widest uppercase text-white transition-all duration-500 hover:border-white/60 hover:text-white/80 hover:bg-white/10 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
-                >
-                  <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                  Assistir de Novo
-                </button>
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-8 text-center text-white">
+              <div className="max-w-4xl space-y-4 md:space-y-6">
+                <h2 className="font-primary font-bold text-3xl md:text-5xl lg:text-6xl tracking-[0.2em] leading-tight drop-shadow-md">
+                  TÊXTIL PARTENON
+                </h2>
+                <h3 className="font-secondary text-2xl md:text-4xl lg:text-5xl font-light tracking-wide drop-shadow-md">
+                  Tecidos que transformam espaços.
+                </h3>
+                <p className="text-sm md:text-lg lg:text-xl text-white/80 font-light tracking-widest drop-shadow-sm max-w-2xl mx-auto">
+                  Qualidade, textura e sofisticação em cada detalhe.
+                </p>
+                <div className="pt-6 md:pt-8">
+                  <button
+                    onClick={handleReplay}
+                    className="group inline-flex items-center gap-3 border-2 border-white/40 px-8 md:px-12 py-3 md:py-4 rounded-full text-sm md:text-base font-secondary font-medium tracking-widest uppercase text-white transition-all duration-500 hover:border-white/60 hover:text-white/80 hover:bg-white/10 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+                  >
+                    <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                    Assistir de Novo
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {loading && (
-        <div className="absolute inset-0 z-40 bg-primary-dark flex items-center justify-center">
-          <div className="text-white text-center">
-            <p className="text-gold">Carregando experiência...</p>
+        {loading && (
+          <div className="absolute inset-0 z-40 bg-primary-dark flex items-center justify-center">
+            <div className="text-white text-center">
+              <p className="text-gold">Carregando experiência...</p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {playerReady && isVideoActive && (
-        <button
-          onClick={toggleMute}
-          aria-label={muted ? 'Ativar som do vídeo' : 'Desativar som do vídeo'}
-          className="absolute bottom-6 right-6 z-50 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
-        >
-          {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-        </button>
-      )}
+        {playerReady && isVideoActive && (
+          <button
+            onClick={toggleMute}
+            aria-label={muted ? 'Ativar som do vídeo' : 'Desativar som do vídeo'}
+            className="absolute bottom-6 right-6 z-50 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
+          >
+            {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+          </button>
+        )}
+      </div>
 
       <style jsx global>{`
         @keyframes fadeInUp {
