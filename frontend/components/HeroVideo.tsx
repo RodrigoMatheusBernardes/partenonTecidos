@@ -256,7 +256,7 @@ export default function HeroVideo() {
   }, []);
 
   // ============================================================
-  // Garantir que o iframe permaneça estável (sem transform)
+  // Garantir que o iframe permaneça estável
   // ============================================================
   useEffect(() => {
     if (!playerReady) return;
@@ -338,7 +338,7 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Renderização – sticky aplicado em um wrapper externo
+  // Renderização
   // ============================================================
   const isVideoActive = heroStage === 'video1' || heroStage === 'video2';
 
@@ -374,9 +374,9 @@ export default function HeroVideo() {
     );
   }
 
-  // WRAPPER EXTERNO COM STICKY (isolado do overflow)
+  // WRAPPER EXTERNO COM STICKY + Z-INDEX ELEVADO + ISOLATE
   return (
-    <div className={`relative w-full ${isMobile ? 'sticky top-0 z-10' : ''}`}>
+    <div className={`relative w-full ${isMobile ? 'sticky top-0 z-50 isolate' : ''}`}>
       <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
         <div ref={containerRef} className="absolute inset-0 w-full h-full z-10" />
 
