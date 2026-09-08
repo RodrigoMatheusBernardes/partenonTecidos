@@ -181,16 +181,7 @@ export default function HeroVideo() {
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
 
-              const iframe = containerRef.current?.querySelector('iframe');
-              if (iframe) {
-                iframe.style.position = 'absolute';
-                iframe.style.top = '0';
-                iframe.style.left = '0';
-                iframe.style.width = '100%';
-                iframe.style.height = '100%';
-                iframe.style.border = '0';
-                iframe.style.transform = 'none';
-              }
+              // NOTA: não manipulamos o iframe aqui – o CSS no containerRef garante o dimensionamento
             },
             onError: (event: YT.OnErrorEvent) => {
               console.error('[HERO] erro do YouTube:', event.data);
@@ -256,21 +247,8 @@ export default function HeroVideo() {
   }, []);
 
   // ============================================================
-  // Garantir que o iframe permaneça estável
+  // NENHUMA MANIPULAÇÃO MANUAL DO IFRAME – o CSS cuida de tudo
   // ============================================================
-  useEffect(() => {
-    if (!playerReady) return;
-    const iframe = containerRef.current?.querySelector('iframe');
-    if (iframe) {
-      iframe.style.position = 'absolute';
-      iframe.style.top = '0';
-      iframe.style.left = '0';
-      iframe.style.width = '100%';
-      iframe.style.height = '100%';
-      iframe.style.border = '0';
-      iframe.style.transform = 'none';
-    }
-  }, [currentVideoIndex, playerReady]);
 
   // ============================================================
   // Funções de transição (mantidas)
@@ -296,7 +274,6 @@ export default function HeroVideo() {
     setIsTransitioning(true);
 
     transitionTimerRef.current = setTimeout(() => {
-      // Para o vídeo ao entrar no banner final
       try {
         playerRef.current?.pauseVideo();
       } catch {}
@@ -379,13 +356,17 @@ export default function HeroVideo() {
   }
 
   return (
-    // Wrapper: determina a dimensão do Hero via aspect-ratio, e aplica sticky no mobile
+    // Wrapper com dimensão fixa (aspect-ratio) e sticky no mobile
     <div
       className={`relative w-full aspect-[16/9] ${isMobile ? 'sticky top-0 z-50' : ''}`}
     >
-      {/* Section: ocupa 100% do wrapper via absolute, sem aspect-ratio próprio */}
+      {/* Section que ocupa 100% do wrapper */}
       <section className="absolute inset-0 overflow-hidden bg-primary-dark group">
-        <div ref={containerRef} className="absolute inset-0 w-full h-full z-10" />
+        {/* ContainerRef: usa classes Tailwind para garantir que qualquer iframe interno ocupe 100% */}
+        <div
+          ref={containerRef}
+          className="relative w-full h-full z-10 [&>iframe]:absolute [&>iframe]:inset-0 [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0 [&>iframe]:transform-none"
+        />
 
         {/* Overlay de transição */}
         <div
