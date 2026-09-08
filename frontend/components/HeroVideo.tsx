@@ -296,6 +296,10 @@ export default function HeroVideo() {
     setIsTransitioning(true);
 
     transitionTimerRef.current = setTimeout(() => {
+      // Para o vídeo ao entrar no banner final
+      try {
+        playerRef.current?.pauseVideo();
+      } catch {}
       stageRef.current = 'final';
       setHeroStage('final');
       setIsTransitioning(false);
@@ -338,7 +342,7 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Renderização – sticky com wrapper de altura adequada
+  // Renderização
   // ============================================================
   const isVideoActive = heroStage === 'video1' || heroStage === 'video2';
 
@@ -375,13 +379,12 @@ export default function HeroVideo() {
   }
 
   return (
+    // Wrapper: determina a dimensão do Hero via aspect-ratio, e aplica sticky no mobile
     <div
-      className={`relative w-full ${isMobile ? 'sticky top-0 z-50' : ''}`}
-      // No mobile, a altura do wrapper é calculada para corresponder ao aspect-ratio do Hero,
-      // garantindo que o sticky tenha espaço suficiente para exibir o vídeo inteiro.
-      style={isMobile ? { height: 'calc(100vw * 9 / 16)' } : {}}
+      className={`relative w-full aspect-[16/9] ${isMobile ? 'sticky top-0 z-50' : ''}`}
     >
-      <section className="relative w-full h-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
+      {/* Section: ocupa 100% do wrapper via absolute, sem aspect-ratio próprio */}
+      <section className="absolute inset-0 overflow-hidden bg-primary-dark group">
         <div ref={containerRef} className="absolute inset-0 w-full h-full z-10" />
 
         {/* Overlay de transição */}
