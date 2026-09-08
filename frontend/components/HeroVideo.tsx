@@ -356,11 +356,13 @@ export default function HeroVideo() {
   }
 
   return (
-    // Único wrapper: define a geometria e também é sticky no mobile
+    // Wrapper com altura fixa (em relação à largura) – não usa aspect-ratio para evitar recálculo
     <div
-      className={`relative w-full aspect-[16/9] ${isMobile ? 'sticky top-0 z-50' : ''}`}
+      className={`relative w-full ${isMobile ? 'sticky top-0 z-50' : ''}`}
+      style={isMobile ? { height: 'calc(100vw * 9 / 16)' } : {}}
     >
-      <section className="absolute inset-0 overflow-hidden bg-primary-dark group">
+      {/* Section: ocupa 100% da altura do wrapper, e contém o overflow-hidden */}
+      <section className="relative w-full h-full overflow-hidden bg-primary-dark group">
         {/* containerRef: o iframe será inserido aqui, dimensionado via CSS */}
         <div
           ref={containerRef}
