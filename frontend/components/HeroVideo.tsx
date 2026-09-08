@@ -181,7 +181,7 @@ export default function HeroVideo() {
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
 
-              // Estiliza o iframe: 100% do container, sem scale ou crop
+              // Estiliza o iframe para ocupar 100% do container SEM transform
               const iframe = containerRef.current?.querySelector('iframe');
               if (iframe) {
                 iframe.style.position = 'absolute';
@@ -190,9 +190,8 @@ export default function HeroVideo() {
                 iframe.style.width = '100%';
                 iframe.style.height = '100%';
                 iframe.style.border = '0';
-                // Para vídeo 1: centralizado
-                iframe.style.transform = 'translate(-50%, -50%)';
-                iframe.style.transformOrigin = 'center';
+                // Remove qualquer transformação que possa causar deslocamento
+                iframe.style.transform = 'none';
               }
             },
             onError: (event: YT.OnErrorEvent) => {
@@ -259,20 +258,17 @@ export default function HeroVideo() {
   }, []);
 
   // ============================================================
-  // Ajuste do enquadramento do iframe quando o vídeo muda
+  // Ajuste de enquadramento do iframe quando o vídeo muda
   // ============================================================
   useEffect(() => {
     if (!playerReady) return;
     const iframe = containerRef.current?.querySelector('iframe');
     if (!iframe) return;
 
-    if (currentVideoIndex === 1) {
-      // Vídeo 2: ajuste de posição sem escala (apenas deslocamento)
-      iframe.style.transform = 'translate(-50%, -40%)';
-    } else {
-      // Vídeo 1: centralizado
-      iframe.style.transform = 'translate(-50%, -50%)';
-    }
+    // Para ambos os vídeos, NÃO aplicar transformação.
+    // O iframe já ocupa 100% do container com position:absolute; top:0; left:0.
+    // Garantir que transform seja none.
+    iframe.style.transform = 'none';
   }, [currentVideoIndex, playerReady]);
 
   // ============================================================
