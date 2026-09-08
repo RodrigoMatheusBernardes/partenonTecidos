@@ -101,54 +101,46 @@ export default function HeroVideo() {
   const video2FinishedRef = useRef(false);
 
   // ============================================================
-  // Dimensionamento do iframe – calculado APENAS no onReady e resize de janela
+  // Dimensionamento do iframe – calculado no carregamento e resize da janela
   // ============================================================
-  useEffect(() => {
+  const updateIframeSize = () => {
     const container = containerRef.current;
     if (!container || !playerReady) return;
-
     const iframe = container.querySelector('iframe');
     if (!iframe) return;
 
-    const updateIframeSize = () => {
-      const rect = container.getBoundingClientRect();
-      const containerWidth = rect.width;
-      const containerHeight = rect.height;
+    const rect = container.getBoundingClientRect();
+    const containerWidth = rect.width;
+    const containerHeight = rect.height;
 
-      // Mantém proporção 16:9 preenchendo o container (sem crop)
-      const scale = Math.max(containerWidth / 16, containerHeight / 9);
-      const videoWidth = 16 * scale;
-      const videoHeight = 9 * scale;
+    // Mantém proporção 16:9 preenchendo o container sem barras pretas
+    const scale = Math.max(containerWidth / 16, containerHeight / 9);
+    const videoWidth = 16 * scale;
+    const videoHeight = 9 * scale;
 
-      iframe.style.width = `${videoWidth}px`;
-      iframe.style.height = `${videoHeight}px`;
-      iframe.style.position = 'absolute';
-      iframe.style.top = '50%';
-      iframe.style.left = '50%';
-      iframe.style.maxWidth = 'none';
-      iframe.style.maxHeight = 'none';
-      iframe.style.border = '0';
+    iframe.style.width = `${videoWidth}px`;
+    iframe.style.height = `${videoHeight}px`;
+    iframe.style.position = 'absolute';
+    iframe.style.top = '50%';
+    iframe.style.left = '50%';
+    iframe.style.maxWidth = 'none';
+    iframe.style.maxHeight = 'none';
+    iframe.style.border = '0';
 
-      const isVideo2 = currentVideoIndex === 1;
-      if (isVideo2) {
-        iframe.style.transform = 'translate(-50%, -40%) scale(1.05)';
-      } else {
-        iframe.style.transform = 'translate(-50%, -50%)';
-      }
-    };
+    const isVideo2 = currentVideoIndex === 1;
+    if (isVideo2) {
+      iframe.style.transform = 'translate(-50%, -40%) scale(1.05)';
+    } else {
+      iframe.style.transform = 'translate(-50%, -50%)';
+    }
+  };
 
-    // Executa uma vez no carregamento
+  // Executa no carregamento e no resize
+  useEffect(() => {
+    if (!playerReady) return;
     updateIframeSize();
-
-    // Apenas em resize de janela (não em scroll)
-    const handleResize = () => {
-      updateIframeSize();
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    window.addEventListener('resize', updateIframeSize);
+    return () => window.removeEventListener('resize', updateIframeSize);
   }, [playerReady, currentVideoIndex]);
 
   // ============================================================
@@ -363,7 +355,7 @@ export default function HeroVideo() {
   };
 
   // ============================================================
-  // Renderização – estrutura estável com sticky no mobile
+  // Renderização
   // ============================================================
   const isVideoActive = heroStage === 'video1' || heroStage === 'video2';
 
@@ -400,75 +392,77 @@ export default function HeroVideo() {
   }
 
   return (
-    <section className="relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group">
-      {/* Container que será sticky no mobile */}
-      <div className={`relative w-full h-full ${isMobile ? 'sticky top-0' : ''}`}>
-        <div ref={containerRef} className="absolute inset-0 w-full h-full z-10">
-          {/* O iframe será inserido aqui pelo YouTube API */}
-        </div>
+    <section
+      className={`
+        relative w-full aspect-[16/9] max-w-full overflow-hidden bg-primary-dark group
+        ${isMobile ? 'sticky top-0 z-10' : ''}
+      `}
+    >
+      <div ref={containerRef} className="absolute inset-0 w-full h-full z-10">
+        {/* O iframe será inserido aqui pelo YouTube API */}
+      </div>
 
-        {/* Overlay de transição */}
-        <div
-          className={`absolute inset-0 z-20 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
-            isTransitioning ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{ pointerEvents: 'none' }}
-        />
+      {/* Overlay de transição */}
+      <div
+        className={`absolute inset-0 z-20 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
+          isTransitioning ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{ pointerEvents: 'none' }}
+      />
 
-        {/* BANNER FINAL – aparece automaticamente */}
-        {heroStage === 'final' && (
-          <div className="absolute inset-0 z-30 animate-fade-in-up">
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url('${FUNDOHOME_IMAGE}')` }}
-            />
-            <div className="absolute inset-0 bg-black/10" />
+      {/* BANNER FINAL – aparece automaticamente */}
+      {heroStage === 'final' && (
+        <div className="absolute inset-0 z-30 animate-fade-in-up">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url('${FUNDOHOME_IMAGE}')` }}
+          />
+          <div className="absolute inset-0 bg-black/10" />
 
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-8 text-center text-white">
-              <div className="max-w-4xl space-y-4 md:space-y-6">
-                <h2 className="font-primary font-bold text-3xl md:text-5xl lg:text-6xl tracking-[0.2em] leading-tight drop-shadow-md">
-                  TÊXTIL PARTENON
-                </h2>
-                <h3 className="font-secondary text-2xl md:text-4xl lg:text-5xl font-light tracking-wide drop-shadow-md">
-                  Tecidos que transformam espaços.
-                </h3>
-                <p className="text-sm md:text-lg lg:text-xl text-white/80 font-light tracking-widest drop-shadow-sm max-w-2xl mx-auto">
-                  Qualidade, textura e sofisticação em cada detalhe.
-                </p>
-                <div className="pt-6 md:pt-8">
-                  <button
-                    onClick={handleReplay}
-                    className="group inline-flex items-center gap-3 border-2 border-white/40 px-8 md:px-12 py-3 md:py-4 rounded-full text-sm md:text-base font-secondary font-medium tracking-widest uppercase text-white transition-all duration-500 hover:border-white/60 hover:text-white/80 hover:bg-white/10 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
-                  >
-                    <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                    Assistir de Novo
-                  </button>
-                </div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-8 text-center text-white">
+            <div className="max-w-4xl space-y-4 md:space-y-6">
+              <h2 className="font-primary font-bold text-3xl md:text-5xl lg:text-6xl tracking-[0.2em] leading-tight drop-shadow-md">
+                TÊXTIL PARTENON
+              </h2>
+              <h3 className="font-secondary text-2xl md:text-4xl lg:text-5xl font-light tracking-wide drop-shadow-md">
+                Tecidos que transformam espaços.
+              </h3>
+              <p className="text-sm md:text-lg lg:text-xl text-white/80 font-light tracking-widest drop-shadow-sm max-w-2xl mx-auto">
+                Qualidade, textura e sofisticação em cada detalhe.
+              </p>
+              <div className="pt-6 md:pt-8">
+                <button
+                  onClick={handleReplay}
+                  className="group inline-flex items-center gap-3 border-2 border-white/40 px-8 md:px-12 py-3 md:py-4 rounded-full text-sm md:text-base font-secondary font-medium tracking-widest uppercase text-white transition-all duration-500 hover:border-white/60 hover:text-white/80 hover:bg-white/10 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+                >
+                  <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  Assistir de Novo
+                </button>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {loading && (
-          <div className="absolute inset-0 z-40 bg-primary-dark flex items-center justify-center">
-            <div className="text-white text-center">
-              <p className="text-gold">Carregando experiência...</p>
-            </div>
+      {loading && (
+        <div className="absolute inset-0 z-40 bg-primary-dark flex items-center justify-center">
+          <div className="text-white text-center">
+            <p className="text-gold">Carregando experiência...</p>
           </div>
-        )}
+        </div>
+      )}
 
-        {playerReady && isVideoActive && (
-          <button
-            onClick={toggleMute}
-            aria-label={muted ? 'Ativar som do vídeo' : 'Desativar som do vídeo'}
-            className="absolute bottom-6 right-6 z-50 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
-          >
-            {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-          </button>
-        )}
-      </div>
+      {playerReady && isVideoActive && (
+        <button
+          onClick={toggleMute}
+          aria-label={muted ? 'Ativar som do vídeo' : 'Desativar som do vídeo'}
+          className="absolute bottom-6 right-6 z-50 p-2 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
+        >
+          {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+        </button>
+      )}
 
       <style jsx global>{`
         @keyframes fadeInUp {
