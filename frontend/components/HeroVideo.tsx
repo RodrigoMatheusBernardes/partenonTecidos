@@ -64,7 +64,6 @@ declare namespace YT {
 const VIDEO_IDS = ['0OGYYD0XY9A', 'nbU9EBZpbAo'];
 const FUNDOHOME_IMAGE = '/img/fundohome.jpg';
 
-// Hook para detectar mobile
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -87,7 +86,6 @@ export default function HeroVideo() {
   const playerRef = useRef<YT.Player | null>(null);
   const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Estados React
   const [heroStage, setHeroStage] = useState<'video1' | 'video2' | 'final'>('video1');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [muted, setMuted] = useState(true);
@@ -99,49 +97,6 @@ export default function HeroVideo() {
 
   const stageRef = useRef<'video1' | 'video2' | 'final'>('video1');
   const video2FinishedRef = useRef(false);
-
-  // ============================================================
-  // Dimensionamento do iframe – calculado no carregamento e resize da janela
-  // ============================================================
-  const updateIframeSize = () => {
-    const container = containerRef.current;
-    if (!container || !playerReady) return;
-    const iframe = container.querySelector('iframe');
-    if (!iframe) return;
-
-    const rect = container.getBoundingClientRect();
-    const containerWidth = rect.width;
-    const containerHeight = rect.height;
-
-    // Mantém proporção 16:9 preenchendo o container sem barras pretas
-    const scale = Math.max(containerWidth / 16, containerHeight / 9);
-    const videoWidth = 16 * scale;
-    const videoHeight = 9 * scale;
-
-    iframe.style.width = `${videoWidth}px`;
-    iframe.style.height = `${videoHeight}px`;
-    iframe.style.position = 'absolute';
-    iframe.style.top = '50%';
-    iframe.style.left = '50%';
-    iframe.style.maxWidth = 'none';
-    iframe.style.maxHeight = 'none';
-    iframe.style.border = '0';
-
-    const isVideo2 = currentVideoIndex === 1;
-    if (isVideo2) {
-      iframe.style.transform = 'translate(-50%, -40%) scale(1.05)';
-    } else {
-      iframe.style.transform = 'translate(-50%, -50%)';
-    }
-  };
-
-  // Executa no carregamento e no resize
-  useEffect(() => {
-    if (!playerReady) return;
-    updateIframeSize();
-    window.addEventListener('resize', updateIframeSize);
-    return () => window.removeEventListener('resize', updateIframeSize);
-  }, [playerReady, currentVideoIndex]);
 
   // ============================================================
   // Carregamento da YouTube IFrame API
@@ -225,6 +180,20 @@ export default function HeroVideo() {
               setLoading(false);
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
+
+              // Estiliza o iframe para ocupar 100% do container e centralizar
+              const iframe = containerRef.current?.querySelector('iframe');
+              if (iframe) {
+                iframe.style.position = 'absolute';
+                iframe.style.top = '0';
+                iframe.style.left = '0';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.border = '0';
+                // Centraliza (vídeo 1)
+                iframe.style.transform = 'translate(-50%, -50%)';
+                iframe.style.transformOrigin = 'center';
+              }
             },
             onError: (event: YT.OnErrorEvent) => {
               console.error('[HERO] erro do YouTube:', event.data);
@@ -288,6 +257,23 @@ export default function HeroVideo() {
       if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
     };
   }, []);
+
+  // ============================================================
+  // Ajuste do enquadramento do iframe quando o vídeo muda
+  // ============================================================
+  useEffect(() => {
+    if (!playerReady) return;
+    const iframe = containerRef.current?.querySelector('iframe');
+    if (!iframe) return;
+
+    if (currentVideoIndex === 1) {
+      // Vídeo 2: ajuste de posição sem zoom
+      iframe.style.transform = 'translate(-50%, -40%)';
+    } else {
+      // Vídeo 1: centralizado
+      iframe.style.transform = 'translate(-50%, -50%)';
+    }
+  }, [currentVideoIndex, playerReady]);
 
   // ============================================================
   // Funções de transição (mantidas)
