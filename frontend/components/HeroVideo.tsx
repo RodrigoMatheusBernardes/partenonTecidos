@@ -355,22 +355,21 @@ export default function HeroVideo() {
   }
 
   // ============================================================
-  // Estruturas separadas: desktop ORIGINAL, mobile CORRIGIDA
+  // Estrutura mobile (corrigida) e desktop (original)
   // ============================================================
   if (isMobile) {
-    // ---------- ESTRUTURA MOBILE ----------
     return (
       <div
-        className="relative w-full sticky top-0 z-50"
+        className="relative w-full sticky top-0 z-50 isolate"
         style={{ height: 'calc(100vw * 9 / 16)' }}
       >
-        <section className="relative w-full h-full overflow-hidden bg-primary-dark group">
+        {/* Removido overflow-hidden para evitar corte; o iframe tem 100% da altura */}
+        <section className="relative w-full h-full bg-primary-dark group">
           <div
             ref={containerRef}
             className="relative w-full h-full z-10 [&>iframe]:absolute [&>iframe]:inset-0 [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0 [&>iframe]:transform-none"
           />
 
-          {/* Overlay */}
           <div
             className={`absolute inset-0 z-20 bg-primary-dark/80 transition-opacity duration-500 ease-in-out ${
               isTransitioning ? 'opacity-100' : 'opacity-0'
@@ -378,7 +377,6 @@ export default function HeroVideo() {
             style={{ pointerEvents: 'none' }}
           />
 
-          {/* BANNER FINAL */}
           {heroStage === 'final' && (
             <div className="absolute inset-0 z-30 animate-fade-in-up">
               <div
@@ -452,7 +450,7 @@ export default function HeroVideo() {
     );
   }
 
-  // ---------- ESTRUTURA DESKTOP (ORIGINAL) ----------
+  // ---------- DESKTOP (original) ----------
   return (
     <div className="relative w-full aspect-[16/9]">
       <section className="absolute inset-0 overflow-hidden bg-primary-dark group">
