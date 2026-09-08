@@ -181,7 +181,7 @@ export default function HeroVideo() {
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
 
-              // Estiliza o iframe para ocupar 100% do container SEM transform
+              // Estiliza o iframe para ocupar 100% do container, sem transformações
               const iframe = containerRef.current?.querySelector('iframe');
               if (iframe) {
                 iframe.style.position = 'absolute';
@@ -190,7 +190,6 @@ export default function HeroVideo() {
                 iframe.style.width = '100%';
                 iframe.style.height = '100%';
                 iframe.style.border = '0';
-                // Remove qualquer transformação que possa causar deslocamento
                 iframe.style.transform = 'none';
               }
             },
@@ -258,17 +257,21 @@ export default function HeroVideo() {
   }, []);
 
   // ============================================================
-  // Ajuste de enquadramento do iframe quando o vídeo muda
+  // Garantir que o iframe não sofra transformações quando o vídeo muda
   // ============================================================
   useEffect(() => {
     if (!playerReady) return;
     const iframe = containerRef.current?.querySelector('iframe');
-    if (!iframe) return;
-
-    // Para ambos os vídeos, NÃO aplicar transformação.
-    // O iframe já ocupa 100% do container com position:absolute; top:0; left:0.
-    // Garantir que transform seja none.
-    iframe.style.transform = 'none';
+    if (iframe) {
+      // Reforçar que o iframe permanece estável
+      iframe.style.position = 'absolute';
+      iframe.style.top = '0';
+      iframe.style.left = '0';
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = '0';
+      iframe.style.transform = 'none';
+    }
   }, [currentVideoIndex, playerReady]);
 
   // ============================================================
