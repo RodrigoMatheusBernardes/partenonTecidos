@@ -181,7 +181,7 @@ export default function HeroVideo() {
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
 
-              // Estiliza o iframe para ocupar 100% do container e centralizar
+              // Estiliza o iframe: 100% do container, sem scale ou crop
               const iframe = containerRef.current?.querySelector('iframe');
               if (iframe) {
                 iframe.style.position = 'absolute';
@@ -190,7 +190,7 @@ export default function HeroVideo() {
                 iframe.style.width = '100%';
                 iframe.style.height = '100%';
                 iframe.style.border = '0';
-                // Centraliza (vídeo 1)
+                // Para vídeo 1: centralizado
                 iframe.style.transform = 'translate(-50%, -50%)';
                 iframe.style.transformOrigin = 'center';
               }
@@ -267,7 +267,7 @@ export default function HeroVideo() {
     if (!iframe) return;
 
     if (currentVideoIndex === 1) {
-      // Vídeo 2: ajuste de posição sem zoom
+      // Vídeo 2: ajuste de posição sem escala (apenas deslocamento)
       iframe.style.transform = 'translate(-50%, -40%)';
     } else {
       // Vídeo 1: centralizado
