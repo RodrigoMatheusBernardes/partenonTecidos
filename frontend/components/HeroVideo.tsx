@@ -180,7 +180,6 @@ export default function HeroVideo() {
               setLoading(false);
               stageRef.current = 'video1';
               video2FinishedRef.current = false;
-              // O iframe será estilizado pelo CSS – sem manipulação manual
             },
             onError: (event: YT.OnErrorEvent) => {
               console.error('[HERO] erro do YouTube:', event.data);
@@ -360,10 +359,12 @@ export default function HeroVideo() {
   if (isMobile) {
     return (
       <div
-        className="relative w-full sticky top-0 z-50 isolate"
-        style={{ height: 'calc(100vw * 9 / 16)' }}
+        className="relative w-full sticky z-40"
+        style={{
+          top: 'var(--header-height, 80px)',
+          height: 'calc(100vw * 9 / 16)',
+        }}
       >
-        {/* Removido overflow-hidden para evitar corte; o iframe tem 100% da altura */}
         <section className="relative w-full h-full bg-primary-dark group">
           <div
             ref={containerRef}
