@@ -20,26 +20,6 @@ export default function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // 🔥 REFERÊNCIA PARA O HEADER
-  const headerRef = useRef<HTMLElement>(null);
-
-  // 🔥 OBSERVADOR DE ALTURA DO HEADER
-  useEffect(() => {
-    const header = headerRef.current;
-    if (!header) return;
-
-    const updateHeight = () => {
-      const height = header.offsetHeight;
-      document.documentElement.style.setProperty('--header-height', `${height}px`);
-    };
-
-    const observer = new ResizeObserver(updateHeight);
-    observer.observe(header);
-    updateHeight(); // valor inicial
-
-    return () => observer.disconnect();
-  }, []);
-
   // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -71,17 +51,18 @@ export default function Header() {
   );
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
+  // Determinar rótulo da role para exibição
   const roleLabel = user?.role === 'admin' ? 'Administrador' : user?.role === 'seller' ? 'Vendedor' : 'Cliente';
 
   return (
-    // 🔥 REFERÊNCIA NO HEADER
-    <header ref={headerRef} className="bg-primary-dark border-b border-secondary-gray/20 sticky top-0 z-50 text-white">
+    <header className="bg-primary-dark border-b border-secondary-gray/20 sticky top-0 z-50 text-white">
       <div className="main-container">
         <div className="flex items-center justify-between h-20">
           
-          {/* LOGO */}
+          {/* LOGO - COMPOSIÇÃO INDEPENDENTE: SÍMBOLO + TEXTO */}
           <Link href="/" className="flex items-center flex-shrink-0 h-20">
             <div className="flex items-center gap-3">
+              {/* Símbolo */}
               <Image
                 src="/images/img/logott.png"
                 alt="Símbolo Parthenon"
@@ -90,6 +71,7 @@ export default function Header() {
                 priority
                 className="max-h-[70px] w-auto object-contain"
               />
+              {/* Texto */}
               <Image
                 src="/images/img/textilpartenon.png"
                 alt="Parthenon Tecidos"
@@ -120,7 +102,7 @@ export default function Header() {
               <Heart className="w-5 h-5" strokeWidth={1.5} />
             </Link>
 
-            {/* User Menu */}
+            {/* User Menu (dropdown) */}
             <div className="relative" ref={dropdownRef}>
               {isAuthenticated ? (
                 <button
@@ -139,6 +121,7 @@ export default function Header() {
                 </Link>
               )}
 
+              {/* Dropdown */}
               {isAuthenticated && dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-white !bg-white rounded-card shadow-xl-luxury border border-gray-mid overflow-hidden z-[100] animate-fadeInUp">
                   <div className="px-4 py-3 border-b border-gray-mid bg-light/50">
