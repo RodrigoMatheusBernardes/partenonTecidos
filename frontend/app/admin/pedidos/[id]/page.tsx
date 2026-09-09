@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { authGet, authPut } from '@/lib/auth';
 import toast from 'react-hot-toast';
+import Button from '@/components/ui/Button';
 
 interface ItemPedido {
   produtoId: string;
@@ -22,6 +23,15 @@ interface Pedido {
   total: number;
   status: string;
   createdAt: string;
+  endereco?: string;
+  telefone?: string;
+  cpf?: string;
+  vendedor?: string;
+  transportadora?: string;
+  frete?: number;
+  desconto?: number;
+  formaPagamento?: string;
+  parcelas?: { vencimento: string; valor: number }[];
 }
 
 const STATUS_OPCOES = ['pendente', 'confirmado', 'enviado', 'entregue', 'cancelado'];
@@ -71,20 +81,38 @@ export default function DetalhesPedidoPage() {
   if (carregando) return <p className="p-8 text-center">Carregando pedido...</p>;
   if (!pedido) return <p className="p-8 text-center text-red-600">Pedido não encontrado.</p>;
 
-  const getStatusBadge = (status: string) => {
-    const badges: Record<string, string> = {
-      pendente: 'bg-yellow-100 text-yellow-800',
-      confirmado: 'bg-blue-100 text-blue-800',
-      enviado: 'bg-purple-100 text-purple-800',
-      entregue: 'bg-green-100 text-green-800',
-      cancelado: 'bg-red-100 text-red-800',
-    };
-    return badges[status] || 'bg-gray-100 text-gray-800';
-  };
-
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Pedido #{pedido._id.slice(-6)}</h1>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <h1 className="text-3xl font-bold">Pedido #{pedido._id.slice(-6)}</h1>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            href={`/admin/pedidos/${id}/venda`}
+            target="_blank"
+          >
+            Pedido de Venda
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            href={`/admin/pedidos/${id}/nota`}
+            target="_blank"
+          >
+            Resumo da Nota
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            href={`/admin/pedidos/${id}/cupom`}
+            target="_blank"
+          >
+            Imprimir Cupom
+          </Button>
+        </div>
+      </div>
+
       <div className="bg-white shadow rounded-lg p-6">
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div><span className="font-semibold">Cliente:</span> {pedido.cliente?.nome}</div>
@@ -106,6 +134,24 @@ export default function DetalhesPedidoPage() {
               {salvandoStatus && <span className="text-xs text-gray-500">Salvando...</span>}
             </div>
           </div>
+          {pedido.endereco && <div><span className="font-semibold">Endereço:</span> {pedido.endereco}</div>}
+          {pedido.telefone && <div><span className="font-semibold">Telefone:</span> {pedido.telefone}</div>}
+          {pedido.cpf && <div><span className="font-semibold">CPF/CNPJ:</span> {pedido.cpf}</div>}
+          {pedido.vendedor && <div><span className="font-semibold">Vendedor:</span> {pedido.vendedor}</div>}
+          {pedido.transportadora && <div><span className="font-semibold">Transportadora:</span> {pedido.transportadora}</div>}
+          {pedido.frete !== undefined && <div><span className="font-semibold">Frete:</span> R$ {pedido.frete.toFixed(2)}</div>}
+          {pedido.desconto !== undefined && <div><span className="font-semibold">Desconto:</span> R$ {pedido.desconto.toFixed(2)}</div>}
+          {pedido.formaPagamento && <div><span className="font-semibold">Pagamento:</span> {pedido.formaPagamento}</div>}
+          {pedido.parcelas && pedido.parcelas.length > 0 && (
+            <div className="col-span-2">
+              <span className="font-semibold">Parcelas:</span>
+              <ul className="list-disc pl-5 mt-1">
+                {pedido.parcelas.map((p, i) => (
+                  <li key={i}>{new Date(p.vencimento).toLocaleDateString('pt-BR')} - R$ {p.valor.toFixed(2)}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <h2 className="text-xl font-bold mb-4">Itens</h2>
