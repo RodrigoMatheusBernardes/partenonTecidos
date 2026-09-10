@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import StarRating from './StarRating';
 import Button from '@/components/ui/Button';
 import { Loader2 } from 'lucide-react';
+import { getApiUrl } from '@/lib/api';
 
 interface AvaliacaoFormProps {
   produtoId: string;
@@ -25,7 +26,7 @@ export default function AvaliacaoForm({ produtoId, onSuccess }: AvaliacaoFormPro
     }
     setEnviando(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = getApiUrl();
       const res = await fetch(`${apiUrl}/api/produtos/${produtoId}/avaliar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
