@@ -75,7 +75,7 @@ async function createPixPayment({ orderId, customerId, amount, description, emai
       status: paymentData.status,
       qrCode: paymentData.point_of_interaction?.transaction_data?.qr_code || '',
       qrCodeBase64: paymentData.point_of_interaction?.transaction_data?.qr_code_base64 || '',
-      pixCode: paymentData.point_of_interaction?.transaction_data?.ticket_url || '',
+      pixCode: paymentData.point_of_interaction?.transaction_data?.qr_code || '',
       expirationDate: paymentData.date_of_expiration || preferenceData.expiration_date_to,
       transactionId: paymentData.id.toString(),
       amount: paymentData.transaction_amount,

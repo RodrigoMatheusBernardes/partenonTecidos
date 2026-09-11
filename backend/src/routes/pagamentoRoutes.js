@@ -149,16 +149,18 @@ router.get('/:id', authMiddleware, async (req, res) => {
     // Buscar status atualizado no Mercado Pago (opcional)
     if (pagamento.transactionId) {
       const statusResult = await getPaymentStatus(pagamento.transactionId);
-      if (statusResult.success && statusResult.status === 'paid') {
-        pagamento.status = 'PAID';
-        pagamento.paidAt = new Date();
-        await pagamento.save();
+      if (statusResult.success && statusResult.status === 'approved') {
+        if (pagamento.status !== 'PAID') {
+          pagamento.status = 'PAID';
+          pagamento.paidAt = new Date();
+          await pagamento.save();
 
-        // Atualizar pedido
-        await Pedido.findByIdAndUpdate(pagamento.orderId, {
-          paymentStatus: 'PAGO',
-          status: 'PAGO',
-        });
+          // Atualizar pedido
+          await Pedido.findByIdAndUpdate(pagamento.orderId, {
+            paymentStatus: 'PAGO',
+            status: 'PAGO',
+          });
+        }
       }
     }
 
