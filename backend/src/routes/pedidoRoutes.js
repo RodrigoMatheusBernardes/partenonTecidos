@@ -68,12 +68,17 @@ async function buildPedidoItens(rawItens) {
 }
 
 // ============================================================
-// POST /api/pedidos – Criar pedido (com cupom e vendedor)
+// POST /api/pedidos – Criar pedido (com cupom, frete e vendedor)
 // ============================================================
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const payload = sanitizeObject(req.body);
-    const { cliente: clienteBody, cupom, vendedor: codigoVendedor } = payload;
+    const {
+      cliente: clienteBody,
+      cupom,
+      vendedor: codigoVendedor,
+      frete: freteRaw,
+    } = payload;
     const itens = await buildPedidoItens(payload.itens);
 
     const authUser = await User.findById(req.user.id).select('nome email').lean();
@@ -114,6 +119,14 @@ router.post('/', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'E-mail do cliente inválido.' });
     }
 
+    // Frete: aceitar apenas número finito >= 0. Arredondar para 2 casas.
+    // Nota: nesta fase o backend não recalcula o frete (dependeria da lógica
+    // de /api/frete/calcular). A fonte é o valor enviado pelo checkout.
+    const freteNumero = Number(freteRaw);
+    const frete = Number.isFinite(freteNumero) && freteNumero >= 0
+      ? Math.round(freteNumero * 100) / 100
+      : 0;
+
     let totalBruto = itens.reduce((acc, i) => acc + i.preco * i.quantidade, 0);
     let desconto = 0;
     let cupomCodigo = '';
@@ -131,7 +144,7 @@ router.post('/', authMiddleware, async (req, res) => {
       cupomCodigo = cupomDoc.codigo;
     }
 
-    const total = totalBruto - desconto;
+    const total = totalBruto - desconto + frete;
 
     let vendedorId = null;
     let vendedorCodigo = '';
@@ -152,6 +165,7 @@ router.post('/', authMiddleware, async (req, res) => {
       cliente,
       itens,
       total,
+      frete,
       cupom_codigo: cupomCodigo,
       desconto,
       status: 'pendente',
@@ -197,6 +211,7 @@ router.post('/', authMiddleware, async (req, res) => {
       message: 'Pedido criado!',
       pedido_id: pedido._id,
       total,
+      frete,
       desconto,
       cupom: cupomCodigo,
       vendedor: vendedorCodigo,
@@ -231,7 +246,6 @@ router.get('/', authMiddleware, async (req, res) => {
         ],
       };
     } else {
-      // customer vê apenas seus pedidos (por email)
       query = { 'cliente.email': req.user.email };
     }
 

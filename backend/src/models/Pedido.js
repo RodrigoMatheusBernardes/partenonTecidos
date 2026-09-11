@@ -20,14 +20,17 @@ const pedidoSchema = new mongoose.Schema({
     quantidade: Number
   }],
   total: { type: Number, required: true },
-  
+
+  // Frete cobrado no pedido. Definido no momento da criação.
+  frete: { type: Number, default: 0 },
+
   // Status do pedido
   status: {
     type: String,
     enum: ['AGUARDANDO_PAGAMENTO', 'PAGO', 'pendente', 'confirmado', 'enviado', 'entregue', 'cancelado', 'EXPIRADO'],
     default: 'AGUARDANDO_PAGAMENTO',
   },
-  
+
   cupom_codigo: { type: String, default: '' },
   desconto: { type: Number, default: 0 },
 
