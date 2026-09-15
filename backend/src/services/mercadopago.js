@@ -1,9 +1,9 @@
 const { Preference, Payment } = require('mercadopago');
 const { mercadopagoClient } = require('../config/mercadopago');
 
-/**
- * Cria um pagamento PIX no Mercado Pago
- */
+/* ============================================================
+ * PIX — INALTERADO
+ * ============================================================ */
 async function createPixPayment({ orderId, customerId, amount, description, email, nome }) {
   try {
     const expirationMinutes = parseInt(process.env.MERCADO_PAGO_EXPIRATION_MINUTES) || 30;
@@ -11,32 +11,21 @@ async function createPixPayment({ orderId, customerId, amount, description, emai
     const paymentClient = new Payment(mercadopagoClient);
 
     const preferenceBody = {
-      items: [
-        {
-          id: orderId.toString(),
-          title: description || 'Pedido Parthenon Tecidos',
-          quantity: 1,
-          currency_id: 'BRL',
-          unit_price: Number(amount.toFixed(2)),
-        },
-      ],
-      payer: {
-        email: email || 'cliente@parthenon.com',
-        name: nome || 'Cliente',
-      },
+      items: [{
+        id: orderId.toString(),
+        title: description || 'Pedido Parthenon Tecidos',
+        quantity: 1,
+        currency_id: 'BRL',
+        unit_price: Number(amount.toFixed(2)),
+      }],
+      payer: { email: email || 'cliente@parthenon.com', name: nome || 'Cliente' },
       payment_methods: {
         excluded_payment_methods: [
-          { id: 'visa' },
-          { id: 'master' },
-          { id: 'amex' },
-          { id: 'hipercard' },
-          { id: 'elo' },
-          { id: 'cabal' },
+          { id: 'visa' }, { id: 'master' }, { id: 'amex' },
+          { id: 'hipercard' }, { id: 'elo' }, { id: 'cabal' },
         ],
         excluded_payment_types: [
-          { id: 'credit_card' },
-          { id: 'debit_card' },
-          { id: 'ticket' },
+          { id: 'credit_card' }, { id: 'debit_card' }, { id: 'ticket' },
         ],
         installments: 1,
       },
@@ -53,7 +42,6 @@ async function createPixPayment({ orderId, customerId, amount, description, emai
 
     const preferenceData = await preferenceClient.create({ body: preferenceBody });
 
-    // Gerar QR Code para PIX
     const paymentData = await paymentClient.create({
       body: {
         transaction_amount: amount,
@@ -82,50 +70,100 @@ async function createPixPayment({ orderId, customerId, amount, description, emai
     };
   } catch (error) {
     console.error('Erro ao criar pagamento PIX:', error.response?.data || error.message);
-    return {
-      success: false,
-      error: error.response?.data?.message || error.message,
-    };
+    return { success: false, error: error.response?.data?.message || error.message };
   }
 }
 
-/**
- * Consulta status de um pagamento no Mercado Pago
- */
+/* ============================================================
+ * CARTÃO — NOVO
+ * ============================================================ */
+async function createCardPayment({
+  orderId,
+  amount,
+  token,
+  installments,
+  paymentMethodId,
+  issuerId,
+  email,
+  identification,
+  idempotencyKey,
+}) {
+  try {
+    const paymentClient = new Payment(mercadopagoClient);
+
+    const payer = { email };
+    if (identification && identification.type && identification.number) {
+      payer.identification = {
+        type: String(identification.type),
+        number: String(identification.number),
+      };
+    }
+
+    const body = {
+      transaction_amount: Number(Number(amount).toFixed(2)),
+      token,
+      description: `Pedido #${orderId}`,
+      installments: Number(installments),
+      payment_method_id: paymentMethodId,
+      payer,
+      external_reference: String(orderId),
+      notification_url: `${process.env.API_BASE_URL}/api/webhooks/mercadopago`,
+    };
+
+    if (issuerId !== undefined && issuerId !== null && issuerId !== '') {
+      const parsed = Number(issuerId);
+      if (Number.isFinite(parsed) && parsed > 0) body.issuer_id = parsed;
+    }
+
+    const paymentData = await paymentClient.create({
+      body,
+      requestOptions: idempotencyKey ? { idempotencyKey } : undefined,
+    });
+
+    return {
+      success: true,
+      paymentId: paymentData.id,
+      status: paymentData.status,
+      statusDetail: paymentData.status_detail || '',
+      transactionId: String(paymentData.id),
+      amount: paymentData.transaction_amount,
+      installments: paymentData.installments,
+    };
+  } catch (error) {
+    const msg =
+      error.response?.data?.message
+      || error.response?.data?.error
+      || 'Falha ao processar pagamento com cartão.';
+    console.error('[MP] Erro ao criar pagamento com cartão:', msg);
+    return { success: false, error: msg };
+  }
+}
+
+/* ============================================================
+ * Consulta — INALTERADO
+ * ============================================================ */
 async function getPaymentStatus(paymentId) {
   try {
     const paymentClient = new Payment(mercadopagoClient);
     const response = await paymentClient.get({ id: paymentId });
-    return {
-      success: true,
-      status: response.status,
-      payment: response,
-    };
+    return { success: true, status: response.status, payment: response };
   } catch (error) {
     console.error('Erro ao consultar pagamento:', error.response?.data || error.message);
-    return {
-      success: false,
-      error: error.response?.data?.message || error.message,
-    };
+    return { success: false, error: error.response?.data?.message || error.message };
   }
 }
 
-/**
- * Verifica assinatura do Webhook do Mercado Pago
- */
+/* ============================================================
+ * Webhook — dívida técnica, NÃO mexer
+ * ============================================================ */
 function validateWebhookSignature(notification, signature, xRequestId) {
-  // Implementação básica - em produção, use a validação oficial do Mercado Pago
-  // https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks
-  // Para validação completa, é recomendado verificar o x-signature
-  // Por enquanto, vamos validar pela presença dos campos obrigatórios
-  if (!notification || !notification.id) {
-    return false;
-  }
+  if (!notification || !notification.id) return false;
   return true;
 }
 
 module.exports = {
   createPixPayment,
+  createCardPayment,
   getPaymentStatus,
   validateWebhookSignature,
 };

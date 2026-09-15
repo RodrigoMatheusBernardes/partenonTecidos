@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const pagamentoSchema = new mongoose.Schema({
-  // Relacionamento
   orderId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Pedido',
@@ -13,7 +12,6 @@ const pagamentoSchema = new mongoose.Schema({
     required: true,
   },
 
-  // Dados do pagamento
   paymentGateway: {
     type: String,
     enum: ['mercadopago', 'pagarme', 'asaas', 'stripe'],
@@ -25,93 +23,53 @@ const pagamentoSchema = new mongoose.Schema({
     required: true,
   },
 
-  // Transação
-  transactionId: {
-    type: String,
-    default: '',
-  },
-  preferenceId: {
-    type: String,
-    default: '',
-  },
+  transactionId: { type: String, default: '' },
+  preferenceId: { type: String, default: '' },
 
-  // PIX específico
-  qrCode: {
-    type: String,
-    default: '',
-  },
-  pixCode: {
-    type: String,
-    default: '',
-  },
-  qrCodeBase64: {
-    type: String,
-    default: '',
-  },
+  idempotencyKey: { type: String, default: '' },
 
-  // Valores
-  amount: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  discount: {
-    type: Number,
-    default: 0,
-  },
-  finalAmount: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
+  qrCode: { type: String, default: '' },
+  pixCode: { type: String, default: '' },
+  qrCodeBase64: { type: String, default: '' },
 
-  // Status
+  amount: { type: Number, required: true, min: 0 },
+  discount: { type: Number, default: 0 },
+  finalAmount: { type: Number, required: true, min: 0 },
+
   status: {
     type: String,
     enum: [
-      'PENDING',      // Aguardando pagamento
-      'PAID',         // Pago
-      'EXPIRED',      // Expirado
-      'CANCELED',     // Cancelado
-      'REFUNDED',     // Reembolsado
-      'PARTIALLY_REFUNDED', // Reembolsado parcialmente
+      'PROCESSING',
+      'PENDING',
+      'PAID',
+      'EXPIRED',
+      'CANCELED',
+      'REFUNDED',
+      'PARTIALLY_REFUNDED',
     ],
     default: 'PENDING',
   },
 
-  // Datas
-  expirationDate: {
-    type: Date,
-    required: true,
-  },
-  paidAt: {
-    type: Date,
-    default: null,
-  },
-  refundedAt: {
-    type: Date,
-    default: null,
-  },
+  expirationDate: { type: Date, default: null },
+  paidAt: { type: Date, default: null },
+  refundedAt: { type: Date, default: null },
 
-  // Dados adicionais
-  metadata: {
-    type: mongoose.Schema.Types.Mixed,
-    default: {},
-  },
-
-  // Para futuros parcelamentos
-  installments: {
-    type: Number,
-    default: 1,
-  },
-
+  metadata: { type: mongoose.Schema.Types.Mixed, default: {} },
+  installments: { type: Number, default: 1 },
 }, { timestamps: true });
 
-// Índices para consultas rápidas
 pagamentoSchema.index({ orderId: 1 });
-pagamentoSchema.index({ transactionId: 1 });
+pagamentoSchema.index({ transactionId: 1 }, { unique: true, sparse: true });
 pagamentoSchema.index({ status: 1 });
 pagamentoSchema.index({ expirationDate: 1 });
 pagamentoSchema.index({ customerId: 1 });
+
+pagamentoSchema.index(
+  { idempotencyKey: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { idempotencyKey: { $type: 'string', $ne: '' } },
+  }
+);
 
 module.exports = mongoose.models.Pagamento || mongoose.model('Pagamento', pagamentoSchema);
